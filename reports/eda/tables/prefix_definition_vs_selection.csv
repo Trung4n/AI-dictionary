@@ -1,0 +1,14 @@
+definition,frame,mean r,median r,min r
+reference: full drawing vs shapes.full,own,0.929,0.938,0.823
+strokes ceil,own,0.878,0.878,0.793
+"strokes max(1, round)",own,0.876,0.876,0.787
+"strokes max(1, floor)",own,0.865,0.864,0.76
+strokes floor,own,0.749,0.802,0.196
+strokes ceil,full,0.737,0.797,0.17
+"strokes max(1, round)",full,0.734,0.796,0.158
+points,own,0.733,0.783,0.124
+"strokes max(1, floor)",full,0.731,0.793,0.147
+ink,own,0.701,0.738,0.037
+points,full,0.62,0.645,0.156
+strokes floor,full,0.613,0.641,0.016
+ink,full,0.585,0.611,0.138
