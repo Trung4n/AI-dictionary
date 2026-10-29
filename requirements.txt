@@ -6,3 +6,5 @@ tqdm==4.70.1
 jupyter==1.1.1
 nbconvert==7.17.2
 ipykernel==7.4.0
+opencv-python-headless==5.0.0.93
+pytest==9.2.0
