@@ -1,0 +1,11 @@
+# Sequence baseline: a causal GRU on stroke-3 input.
+extends: baseline.yaml
+
+run:
+  name: baseline_gru
+
+model:
+  kind: gru
+  hidden: 256
+  layers: 2
+  dropout: 0.0

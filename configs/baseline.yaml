@@ -1,0 +1,31 @@
+# Settings shared by both baselines. They differ only under `model` and in the
+# input settings that belong to each model.
+extends: base.yaml
+
+data:
+  order_encoding: true  # CNN: draw earlier strokes brighter, so the image keeps stroke order
+  max_len: 256          # GRU: longer drawings are thinned, not cut off
+  num_workers: 4
+
+train:
+  epochs: 10
+  batch_size: 512
+  lr: 0.001
+  weight_decay: 0.01
+  warmup_steps: 500
+  grad_clip: 1.0
+  amp: true
+  train_subset: null    # number of training drawings; null uses all of them
+  log_every: 50
+
+eval:
+  fracs: [0.1, 0.25, 0.5, 0.75, 1.0]
+  subset_per_class: 300 # used after each epoch to pick the best checkpoint
+  batch_size: 1024
+  full_val_at_end: true
+
+checkpoint:
+  every_minutes: 20
+
+budget:
+  max_minutes: null     # stop and save after this long; resume with --resume

@@ -1,0 +1,10 @@
+# Raster baseline: a compact ResNet-18 on 64x64 images.
+extends: baseline.yaml
+
+run:
+  name: baseline_cnn
+
+model:
+  kind: cnn
+  width: 32
+  blocks: [2, 2, 2, 2]
