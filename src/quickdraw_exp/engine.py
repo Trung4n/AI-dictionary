@@ -39,15 +39,17 @@ def stratified_subset(split, per_class: int, seed: int) -> SubsetSplit:
 
 def make_view(cfg: dict, base, frac, train: bool):
     """Preprocessing for one model: the only place the two input kinds differ."""
-    from quickdraw.dataset import RasterView, SequenceView
     from quickdraw.transforms import AugmentConfig
+
+    from .views import NormRasterView, NormSequenceView
 
     data = cfg["data"]
     common = dict(frac=frac, prefix_mode=data["prefix_mode"], augment=AugmentConfig() if train else None,
-                  frac_range=tuple(data["frac_range"]), seed=cfg["run"]["seed"])
+                  frac_range=tuple(data["frac_range"]), seed=cfg["run"]["seed"],
+                  input_norm=data["input_norm"], spacing=data["resample_spacing"])
     if cfg["model"]["kind"] == "cnn":
-        return RasterView(base, size=data["image_size"], order_encoding=data["order_encoding"], **common)
-    return SequenceView(base, max_len=data["max_len"], **common)
+        return NormRasterView(base, size=data["image_size"], order_encoding=data["order_encoding"], **common)
+    return NormSequenceView(base, max_len=data["max_len"], **common)
 
 
 def pick_device(name: str = "auto") -> torch.device:
@@ -238,7 +240,8 @@ def run_training(cfg: dict, run_dir=None) -> dict:
         summary["peak_gpu_memory_mb"] = round(torch.cuda.max_memory_allocated(device) / 2 ** 20)
     if not stopped and best.is_file():
         load_checkpoint(best, model)
-        target = val_split if cfg["eval"]["full_val_at_end"] else val_small
+        final = cfg["eval"]["final_per_class"]
+        target = val_split if final is None else stratified_subset(val_split, final, seed)
         summary["val"] = evaluate(model, cfg, target, device, load_roles(), with_groups=True)
     logger.event("stopped by the time budget; continue with --resume" if stopped else "finished")
     logger.finish("budget_stopped" if stopped else "finished", **summary)
@@ -252,9 +255,10 @@ def main(argv=None) -> int:
     parser.add_argument("--config", required=True)
     parser.add_argument("--set", action="append", default=[], metavar="section.key=value")
     parser.add_argument("--resume", help="run folder or checkpoint to continue")
+    parser.add_argument("--run-dir", help="fixed run folder; continues it if it holds a checkpoint")
     args = parser.parse_args(argv)
     cfg = load_config(args.config, args.set)
-    run_dir = None
+    run_dir = args.run_dir
     if args.resume:
         run_dir = adopt_run_dir(args.resume, resolve_output_root(cfg["run"]["output_root"]))
     summary = run_training(cfg, run_dir)

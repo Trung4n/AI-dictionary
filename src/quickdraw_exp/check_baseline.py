@@ -19,7 +19,7 @@ from pathlib import Path
 
 CONFIGS = {"cnn": "configs/baseline_cnn.yaml", "gru": "configs/baseline_gru.yaml"}
 SMALL = ["train.train_subset=50000", "train.epochs=5", "train.warmup_steps=20", "train.log_every=10",
-         "eval.subset_per_class=20", "eval.batch_size=512", "eval.full_val_at_end=false", "data.num_workers=2"]
+         "eval.subset_per_class=20", "eval.batch_size=512", "eval.final_per_class=20", "data.num_workers=2"]
 OVERFIT_SIZE, OVERFIT_STEPS = 256, 1000
 OVERFIT_TARGET, SMALL_TOP1_TARGET = 0.8, 0.05  # chance is 0.01
 

@@ -6,6 +6,8 @@ data:
   order_encoding: true  # CNN: draw earlier strokes brighter, so the image keeps stroke order
   max_len: 256          # GRU: longer drawings are thinned, not cut off
   num_workers: 4
+  input_norm: prefix    # prefix, full_bbox or resampled; see quickdraw_exp/views.py
+  resample_spacing: 16  # canvas units between points, for input_norm=resampled
 
 train:
   epochs: 10
@@ -22,7 +24,7 @@ eval:
   fracs: [0.1, 0.25, 0.5, 0.75, 1.0]
   subset_per_class: 300 # used after each epoch to pick the best checkpoint
   batch_size: 1024
-  full_val_at_end: true
+  final_per_class: null # drawings per class in the final validation; null uses all of them
 
 checkpoint:
   every_minutes: 20

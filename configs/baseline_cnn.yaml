@@ -8,3 +8,4 @@ model:
   kind: cnn
   width: 32
   blocks: [2, 2, 2, 2]
+  stem_stride: 1        # 2 halves the first feature maps: much faster on a T4

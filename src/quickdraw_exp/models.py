@@ -25,9 +25,9 @@ class RasterResNet(nn.Module):
 
     input_kind = "raster"
 
-    def __init__(self, n_classes: int = 100, width: int = 32, blocks=(2, 2, 2, 2)):
+    def __init__(self, n_classes: int = 100, width: int = 32, blocks=(2, 2, 2, 2), stem_stride: int = 1):
         super().__init__()
-        self.stem = nn.Sequential(nn.Conv2d(1, width, 3, 1, 1, bias=False), nn.BatchNorm2d(width), nn.ReLU(inplace=True))
+        self.stem = nn.Sequential(nn.Conv2d(1, width, 3, stem_stride, 1, bias=False), nn.BatchNorm2d(width), nn.ReLU(inplace=True))
         stages, channels = [], width
         for i, count in enumerate(blocks):
             out = width * 2 ** i
@@ -70,7 +70,7 @@ class CausalGRU(nn.Module):
 def build_model(model_cfg: dict, n_classes: int = 100) -> nn.Module:
     kind = model_cfg["kind"]
     if kind == "cnn":
-        return RasterResNet(n_classes, model_cfg["width"], tuple(model_cfg["blocks"]))
+        return RasterResNet(n_classes, model_cfg["width"], tuple(model_cfg["blocks"]), model_cfg["stem_stride"])
     if kind == "gru":
         return CausalGRU(n_classes, model_cfg["hidden"], model_cfg["layers"], model_cfg["dropout"])
     raise ValueError(f"unknown model kind {kind!r}")

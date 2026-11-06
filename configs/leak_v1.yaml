@@ -1,0 +1,47 @@
+# Step 3: does input normalisation change accuracy on partial drawings?
+# Written before any of these models was trained. Results are on validation data.
+experiment: leak_v1
+
+# Every job trains on 6,000 drawings per class for 8 epochs, and is scored on
+# 1,000 drawings per class. Two jobs share the CPU at a time.
+common:
+  - train.train_subset=600000
+  - train.epochs=8
+  - eval.subset_per_class=200
+  - eval.final_per_class=1000
+  - data.num_workers=2
+
+seeds: [42, 43]
+
+conditions:
+  gru_prefix:     {config: configs/baseline_gru.yaml, set: [data.input_norm=prefix]}
+  gru_full_bbox:  {config: configs/baseline_gru.yaml, set: [data.input_norm=full_bbox]}
+  gru_resampled:  {config: configs/baseline_gru.yaml, set: [data.input_norm=resampled]}
+  cnn_prefix:     {config: configs/baseline_cnn.yaml, set: [model.stem_stride=2, data.input_norm=prefix]}
+  cnn_full_bbox:  {config: configs/baseline_cnn.yaml, set: [model.stem_stride=2, data.input_norm=full_bbox]}
+
+# Short runs that decide the CNN's first stride, because the T4 limits its speed.
+# They do not take part in the decision below.
+speed_runs:
+  cnn_stride1: {config: configs/baseline_cnn.yaml, set: [model.stem_stride=1]}
+  cnn_stride2: {config: configs/baseline_cnn.yaml, set: [model.stem_stride=2]}
+speed_common:
+  - train.train_subset=50000
+  - train.epochs=5
+  - train.warmup_steps=20
+  - train.log_every=10
+  - eval.subset_per_class=20
+  - eval.final_per_class=100
+  - data.num_workers=2
+
+# Fixed in advance. Early top-1 is the mean of top-1 over these fractions.
+decision:
+  early_fracs: [0.1, 0.25, 0.5]
+  margin: 0.01
+  rule: >-
+    full_bbox is never used for claims, because it cannot exist while drawing.
+    Sequence model: if resampled early top-1 is at least prefix early top-1 minus
+    the margin, use resampled, since it removes the simplification artefacts at
+    little cost. Otherwise keep prefix and report the gap as an upper limit on what
+    those artefacts could add, because resampling may also remove real shape detail.
+    Raster model: keep prefix.

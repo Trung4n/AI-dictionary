@@ -81,6 +81,13 @@ def test_cnn_shape_and_gradients():
     assert all(p.grad is not None for p in model.parameters())
 
 
+def test_cnn_stem_stride_keeps_output_shape():
+    torch = _torch()
+    from quickdraw_exp.models import build_model
+    model = build_model({"kind": "cnn", "width": 8, "blocks": [1, 1], "stem_stride": 2})
+    assert model(torch.rand(2, 1, 64, 64)).shape == (2, 100)
+
+
 def test_gru_ignores_padding():
     torch = _torch()
     from quickdraw_exp.models import CausalGRU
