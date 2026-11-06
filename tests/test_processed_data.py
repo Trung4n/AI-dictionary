@@ -121,3 +121,16 @@ def test_views_produce_valid_samples(splits):
         assert seq.shape == (256, 3) and 1 <= n <= 256
     with pytest.raises(ValueError):
         RasterView(splits["test"], frac="random")
+
+
+def test_sequence_view_resample_option(splits):
+    from quickdraw.dataset import SequenceView, load_resampled_stats
+    from quickdraw.transforms import RESAMPLE_STEP
+
+    plain = SequenceView(splits["val"], frac=0.25)
+    res = SequenceView(splits["val"], frac=0.25, resample_step=RESAMPLE_STEP)
+    assert res.delta_std == load_resampled_stats(RESAMPLE_STEP) != plain.delta_std
+    seq, n, label = res[7]
+    assert seq.shape == (256, 3) and 1 <= n <= 256 and label == plain[7][2]
+    with pytest.raises(ValueError):
+        SequenceView(splits["val"], resample_step=RESAMPLE_STEP + 1)

@@ -4,10 +4,12 @@ import math
 import numpy as np
 import pytest
 
+from quickdraw.leak import attack_stroke_endpoints
 from quickdraw.prefix import prefix_by_ink
+from quickdraw.simplify import simplify
 from quickdraw.transforms import (CANVAS, AugmentConfig, augment, downsample,
                                   ink_lengths, normalize, prefix, rasterize,
-                                  to_sequence)
+                                  resample_uniform, to_sequence)
 
 
 def pack(strokes):
@@ -180,3 +182,64 @@ def test_to_sequence_roundtrip():
     rec = np.cumsum(seq[:n, :2] * [2.0, 4.0], axis=0)
     assert np.allclose(rec, n_pts, atol=1e-3)
     assert seq[:n, 2].tolist() == end.tolist() and not seq[n:].any()
+
+
+# ---------------------------------------------------------------- resample
+
+def test_resample_uniform_spacing_and_strokes():
+    rng = np.random.default_rng(8)
+    pts, end = pack(random_drawing(rng, n_strokes=4))
+    r, e = resample_uniform(normalize(pts), end, 8.0)
+    assert e.sum() == end.sum() and e[-1]
+    for s in np.split(r, np.flatnonzero(e)[:-1] + 1):
+        if len(s) > 2:
+            d = np.hypot(*np.diff(s, axis=0).T)
+            assert d.max() <= 8.0 + 1e-3  # a chord is never longer than its arc
+
+
+def test_resample_uniform_handles_dots():
+    pts, end = pack([([5, 5], [5, 5]), ([9, 20], [9, 9])])
+    r, e = resample_uniform(normalize(pts), end, 8.0)
+    assert e.sum() == 2 and np.isfinite(r).all()
+
+
+def test_resample_removes_the_coordinate_grid():
+    """A prefix rescaled from integer coordinates sits on a grid; after resampling
+    neither all points nor the stroke endpoints marked by pen_lift should."""
+    rng = np.random.default_rng(9)
+    hits_before, hits_after = 0, 0
+    for _ in range(100):
+        pts, end = pack(random_drawing(rng, n_strokes=5))
+        p, e = prefix((pts * 0.4).round(), end, 0.8)  # true side is about 0.4 * 255
+        true = float((p.max(axis=0) - p.min(axis=0)).max()) / 255
+        n = normalize(p)
+        r, re = resample_uniform(n, e, 8.0)
+        hits_before += abs(attack_stroke_endpoints(n, e) / true - 1) < 0.03
+        estimate = attack_stroke_endpoints(r, re)
+        hits_after += not np.isnan(estimate) and abs(estimate / true - 1) < 0.03
+    assert hits_before > 60 and hits_after <= 2
+
+
+def test_to_sequence_with_resample_decodes_to_resampled_points():
+    pts, end = pack(random_drawing(np.random.default_rng(10), n_strokes=3))
+    n = normalize(pts)
+    r, _ = resample_uniform(n, end, 8.0)
+    seq, k = to_sequence(n, end, max_len=len(r) + 1, resample_step=8.0)
+    assert k == len(r)
+    assert np.allclose(np.cumsum(seq[:k, :2], axis=0), r, atol=1e-2)
+
+
+# ---------------------------------------------------------------- simplify
+
+def test_simplify_straight_line_keeps_only_ends():
+    pts = np.array([[0, 0], [10, 10], [20, 20], [100, 100]], dtype=float)
+    end = np.array([False, False, False, True])
+    s, e = simplify(pts, end)
+    assert s.tolist() == [[0, 0], [255, 255]] and e.tolist() == [False, True]
+
+
+def test_simplify_scales_and_keeps_strokes():
+    rng = np.random.default_rng(11)
+    pts, end = pack(random_drawing(rng, n_strokes=3))
+    s, e = simplify(pts * 3.7 + 11, end)
+    assert s.min() == 0 and s.max() == 255 and e.sum() == 3 and (s == np.rint(s)).all()

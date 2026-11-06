@@ -22,6 +22,7 @@ import numpy as np
 CANVAS = 255
 EVAL_FRACS = (0.1, 0.25, 0.5, 0.75, 1.0)
 PREFIX_MODES = ("ink", "points", "strokes_ceil")
+RESAMPLE_STEP = 8.0  # canvas units; about 2 px of a 64 x 64 raster
 
 
 def stroke_ids(end: np.ndarray) -> np.ndarray:
@@ -143,6 +144,33 @@ def rasterize(pts: np.ndarray, end: np.ndarray, size: int = 64, pad: int = 2,
     return img
 
 
+def resample_uniform(pts: np.ndarray, end: np.ndarray, step: float = RESAMPLE_STEP):
+    """Evenly spaced points along each stroke of a *normalised* drawing.
+
+    Stored coordinates sit on an integer grid, so after a prefix is rescaled the
+    grid spacing reveals its true size relative to the finished drawing. Point
+    spacing reveals it too. Sampling at the midpoints of ``k`` equal arcs removes
+    both: unlike a scheme that keeps stroke endpoints, no original point survives
+    (only dots, which have no arc). Corners can be cut by up to ``step / 2``.
+    The polyline's facets remain, because they are part of the geometry."""
+    out, out_end = [], []
+    for s in np.split(pts.astype(np.float64), np.flatnonzero(end)[:-1] + 1):
+        seg = np.hypot(*np.diff(s, axis=0).T)
+        length = seg.sum()
+        if length == 0:
+            r = s[:1]
+        else:
+            k = max(2, math.ceil(length / step))
+            t = np.concatenate([[0.0], np.cumsum(seg)])
+            u = (np.arange(k) + 0.5) * length / k
+            r = np.column_stack([np.interp(u, t, s[:, 0]), np.interp(u, t, s[:, 1])])
+        e = np.zeros(len(r), dtype=bool)
+        e[-1] = True
+        out.append(r)
+        out_end.append(e)
+    return np.vstack(out).astype(np.float32), np.concatenate(out_end)
+
+
 def downsample(pts: np.ndarray, end: np.ndarray, max_len: int):
     """Reduce to ``max_len`` points without cutting off the end of the drawing:
     keep every stroke's first and last point, then evenly spaced interior points."""
@@ -165,11 +193,14 @@ def downsample(pts: np.ndarray, end: np.ndarray, max_len: int):
 
 
 def to_sequence(pts: np.ndarray, end: np.ndarray, max_len: int = 256,
-                delta_std: tuple[float, float] = (1.0, 1.0)):
+                delta_std: tuple[float, float] = (1.0, 1.0), resample_step: float | None = None):
     """Stroke-3 sequence of a *normalised* drawing: rows ``(dx, dy, pen_lift)``
     where the first row is the offset from the origin and ``pen_lift`` = 1 on the
     last point of a stroke. dx, dy are divided by ``delta_std`` (fitted on the
-    training split). Returns ``(seq[max_len, 3] float32, length)``, zero-padded."""
+    training split). ``resample_step`` applies ``resample_uniform`` first.
+    Returns ``(seq[max_len, 3] float32, length)``, zero-padded."""
+    if resample_step is not None:
+        pts, end = resample_uniform(pts, end, resample_step)
     pts, end = downsample(pts, end, max_len)
     d = np.diff(pts.astype(np.float32), axis=0, prepend=np.zeros((1, 2), np.float32))
     seq = np.zeros((max_len, 3), dtype=np.float32)
