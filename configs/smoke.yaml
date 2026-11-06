@@ -1,0 +1,18 @@
+# Step 1 check. Trains a tiny throwaway network to test data loading, logging
+# and resuming. It is not a baseline and its accuracy means nothing.
+extends: base.yaml
+
+run:
+  name: smoke
+
+data:
+  verify_sha256: true
+
+smoke:
+  subset_size: 1600     # 25 batches per epoch, so the run crosses epochs
+  batch_size: 64
+  lr: 0.001
+  total_steps: 60
+  stop_at: 30           # the interrupted run saves here, in the middle of an epoch
+  crash_after: 5        # and runs this many more steps before dying unsaved
+  tolerance: 1.0e-6     # largest parameter difference that still counts as equal

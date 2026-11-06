@@ -13,7 +13,7 @@ python -m venv .venv
 
 Python 3.12. The data files are not in git: place `quickdraw_100c_30k.parquet`,
 `quickdraw_100c_30k_classes.txt` and `class_selection/` under `dataset/`
-(see `notebooks/1.dataset_collection.ipynb` for how they were produced from Kaggle).
+(see `notebooks/00_dataset_collection.ipynb` for how they were produced from Kaggle).
 
 ## Run order
 
@@ -42,18 +42,46 @@ train.set_epoch(epoch)         # call once per epoch for fresh prefixes/augmenta
 `SequenceView` returns `(seq float32 (256, 3), length, label)` in stroke-3 format.
 Both are torch-free map-style datasets usable with `torch.utils.data.DataLoader`.
 
+## Experiments
+
+Run from the repository root on any machine:
+
+```bash
+PYTHONPATH=src python -m quickdraw_exp.smoke --config configs/smoke.yaml   # step 1 check, about 2 minutes
+PYTHONPATH=src python -m pytest tests/test_exp_setup.py
+```
+
+The processed data is found automatically: `data.root` in the config, then the
+`QUICKDRAW_DATA` environment variable, `dataset/processed/`, `dataset/`, and on
+Kaggle anything attached under `/kaggle/input`. On Kaggle, use the preinstalled
+packages instead of `requirements.txt`, whose pins can conflict with them; open
+`notebooks/kaggle_step1_check.ipynb`.
+
+Each run writes a folder under `runs/` (`/kaggle/working/runs` on Kaggle) with
+its resolved configuration, environment, metrics, events and checkpoints, and
+adds a line to `runs/index.csv`. Override settings with `--set section.key=value`;
+unknown keys are an error.
+
+`configs/country_holdout_v1.json` freezes five countries left out of training and
+validation for the unseen-country test. Split v1 is unchanged: they are filtered
+at load time. Test data opens only with `final_evaluation=True`.
+
 ## Layout
 
 ```
 src/quickdraw/   io.py, stats.py (EDA statistics), prefix.py, viz.py (EDA helpers),
                  transforms.py, prepare.py, dataset.py (preprocessing pipeline)
-notebooks/       01_eda.ipynb, 02_preprocessing.ipynb
+src/quickdraw_exp/  config.py, paths.py, data.py, runlog.py, checkpoint.py, smoke.py (experiments)
+configs/         base.yaml, smoke.yaml, country_holdout_v1.json
+notebooks/       01_eda.ipynb, 02_preprocessing.ipynb, kaggle_step1_check.ipynb
 tests/           unit tests for transforms, checks on the processed data
 reports/         generated figures and tables
 ```
 
 ## Attribution
 
-Dataset © Google, released under CC BY 4.0 via the Quick, Draw! project. All code in
-`src/`, `notebooks/` and `tests/` is our own; it uses NumPy, pandas, PyArrow, OpenCV and
-Matplotlib.
+Dataset © Google, released under CC BY 4.0 via the Quick, Draw! project. `src/quickdraw/`,
+the analysis notebooks and the preprocessing tests are our own; they use NumPy, pandas,
+PyArrow, OpenCV and Matplotlib. `src/quickdraw_exp/`, `configs/`, `tests/test_exp_setup.py`
+and `notebooks/kaggle_step1_check.ipynb` were written with AI assistance (Claude) and use
+PyTorch and PyYAML.

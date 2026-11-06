@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "frozen_on": "2026-11-06",
+  "countries": ["IN", "IT", "KR", "SA", "TH"],
+  "regions": {
+    "South Asia": "IN",
+    "Southern and Western Europe": "IT",
+    "East Asia": "KR",
+    "Middle East": "SA",
+    "Southeast Asia": "TH"
+  },
+  "rule": "Among countries with at least 100 drawings in every class (reports/eda/tables/countries.csv, column min_per_class) and outside the 10 largest, take the largest country of each region. Chosen from counts and geography only, before any model was trained and without using model results or recognized rates.",
+  "use": "Removed from training, validation and the in-distribution test at load time. The unseen-country test uses every drawing of these countries from all three v1 splits, once, at final evaluation.",
+  "limitation": "No country from Africa or South America meets the rule (Brazil is among the 10 largest), so those regions are not tested."
+}

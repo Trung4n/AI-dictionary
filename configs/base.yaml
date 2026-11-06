@@ -1,0 +1,19 @@
+# Shared settings. Other configs start with `extends: base.yaml`.
+# Override from the command line: --set run.seed=7
+run:
+  name: base
+  seed: 42
+  device: auto          # auto, cpu, cuda, cuda:0, cuda:1
+  account: kiet         # Kaggle account used; change it when borrowing one
+  output_root: null     # null: /kaggle/working/runs on Kaggle, otherwise runs/
+
+data:
+  root: null            # null: search (see quickdraw_exp/paths.py)
+  split_version: v1
+  split_digest: 1aa4e15a1b8ce88d8b36a82a98f0e3cba022b805a1b36bcc14bbdcfc7bc96fe5
+  verify_sha256: false  # true: hash all 14 files against manifest.json
+  holdout_file: configs/country_holdout_v1.json
+  prefix_mode: ink
+  image_size: 64
+  frac_range: [0.05, 1.0]
+  num_workers: 2
