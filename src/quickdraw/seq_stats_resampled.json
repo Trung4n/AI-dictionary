@@ -1,0 +1,19 @@
+{
+  "fitted_on": "train",
+  "step": 8.0,
+  "n_drawings": 200000,
+  "seed": 42,
+  "frac_range": [
+    0.05,
+    1.0
+  ],
+  "n_deltas": 18616268,
+  "delta_mean": [
+    0.517376,
+    0.442451
+  ],
+  "delta_std": [
+    12.175771,
+    11.619195
+  ]
+}

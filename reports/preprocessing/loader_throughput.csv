@@ -1,5 +1,6 @@
 ,samples_per_s,train_epoch_min_1_core
-raw read,261076.0,0.2
-raster64 (prefix+aug),1968.0,20.3
-raster64 order (prefix+aug),4554.0,8.8
-sequence256 (prefix+aug),6603.0,6.1
+raw read,256476.0,0.2
+raster64 (prefix+aug),1959.0,20.4
+raster64 order (prefix+aug),5071.0,7.9
+sequence256 (prefix+aug),7002.0,5.7
+sequence256 resampled (prefix+aug),4068.0,9.8

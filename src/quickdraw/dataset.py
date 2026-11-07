@@ -22,6 +22,9 @@ from .transforms import (AugmentConfig, augment, normalize, prefix, rasterize,
                          to_sequence)
 
 
+RESAMPLED_STATS_PATH = Path(__file__).with_name("seq_stats_resampled.json")
+
+
 class QuickDrawSplit:
     """Raw drawings of one split: ``ds[i] -> (pts uint8 (P, 2), end bool (P,), label)``."""
 
@@ -47,6 +50,16 @@ class QuickDrawSplit:
 
 def load_seq_stats(root: Path = PROCESSED_DIR) -> tuple[float, float]:
     return tuple(json.loads((root / "seq_stats.json").read_text())["delta_std"])
+
+
+def load_resampled_stats(step: float) -> tuple[float, float]:
+    """Delta scale for resampled sequences, fitted on train by
+    ``scripts/fit_resampled_stats.py``. It ships with the code, so the processed
+    dataset does not have to be rebuilt or uploaded again."""
+    stats = json.loads(RESAMPLED_STATS_PATH.read_text())
+    if stats["step"] != step:
+        raise ValueError(f"stats were fitted for step {stats['step']}, not {step}; pass delta_std")
+    return tuple(stats["delta_std"])
 
 
 class _View:
@@ -95,14 +108,21 @@ class RasterView(_View):
 
 
 class SequenceView(_View):
-    """``view[i] -> (seq float32 [max_len, 3], length, label)``."""
+    """``view[i] -> (seq float32 [max_len, 3], length, label)``.
 
-    def __init__(self, base, max_len: int = 256, delta_std=None, **kw):
+    ``resample_step`` (e.g. ``transforms.RESAMPLE_STEP``) resamples points evenly
+    along each stroke, which removes most of the scale leak of prefixes; see
+    ``reports/preprocessing/leak_audit.md``. The default ``None`` keeps the stored
+    points, so both variants can be compared under the same protocol."""
+
+    def __init__(self, base, max_len: int = 256, delta_std=None, resample_step: float | None = None, **kw):
         super().__init__(base, **kw)
-        self.max_len = max_len
-        self.delta_std = delta_std or load_seq_stats(base.root)
+        self.max_len, self.resample_step = max_len, resample_step
+        if delta_std is None:
+            delta_std = load_resampled_stats(resample_step) if resample_step else load_seq_stats(base.root)
+        self.delta_std = delta_std
 
     def __getitem__(self, i: int):
         pts, end, label = self._prepare(i)
-        seq, n = to_sequence(pts, end, self.max_len, self.delta_std)
+        seq, n = to_sequence(pts, end, self.max_len, self.delta_std, self.resample_step)
         return seq, n, label

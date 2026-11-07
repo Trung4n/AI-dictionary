@@ -1,0 +1,46 @@
+{
+  "n": 40000,
+  "split": "val",
+  "seed": 0,
+  "frac_range": [
+    0.05,
+    1.0
+  ],
+  "subset_frac": [
+    0.2,
+    0.3
+  ],
+  "resample_step": 8.0,
+  "base_rate_ratio_about_1": 0.337175,
+  "grid_attack_hit_rate": {
+    "stored_all": 0.90195,
+    "stored_endpoints": 0.4832,
+    "resampled_all": 5e-05,
+    "resampled_endpoints": 0.00085
+  },
+  "grid_attack_hit_rate_ratio_below_0.9": {
+    "stored_all": 0.8740866155765461,
+    "stored_endpoints": 0.3668240955266441,
+    "resampled_all": 8.911067545891998e-05,
+    "resampled_endpoints": 0.0011584387809659598
+  },
+  "share_ratio_below_0.9": 0.5611,
+  "resample_raster_iou_median": 0.8746268656716418,
+  "resample_raster_iou_p10": 0.823076923076923,
+  "gb_seq_stored": {
+    "r2": 0.7539413116681415,
+    "r2_fold_std": 0.004525248295412594,
+    "r2_subset": 0.38016941950492444
+  },
+  "gb_seq_resampled": {
+    "r2": 0.5290727708568459,
+    "r2_fold_std": 0.007935119933314458,
+    "r2_subset": -0.21566728053795825
+  },
+  "cnn_raster64_stored": {
+    "r2": 0.5014491634111269,
+    "r2_seed_std": 0.004664786064763436,
+    "seeds": 3,
+    "r2_subset": -0.11614951613622189
+  }
+}
