@@ -9,3 +9,4 @@ model:
   hidden: 256
   layers: 2
   dropout: 0.0
+  confidence_head: false

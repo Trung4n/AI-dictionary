@@ -18,6 +18,9 @@ train:
   grad_clip: 1.0
   amp: true
   train_subset: null    # number of training drawings; null uses all of them
+  views_per_drawing: 1  # prefixes of each drawing per step; batch_size counts prefixes
+  consistency_weight: 0.0  # pull earlier prefixes toward later ones (needs views_per_drawing > 1)
+  confidence_weight: 1.0   # weight of the confidence head's loss, if the model has a head
   log_every: 50
 
 eval:

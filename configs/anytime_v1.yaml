@@ -1,0 +1,47 @@
+# Step 4a: confidence head, consistency loss and stopping policy.
+# Written before any of these models was trained.
+#
+# Every run sees the same number of training prefixes as its leak_v1 baseline:
+# batch_size counts prefixes, so 2 prefixes per drawing and 4 epochs give the same
+# 9,375 steps of 512 prefixes as 1 prefix and 8 epochs. Checkpoint selection is
+# the same as the baseline's (mean top-1 over 5 fractions, 200 drawings per class).
+experiment: anytime_v1
+
+common:
+  - train.train_subset=600000
+  - train.epochs=4
+  - train.views_per_drawing=2
+  - eval.subset_per_class=200
+  - eval.final_per_class=1000
+  - data.num_workers=2
+
+seeds: [42, 43]
+
+conditions:
+  gru_anytime:
+    config: configs/baseline_gru.yaml
+    set: [model.confidence_head=true, train.consistency_weight=0.5]
+  gru_no_consistency:
+    config: configs/baseline_gru.yaml
+    seeds: [42]
+    set: [model.confidence_head=true, train.consistency_weight=0.0]
+  cnn_anytime:
+    config: configs/baseline_cnn.yaml
+    seeds: [42]
+    set: [model.confidence_head=true, train.consistency_weight=0.5]
+
+anytime:
+  # The baselines are the leak_v1 runs with prefix normalisation (both seeds).
+  baseline_experiment: leak_v1
+  baseline_conditions: [gru_prefix, cnn_prefix]
+  # Primary metric: area under the accuracy-earliness frontier on the evaluation
+  # half of validation. Policies: pmax (max softmax), margin, conf (the head),
+  # fixed_strokes (answer after n strokes).
+  primary: {a: [gru_anytime, conf], b: [gru_prefix, pmax]}
+  comparisons:
+    - {name: "method vs baseline, GRU", a: [gru_anytime, conf], b: [gru_prefix, pmax]}
+    - {name: "confidence head vs max softmax, same classifier", a: [gru_anytime, conf], b: [gru_anytime, pmax]}
+    - {name: "consistency loss, both with the head", a: [gru_anytime, conf], b: [gru_no_consistency, conf]}
+    - {name: "two prefixes per drawing alone", a: [gru_no_consistency, pmax], b: [gru_prefix, pmax]}
+    - {name: "method vs baseline, CNN", a: [cnn_anytime, conf], b: [cnn_prefix, pmax]}
+    - {name: "best fixed rule vs baseline, GRU", a: [gru_prefix, margin], b: [gru_prefix, pmax]}

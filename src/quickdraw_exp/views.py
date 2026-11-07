@@ -86,3 +86,40 @@ class NormSequenceView(_NormMixin, SequenceView):
     def __init__(self, base, input_norm: str = "prefix", spacing: float = 16.0, **kw):
         super().__init__(base, **kw)
         self._configure_norm(input_norm, spacing)
+
+
+class MultiPrefixView:
+    """``k`` prefixes of the same drawing, in drawing order, for training.
+
+    The fractions are drawn uniformly from ``frac_range`` and sorted. Both prefixes
+    get the same random affine transform, so they differ only in how much is drawn.
+    Returns ``(images[k, size, size], label)`` or ``(seqs[k, max_len, 3], lengths[k], label)``.
+    """
+
+    def __init__(self, view, k: int):
+        if view.frac != "random":
+            raise ValueError("MultiPrefixView needs a training view with random prefixes")
+        self.view, self.k = view, k
+        self.split, self.root = view.base.split, view.base.root
+
+    def set_epoch(self, epoch: int) -> None:
+        self.view.set_epoch(epoch)
+
+    def __len__(self) -> int:
+        return len(self.view)
+
+    def __getitem__(self, i: int):
+        view = self.view
+        rng = np.random.default_rng([view.seed, view.epoch, i, 1])
+        fracs = np.sort(rng.uniform(*view.frac_range, size=self.k))
+        outs = []
+        try:
+            for frac in fracs:
+                view.frac = float(frac)
+                outs.append(view[i])
+        finally:
+            view.frac = "random"
+        label = outs[0][-1]
+        if len(outs[0]) == 2:
+            return np.stack([o[0] for o in outs]), label
+        return np.stack([o[0] for o in outs]), np.array([o[1] for o in outs], dtype=np.int64), label

@@ -1,0 +1,45 @@
+# DRAFT for the team to review. Not used by any code yet.
+# Must be agreed and frozen before the hierarchical guess is evaluated, because a
+# tree tuned after seeing results would flatter the method.
+#
+# Two levels above the 100 classes: a coarse group, then a finer group. Each class
+# appears exactly once. Groups follow everyday meaning (what a player would say),
+# not drawing shape, so the tree does not reuse the shape clusters that chose the classes.
+version: v1-draft
+groups:
+  animal:
+    bird: [bird, duck, owl]
+    sea animal: [lobster, octopus, whale]
+    small creature: [ant, butterfly, scorpion, snail, spider]
+    mammal: [bat, camel, giraffe, horse, kangaroo, monkey, pig, rabbit, squirrel, zebra]
+  person:
+    body part: [face, finger, foot, hand, knee, mouth, nose]
+    figure: [angel, The Mona Lisa, yoga, snowman]
+  clothing and accessory:
+    clothing: [jacket, sweater, t-shirt, sock, flip flops]
+    accessory: [bowtie, bracelet, helmet, purse, wristwatch]
+  food and plant:
+    fruit: [apple, blackberry, grapes]
+    sweet: [lollipop, popsicle]
+    vegetable and plant: [mushroom, onion, house plant]
+  weather and nature:
+    weather: [hurricane, lightning, snowflake, sun, tornado]
+    landscape: [mountain]
+  building and place:
+    building: [castle, church, lighthouse, tent]
+    street and yard: [fence, mailbox, stop sign, waterslide, map]
+  vehicle:
+    on water: [cruise ship, sailboat]
+    in the air: [helicopter, parachute]
+    on land: [tractor, skateboard, rollerskates]
+  household object:
+    electronic: [alarm clock, computer, television, fan, megaphone]
+    furniture and fitting: [bathtub, chandelier, floor lamp, picture frame, sleeping bag, umbrella, wine bottle]
+    tool: [anvil, drill, key, rake, scissors]
+  sport, music and toy:
+    sport: [basketball, boomerang, hockey stick]
+    music: [cello, saxophone]
+    toy: [teddy-bear]
+  shape and pattern:
+    shape: [square, star, triangle, diamond]
+    pattern: [camouflage]

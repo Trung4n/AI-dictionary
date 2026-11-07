@@ -21,7 +21,7 @@ from .checkpoint import TimeBudget, load_checkpoint, save_checkpoint, seed_every
 from .config import load_config, repo_path
 from .data import ResumableSampler, SubsetSplit, load_holdout, open_split
 from .metrics import classification_metrics, group_masks
-from .models import build_model, to_inputs
+from .models import anytime_loss, build_model, to_inputs
 from .paths import resolve_data_root, resolve_output_root, verify_data
 from .runlog import RunLogger, adopt_run_dir, new_run_dir
 
@@ -145,7 +145,12 @@ def run_training(cfg: dict, run_dir=None) -> dict:
 
     model = build_model(cfg["model"]).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=tcfg["lr"], weight_decay=tcfg["weight_decay"])
-    batch_size = tcfg["batch_size"]
+    # batch_size counts prefixes, so more prefixes per drawing means fewer drawings
+    # per step at the same cost per step.
+    views = tcfg["views_per_drawing"]
+    if tcfg["batch_size"] % views:
+        raise ValueError("train.batch_size must be a multiple of train.views_per_drawing")
+    batch_size = tcfg["batch_size"] // views
     steps_per_epoch = len(train_split) // batch_size
     if steps_per_epoch == 0:
         raise ValueError(f"{len(train_split)} training drawings is less than one batch of {batch_size}")
@@ -167,6 +172,9 @@ def run_training(cfg: dict, run_dir=None) -> dict:
     logger.event(f"{cfg['model']['kind']}: {n_params:,} parameters on {device}, "
                  f"{len(train_split):,} train, {len(val_split):,} val, {total_steps} steps")
     view = make_view(cfg, train_split, "random", train=True)
+    if views > 1:
+        from .views import MultiPrefixView
+        view = MultiPrefixView(view, views)
     sampler = ResumableSampler(len(view), seed)
     val_small = stratified_subset(val_split, cfg["eval"]["subset_per_class"], seed)
 
@@ -187,9 +195,11 @@ def run_training(cfg: dict, run_dir=None) -> dict:
             view, batch_size=batch_size, sampler=sampler, drop_last=True, num_workers=cfg["data"]["num_workers"],
             pin_memory=device.type == "cuda", generator=torch.Generator().manual_seed(seed + epoch))
         for batch in loader:
-            inputs, labels = to_inputs(model.input_kind, batch, device, non_blocking=True)
+            inputs, labels = to_inputs(model.input_kind, batch, device, non_blocking=True, views=views)
             with _autocast(device, amp):
-                loss = torch.nn.functional.cross_entropy(model(*inputs), labels)
+                logits, confidence = model.forward_all(*inputs)
+            loss, parts = anytime_loss(logits, labels, confidence, views,
+                                       tcfg["consistency_weight"], tcfg["confidence_weight"])
             optimizer.zero_grad(set_to_none=True)
             scaler.scale(loss).backward()
             scaler.unscale_(optimizer)
@@ -208,7 +218,8 @@ def run_training(cfg: dict, run_dir=None) -> dict:
                 now = time.monotonic()
                 rate = window_steps * batch_size / max(now - window_start, 1e-9)
                 rates.append(rate)
-                logger.log(step, loss=round(value, 5), lr=scheduler.get_last_lr()[0], epoch=epoch, samples_per_s=round(rate, 1))
+                logger.log(step, loss=round(value, 5), lr=scheduler.get_last_lr()[0], epoch=epoch, samples_per_s=round(rate, 1),
+                           **{k: round(float(v), 5) for k, v in parts.items()})
                 window_start, window_steps = now, 0
             if budget.exhausted():
                 stopped = True
@@ -230,7 +241,7 @@ def run_training(cfg: dict, run_dir=None) -> dict:
         last_save = time.monotonic()
 
     checkpoint(latest)
-    summary = {"finished": not stopped, "steps": step, "epochs_done": epoch, "parameters": n_params,
+    summary = {"finished": not stopped, "steps": step, "views_per_drawing": views, "epochs_done": epoch, "parameters": n_params,
                "device": str(device), "best_val_mean_top1": best_metric,
                "first_loss": float(np.mean(first_losses)) if first_losses else None,
                "last_loss": float(np.mean(last_losses)) if last_losses else None,

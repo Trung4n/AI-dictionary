@@ -9,3 +9,4 @@ model:
   width: 32
   blocks: [2, 2, 2, 2]
   stem_stride: 2        # chosen in leak_v1: twice as fast on a T4, no loss on the speed runs
+  confidence_head: false

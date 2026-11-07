@@ -35,6 +35,8 @@ def build_jobs(matrix: dict) -> list[dict]:
                      "set": [*matrix.get("speed_common", []), *spec.get("set", [])]})
     for seed in matrix["seeds"]:
         for name, spec in matrix["conditions"].items():
+            if seed not in spec.get("seeds", matrix["seeds"]):
+                continue
             jobs.append({"name": f"{name}_s{seed}", "condition": name, "seed": seed, "kind": "condition",
                          "config": spec["config"], "set": [*matrix.get("common", []), *spec.get("set", [])]})
     names = [job["name"] for job in jobs]
@@ -189,12 +191,14 @@ def main(argv=None) -> int:
     run_jobs(jobs, top, torch.cuda.device_count(), args.max_minutes, args.set)
 
     rows = collect(jobs, top)
-    decision = matrix["decision"]
-    table = summarise(rows, decision["early_fracs"])
-    verdict = decide(table, decision["margin"], len(matrix["seeds"]))
+    decision = matrix.get("decision")
+    table = summarise(rows, decision["early_fracs"] if decision else [0.1, 0.25, 0.5])
     missing = [job["name"] for job in jobs if not is_finished(top / job["name"])]
     result = {"experiment": matrix["experiment"], "complete": not missing, "missing": missing,
-              "decision": verdict, "rule": decision["rule"], "speed": speed_report(jobs, top), "table": table}
+              "speed": speed_report(jobs, top), "table": table}
+    if decision:
+        result["decision"] = decide(table, decision["margin"], len(matrix["seeds"]))
+        result["rule"] = decision["rule"]
     write_results(rows, result, top)
     print(json.dumps(result, indent=2))
     print(f"\n{matrix['experiment']} {'COMPLETE' if not missing else 'INCOMPLETE'}. Records: {top}")
