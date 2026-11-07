@@ -1,11 +1,14 @@
-# DRAFT for the team to review. Not used by any code yet.
-# Must be agreed and frozen before the hierarchical guess is evaluated, because a
-# tree tuned after seeing results would flatter the method.
+# Class hierarchy for step 4b. FROZEN on 2026-11-07, before any hierarchical
+# result was computed. The team accepted the draft and resolved the open cases:
+# snowman -> weather and nature / winter; umbrella -> accessory;
+# megaphone -> music and sound; map -> its own subgroup; skateboard and
+# rollerskates -> sport.
 #
 # Two levels above the 100 classes: a coarse group, then a finer group. Each class
 # appears exactly once. Groups follow everyday meaning (what a player would say),
-# not drawing shape, so the tree does not reuse the shape clusters that chose the classes.
-version: v1-draft
+# not drawing shape.
+version: v1
+frozen_on: "2026-11-07"
 groups:
   animal:
     bird: [bird, duck, owl]
@@ -14,31 +17,33 @@ groups:
     mammal: [bat, camel, giraffe, horse, kangaroo, monkey, pig, rabbit, squirrel, zebra]
   person:
     body part: [face, finger, foot, hand, knee, mouth, nose]
-    figure: [angel, The Mona Lisa, yoga, snowman]
+    figure: [angel, The Mona Lisa, yoga]
   clothing and accessory:
     clothing: [jacket, sweater, t-shirt, sock, flip flops]
-    accessory: [bowtie, bracelet, helmet, purse, wristwatch]
+    accessory: [bowtie, bracelet, helmet, purse, wristwatch, umbrella]
   food and plant:
     fruit: [apple, blackberry, grapes]
     sweet: [lollipop, popsicle]
     vegetable and plant: [mushroom, onion, house plant]
   weather and nature:
-    weather: [hurricane, lightning, snowflake, sun, tornado]
+    weather: [hurricane, lightning, sun, tornado]
+    winter: [snowflake, snowman]
     landscape: [mountain]
   building and place:
     building: [castle, church, lighthouse, tent]
-    street and yard: [fence, mailbox, stop sign, waterslide, map]
+    street and yard: [fence, mailbox, stop sign, waterslide]
+    map: [map]
   vehicle:
     on water: [cruise ship, sailboat]
     in the air: [helicopter, parachute]
-    on land: [tractor, skateboard, rollerskates]
+    on land: [tractor]
   household object:
-    electronic: [alarm clock, computer, television, fan, megaphone]
-    furniture and fitting: [bathtub, chandelier, floor lamp, picture frame, sleeping bag, umbrella, wine bottle]
+    electronic: [alarm clock, computer, television, fan]
+    furniture and fitting: [bathtub, chandelier, floor lamp, picture frame, sleeping bag, wine bottle]
     tool: [anvil, drill, key, rake, scissors]
   sport, music and toy:
-    sport: [basketball, boomerang, hockey stick]
-    music: [cello, saxophone]
+    sport: [basketball, boomerang, hockey stick, skateboard, rollerskates]
+    music and sound: [cello, saxophone, megaphone]
     toy: [teddy-bear]
   shape and pattern:
     shape: [square, star, triangle, diamond]

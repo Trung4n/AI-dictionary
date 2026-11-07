@@ -254,3 +254,9 @@ def test_hierarchy_draft_covers_every_class_once():
     leaves = [c for group in tree.values() for sub in group.values() for c in sub]
     assert len(leaves) == len(set(leaves)) == 100
     assert set(leaves) == set(pd.read_csv(table)["word"])
+
+
+def test_policy_scores_are_float64():
+    from quickdraw_exp.anytime import scores_from
+    s = scores_from(np.array([[0.6, 0.4]], dtype=np.float16), np.array([0.5], dtype=np.float32))
+    assert all(v.dtype == np.float64 for v in s.values())

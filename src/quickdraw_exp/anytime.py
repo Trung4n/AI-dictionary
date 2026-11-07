@@ -186,10 +186,13 @@ def policy_report(score_c, score_e, cal, ev) -> dict:
 
 
 def scores_from(probs: np.ndarray, confidence: np.ndarray) -> dict:
-    p = np.sort(probs.astype(np.float32), axis=1)
+    """Scores in float64. With float32 scores, NumPy compares a Python-float
+    threshold in float32 but a NumPy-float threshold in float64, so a threshold
+    chosen in calibration could select different rows in evaluation."""
+    p = np.sort(probs.astype(np.float64), axis=1)
     scores = {"pmax": p[:, -1], "margin": p[:, -1] - p[:, -2]}
     if np.isfinite(confidence).all():
-        scores["conf"] = confidence.astype(np.float32)
+        scores["conf"] = confidence.astype(np.float64)
     return scores
 
 
@@ -352,7 +355,8 @@ def main(argv=None) -> int:
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--matrix", required=True)
-    parser.add_argument("--runs", nargs="+", required=True, help="folders holding finished runs")
+    parser.add_argument("--runs", nargs="*", default=[], help="folders holding finished runs")
+    parser.add_argument("--predictions", help="folder with saved <run>.npz: rescore them without any model")
     parser.add_argument("--baselines", nargs="*", default=[], help="folders holding the baseline runs")
     parser.add_argument("--out", help="default: <first --runs folder>/anytime")
     parser.add_argument("--num-workers", type=int, default=2)
@@ -361,16 +365,24 @@ def main(argv=None) -> int:
 
     matrix = yaml.safe_load(Path(args.matrix).read_text(encoding="utf-8"))
     spec = matrix["anytime"]
-    out = Path(args.out) if args.out else Path(args.runs[0]) / "anytime"
+    if not args.runs and not args.predictions:
+        parser.error("give --runs or --predictions")
+    out = Path(args.out) if args.out else Path(args.runs[0] if args.runs else "runs") / "anytime"
     out.mkdir(parents=True, exist_ok=True)
     wanted = set(matrix["conditions"]) | set(spec["baseline_conditions"])
-    runs = [r for r in find_runs([*args.runs, *args.baselines]) if condition_of(r)[0] in wanted]
+    if args.predictions:
+        runs = sorted(p.with_suffix("") for p in Path(args.predictions).glob("*.npz"))
+    else:
+        runs = find_runs([*args.runs, *args.baselines])
+    runs = [r for r in runs if condition_of(r)[0] in wanted]
     device = pick_device("auto")
     per_run = {}
     for run_dir in runs:
         key = condition_of(run_dir)
         saved = out / f"{run_dir.name}.npz"
-        if not saved.is_file():
+        if args.predictions:
+            saved = Path(args.predictions) / f"{run_dir.name}.npz"
+        elif not saved.is_file():
             print(f"predicting {run_dir.name}", flush=True)
             np.savez_compressed(saved, **predict_run(run_dir, device, args.num_workers, per_class=args.per_class))
         data = dict(np.load(saved))

@@ -1,0 +1,40 @@
+# Step 4b evaluation. Written and frozen on 2026-11-07, before any hierarchical
+# result was computed. Uses the checkpoint predictions saved by step 4a
+# (runs/anytime_v1/anytime/*.npz); nothing is trained.
+experiment: hierarchy_v1
+tree: configs/hierarchy_v1.yaml
+
+# At each checkpoint the guesser either answers a node of the tree (a class, a
+# subgroup or a group) or stays silent. Node probability = sum of its classes'
+# probabilities. Hierarchical rule: among nodes whose probability reaches tau,
+# answer the most specific one. Flat rule (baseline): answer the top class only
+# when its probability reaches tau.
+#
+# Reward of a correct answer (Deng et al., 2012, information gain, normalised):
+# 1 - log(size of node) / log(100): a class 1, a 3-class subgroup 0.76, the
+# 21-class animal group 0.34. A wrong answer or silence scores 0.
+#
+# tau is chosen separately for each rule on the calibration half: the lowest tau
+# whose answers are right at least `precision` of the time. Results are reported
+# on the evaluation half.
+precision_targets: [0.95, 0.90]
+tau_grid: {start: 0.30, stop: 0.99, step: 0.01}
+
+# Primary metric: reward area. Per drawing, the reward at each checkpoint holds
+# until the next one (0 before the first, the last one holds to the end), and the
+# area under reward against ink drawn is averaged over drawings. Higher means more
+# correct information, earlier.
+runs: [gru_prefix_s42, gru_prefix_s43, cnn_prefix_s42, cnn_prefix_s43, gru_anytime_s42, gru_anytime_s43]
+
+# Trees compared:
+#   semantic   the frozen tree above (primary)
+#   random     the same shape with classes shuffled, 5 shuffles (seeds 0-4), averaged
+#   shape      one level of groups from the early-shape clusters used to choose the
+#              classes (reports/eda/tables/class_summary.csv, column `cluster`)
+comparisons:
+  - {name: "semantic tree vs flat, GRU baseline", a: semantic, b: flat, runs: [gru_prefix_s42, gru_prefix_s43]}
+  - {name: "semantic tree vs flat, CNN baseline", a: semantic, b: flat, runs: [cnn_prefix_s42, cnn_prefix_s43]}
+  - {name: "semantic vs random tree, GRU baseline", a: semantic, b: random, runs: [gru_prefix_s42, gru_prefix_s43]}
+  - {name: "semantic vs shape tree, GRU baseline", a: semantic, b: shape, runs: [gru_prefix_s42, gru_prefix_s43]}
+  - {name: "semantic tree vs flat, GRU anytime", a: semantic, b: flat, runs: [gru_anytime_s42, gru_anytime_s43]}
+primary: "semantic tree vs flat, GRU baseline"   # at precision 0.95
