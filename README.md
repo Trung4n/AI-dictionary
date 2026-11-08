@@ -63,6 +63,7 @@ PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/anytime_v1.y
 PYTHONPATH=src python -m quickdraw_exp.anytime --matrix configs/anytime_v1.yaml --runs runs/anytime_v1 --baselines <leak_v1 folder>
 PYTHONPATH=src python -m quickdraw_exp.hierarchy --matrix configs/hierarchy_eval_v1.yaml --predictions <step 4a .npz folder>  # step 4b, CPU
 PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/followup_v1.yaml --max-minutes 300   # leak_v2, extra seeds
+PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/followup_v2.yaml --max-minutes 420   # step 4a on the uniform input
 PYTHONPATH=src python -m pytest tests -k 'not processed_data'
 ```
 
@@ -99,7 +100,7 @@ src/quickdraw/   io.py, stats.py (EDA statistics), prefix.py, viz.py (EDA helper
 src/quickdraw_exp/  config.py, paths.py, data.py, runlog.py, checkpoint.py, metrics.py, models.py, views.py,
                  engine.py (train, evaluate), experiments.py, anytime.py (when to guess), hierarchy.py,
                  smoke.py, check_baseline.py
-configs/         base.yaml, baseline*.yaml, leak_v1.yaml, anytime_v1.yaml, hierarchy_v1.yaml (frozen), hierarchy_eval*.yaml, followup_v1.yaml,
+configs/         base.yaml, baseline*.yaml, leak_v1.yaml, anytime_v1.yaml, hierarchy_v1.yaml (frozen), hierarchy_eval*.yaml, followup_v*.yaml,
                  smoke.yaml, country_holdout_v1.json
 scripts/         fit_resampled_stats.py, leak_audit.py, raw_pilot.py
 notebooks/       00_dataset_collection.ipynb, 01_eda.ipynb, 02_preprocessing.ipynb, kaggle_*.ipynb

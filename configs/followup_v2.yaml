@@ -1,0 +1,56 @@
+# Step 4a again, on the leak_v2 GRU input. Written on 2026-11-08, after
+# followup_v1 and before any of these models was trained.
+#
+# followup_v1 found that uniform resampling lowers the GRU's early top-1 by 1.2
+# points (rule threshold: 1 point), so by the rule fixed in followup_v1.yaml every
+# early GRU number in the report uses data.resample_step=8.0. This matrix repeats
+# the step 4a GRU conditions on that input (two seeds each, same settings as
+# anytime_v1 apart from the input), with gru_uniform (followup_v1) as the baseline.
+#
+# It also answers the followup_v1 exploratory result fairly: there the method,
+# trained for twice as many steps, beat a baseline trained for the normal number
+# of steps. Here both get twice the steps (2 x 9,375 x 512 prefixes): the
+# baseline as 16 epochs of 1 prefix, the method as 8 epochs of 2 prefixes. One
+# seed each; the comparison is pre-registered below.
+experiment: followup_v2
+
+common:
+  - train.train_subset=600000
+  - eval.subset_per_class=200
+  - eval.final_per_class=1000
+  - data.num_workers=2
+  - data.input_norm=prefix
+  - data.resample_step=8.0
+
+seeds: [42, 43]
+
+conditions:
+  gru_uniform_long:
+    config: configs/baseline_gru.yaml
+    seeds: [42]
+    set: [train.epochs=16]
+  gru_anytime_uniform_long:
+    config: configs/baseline_gru.yaml
+    seeds: [42]
+    set: [train.epochs=8, train.views_per_drawing=2, model.confidence_head=true, train.consistency_weight=0.5]
+  gru_anytime_uniform:
+    config: configs/baseline_gru.yaml
+    set: [train.epochs=4, train.views_per_drawing=2, model.confidence_head=true, train.consistency_weight=0.5]
+  gru_no_consistency_uniform:
+    config: configs/baseline_gru.yaml
+    set: [train.epochs=4, train.views_per_drawing=2, model.confidence_head=true, train.consistency_weight=0.0]
+
+anytime:
+  baseline_conditions: [gru_uniform]
+  # Primary: the step 4a primary comparison on the leak_v2 input.
+  primary: {a: [gru_anytime_uniform, conf], b: [gru_uniform, pmax]}
+  comparisons:
+    - {name: "method vs baseline, GRU uniform", a: [gru_anytime_uniform, conf], b: [gru_uniform, pmax]}
+    - {name: "confidence head vs max softmax, same classifier, uniform", a: [gru_anytime_uniform, conf], b: [gru_anytime_uniform, pmax]}
+    - {name: "consistency loss, both with the head, uniform", a: [gru_anytime_uniform, conf], b: [gru_no_consistency_uniform, conf]}
+    - {name: "two prefixes per drawing alone, uniform", a: [gru_no_consistency_uniform, pmax], b: [gru_uniform, pmax]}
+    - {name: "best fixed rule vs baseline, GRU uniform", a: [gru_uniform, margin], b: [gru_uniform, pmax]}
+    # Same compute (2x), one seed each.
+    - {name: "2x steps, same compute: method vs baseline", a: [gru_anytime_uniform_long, conf], b: [gru_uniform_long, pmax]}
+    - {name: "2x steps, same compute: max softmax of both", a: [gru_anytime_uniform_long, pmax], b: [gru_uniform_long, pmax]}
+    - {name: "baseline 2x steps vs 1x", a: [gru_uniform_long, pmax], b: [gru_uniform, pmax]}

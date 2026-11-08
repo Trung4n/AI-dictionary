@@ -123,3 +123,49 @@ def test_old_run_configs_without_the_key_keep_the_stored_points(tmp_path):
     (root / "seq_stats.json").write_text('{"delta_std": [3.0, 4.0]}')
     assert tuple(sequence_scale({"data": {}}, root)) == (3.0, 4.0)
     assert tuple(sequence_scale({"data": {"resample_step": None}}, root)) == (3.0, 4.0)
+
+
+# ---------------------------------------------------------------- followup_v2
+
+FOLLOWUP2 = Path("configs/followup_v2.yaml")
+
+
+def test_followup_v2_jobs():
+    assert sorted(_jobs(FOLLOWUP2)) == ["gru_anytime_uniform_long_s42", "gru_anytime_uniform_s42",
+                                        "gru_anytime_uniform_s43", "gru_no_consistency_uniform_s42",
+                                        "gru_no_consistency_uniform_s43", "gru_uniform_long_s42"]
+
+
+def test_followup_v2_repeats_anytime_v1_on_the_uniform_input():
+    new, old = _jobs(FOLLOWUP2), _jobs("configs/anytime_v1.yaml")
+    pairs = {"gru_anytime_uniform": "gru_anytime", "gru_no_consistency_uniform": "gru_no_consistency"}
+    for mine, theirs in pairs.items():
+        for seed in (42, 43):
+            a = _resolved(new[f"{mine}_s{seed}"])
+            b = _resolved({**old[f"{theirs}_s42"], "seed": seed})
+            assert a["data"].pop("resample_step") == 8.0 and b["data"].pop("resample_step") is None
+            assert a == b, (mine, seed)
+
+
+def test_followup_v2_long_pair_has_equal_and_doubled_compute():
+    new, v1 = _jobs(FOLLOWUP2), _jobs(FOLLOWUP)
+    base = _resolved(v1["gru_uniform_s42"])
+    long_base, long_method = _resolved(new["gru_uniform_long_s42"]), _resolved(new["gru_anytime_uniform_long_s42"])
+
+    def prefixes(cfg):
+        return cfg["train"]["train_subset"] * cfg["train"]["epochs"] * cfg["train"]["views_per_drawing"]
+    assert prefixes(long_base) == prefixes(long_method) == 2 * prefixes(base)
+    assert long_base["train"].pop("epochs") == 16 and base["train"].pop("epochs") == 8
+    assert long_base == base
+    method = _resolved(new["gru_anytime_uniform_s42"])
+    assert long_method["train"].pop("epochs") == 2 * method["train"].pop("epochs")
+    assert long_method == method
+
+
+def test_followup_v2_comparisons_name_known_conditions():
+    matrix = yaml.safe_load(FOLLOWUP2.read_text())
+    known = set(matrix["conditions"]) | set(matrix["anytime"]["baseline_conditions"])
+    assert matrix["anytime"]["baseline_conditions"] == ["gru_uniform"]
+    assert "gru_uniform" in yaml.safe_load(FOLLOWUP.read_text())["conditions"]
+    for c in matrix["anytime"]["comparisons"]:
+        assert c["a"][0] in known and c["b"][0] in known
