@@ -274,32 +274,29 @@ def condition_of(run_dir: Path) -> tuple[str, int]:
     return (match.group(1), int(match.group(2))) if match else (run_dir.name, -1)
 
 
-def predict_run(run_dir: Path, device, num_workers: int = 2, batch_size: int = 1024, per_class: int = PER_CLASS) -> dict:
+def load_run(run_dir: Path, device):
+    """A finished run's configuration and best model, ready for inference."""
     import torch
 
-    from .config import repo_path
-    from .data import load_holdout, open_split
     from .models import build_model, load_weights
-    from .paths import resolve_data_root
-
     cfg = yaml.safe_load((run_dir / "config.yaml").read_text(encoding="utf-8"))
-    if cfg["data"].get("input_norm", "prefix") != "prefix":
-        raise ValueError(f"{run_dir.name}: anytime evaluation uses prefix normalisation only")
     model = build_model(cfg["model"]).to(device).eval()
     state = torch.load(run_dir / "checkpoints" / "best.pt", map_location="cpu", weights_only=False)
     load_weights(model, state["model"])
+    return cfg, model
 
-    root = resolve_data_root(None)
-    val = open_split("val", root, load_holdout(repo_path(cfg["data"]["holdout_file"])))
-    calib, evals = calibration_split(np.asarray(val.labels), per_class)
-    parts = [build_items(val, calib), build_items(val, evals)]
-    items = {key: np.concatenate([p[key] for p in parts]) for key in parts[0]}
-    items["half"] = np.concatenate([np.zeros(len(parts[0]["k"]), np.int8), np.ones(len(parts[1]["k"]), np.int8)])
 
-    dataset = CheckpointDataset(val, items, cfg, sequence_scale(cfg, root))
+def predict_items(model, cfg: dict, split, items: dict, device, root, num_workers: int = 2,
+                  batch_size: int = 1024) -> dict:
+    """Class probabilities (float16) and head confidence at every (drawing, checkpoint) row."""
+    import torch
+
+    from .models import to_inputs
+    if cfg["data"].get("input_norm", "prefix") != "prefix":
+        raise ValueError("anytime evaluation uses prefix normalisation only")
+    dataset = CheckpointDataset(split, items, cfg, sequence_scale(cfg, root))
     loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers,
                                          pin_memory=device.type == "cuda")
-    from .models import to_inputs
     probs, confidence = [], []
     with torch.no_grad():
         for batch in loader:
@@ -308,9 +305,28 @@ def predict_run(run_dir: Path, device, num_workers: int = 2, batch_size: int = 1
                 logits, conf = model.forward_all(*inputs)
             probs.append(torch.softmax(logits.float(), dim=1).cpu().numpy().astype(np.float16))
             confidence.append(conf.float().cpu().numpy() if conf is not None else np.full(len(logits), np.nan, np.float32))
-    items["probs"] = np.concatenate(probs)
-    items["confidence"] = np.concatenate(confidence)
-    return items
+    out = dict(items)
+    out["probs"] = np.concatenate(probs)
+    out["confidence"] = np.concatenate(confidence)
+    return out
+
+
+def predict_run(run_dir: Path, device, num_workers: int = 2, batch_size: int = 1024, per_class: int = PER_CLASS) -> dict:
+    """Validation predictions of one run: calibration half, then evaluation half."""
+    from .config import repo_path
+    from .data import load_holdout, open_split
+    from .paths import resolve_data_root
+
+    cfg, model = load_run(run_dir, device)
+    if cfg["data"].get("input_norm", "prefix") != "prefix":
+        raise ValueError(f"{run_dir.name}: anytime evaluation uses prefix normalisation only")
+    root = resolve_data_root(None)
+    val = open_split("val", root, load_holdout(repo_path(cfg["data"]["holdout_file"])))
+    calib, evals = calibration_split(np.asarray(val.labels), per_class)
+    parts = [build_items(val, calib), build_items(val, evals)]
+    items = {key: np.concatenate([p[key] for p in parts]) for key in parts[0]}
+    items["half"] = np.concatenate([np.zeros(len(parts[0]["k"]), np.int8), np.ones(len(parts[1]["k"]), np.int8)])
+    return predict_items(model, cfg, val, items, device, root, num_workers, batch_size)
 
 
 def aggregate(per_run: dict) -> dict:

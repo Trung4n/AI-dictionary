@@ -1,0 +1,42 @@
+# Final evaluation, approved by the team on 2026-11-09 (doc "AI Pictionary: đánh giá
+# cuối và dàn ý báo cáo") before the test split was opened. Nothing is trained,
+# no checkpoint is re-chosen, and every threshold comes from validation data:
+# the calibration half of the val split (100 drawings per class, seed 2026), the
+# same thresholds as in the validation results.
+#
+# Run first with --split val: it must reproduce the reported validation numbers
+# (checked against reports/). Then once with --split test, which also scores the
+# five held-out countries (every drawing of IN, IT, KR, SA, TH, never seen in training).
+experiment: final_v1
+
+# Claim 1: the scale leak. Top-1 at each ink fraction. On test: every test drawing.
+# On val (the check): the same 1,000 drawings per class as each run's final validation.
+leak_runs: [gru_prefix_s42, gru_prefix_s43, gru_full_bbox_s42, gru_full_bbox_s43, gru_uniform_s42, gru_uniform_s43,
+            cnn_prefix_s42, cnn_prefix_s43, cnn_full_bbox_s42, cnn_full_bbox_s43]
+leak_comparisons:
+  - {name: "full_bbox minus prefix, GRU", a: gru_full_bbox, b: gru_prefix}
+  - {name: "full_bbox minus prefix, CNN", a: cnn_full_bbox, b: cnn_prefix}
+  - {name: "uniform minus prefix, GRU", a: gru_uniform, b: gru_prefix}
+early_fracs: [0.1, 0.25, 0.5]
+
+# Claims 2 and 3: when to guess, and the hierarchy. On test: 500 drawings per class,
+# drawn with seed 2026 (all of a class when it has fewer, for the held-out countries).
+# On val (the check): the evaluation half used for every validation result.
+per_class: 500
+sample_seed: 2026
+anytime_runs: [gru_uniform_s42, gru_uniform_s43, gru_anytime_uniform_s42, gru_anytime_uniform_s43,
+               cnn_prefix_s42, cnn_prefix_s43, cnn_anytime_s42, cnn_anytime_s43]
+anytime_comparisons:
+  - {name: "method vs baseline, GRU uniform", a: [gru_anytime_uniform, conf], b: [gru_uniform, pmax]}
+  - {name: "confidence head vs max softmax, GRU uniform", a: [gru_anytime_uniform, conf], b: [gru_anytime_uniform, pmax]}
+  - {name: "method vs baseline, CNN", a: [cnn_anytime, conf], b: [cnn_prefix, pmax]}
+hierarchy_runs: [gru_uniform_s42, gru_uniform_s43, cnn_prefix_s42, cnn_prefix_s43]
+hierarchy_matrix: configs/hierarchy_eval_v1.yaml   # tree, rules, tau grid and precision targets
+hierarchy_comparisons:
+  - {name: "semantic tree vs flat, GRU uniform", a: semantic, b: flat, runs: [gru_uniform_s42, gru_uniform_s43]}
+  - {name: "semantic vs random tree, GRU uniform", a: semantic, b: random, runs: [gru_uniform_s42, gru_uniform_s43]}
+  - {name: "semantic vs shape tree, GRU uniform", a: semantic, b: shape, runs: [gru_uniform_s42, gru_uniform_s43]}
+  - {name: "semantic tree vs flat, CNN", a: semantic, b: flat, runs: [cnn_prefix_s42, cnn_prefix_s43]}
+
+# Held-out countries: the models a reader would deploy, on every metric above.
+unseen_runs: [gru_uniform_s42, gru_uniform_s43, cnn_prefix_s42, cnn_prefix_s43]

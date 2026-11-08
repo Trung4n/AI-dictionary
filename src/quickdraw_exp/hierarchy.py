@@ -130,8 +130,9 @@ def calibrate(probs, labels, tree: Tree, taus, target: float) -> float:
     """Lowest tau whose answers are right at least ``target`` of the time."""
     node_probs = probs @ tree.members.T
     for tau in sorted(taus):
-        right, _ = score(answer(node_probs, tree, tau), labels, tree)
-        answered = (answer(node_probs, tree, tau) >= 0).sum()
+        nodes = answer(node_probs, tree, tau)
+        right, _ = score(nodes, labels, tree)
+        answered = (nodes >= 0).sum()
         if answered and right.sum() / answered >= target:
             return float(tau)
     return float(max(taus))

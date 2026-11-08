@@ -65,11 +65,12 @@ PYTHONPATH=src python -m quickdraw_exp.hierarchy --matrix configs/hierarchy_eval
 PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/followup_v1.yaml --max-minutes 300   # leak_v2, extra seeds
 PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/followup_v2.yaml --max-minutes 420   # step 4a on the uniform input
 PYTHONPATH=src python -m quickdraw_exp.analysis --predictions <folder of all .npz>   # by recognized, hierarchy by group, CPU
+PYTHONPATH=src python -m quickdraw_exp.final_eval --split val --val-predictions <folder>   # check, then --split test (once)
 PYTHONPATH=src python -m pytest tests -k 'not processed_data'
 ```
 
 Set `budget.max_minutes` to stop and save before a Kaggle session or quota ends.
-Models are compared on validation data; `engine.py` never opens the test split.
+Models are compared on validation data; only `final_eval.py` opens the test split, once, with `configs/final_v1.yaml`.
 
 The processed data is found automatically: `data.root` in the config, then the
 `QUICKDRAW_DATA` environment variable, `dataset/processed/`, `dataset/`, and on
@@ -99,9 +100,9 @@ src/quickdraw/   io.py, stats.py (EDA statistics), prefix.py, viz.py (EDA helper
                  transforms.py, prepare.py, dataset.py (preprocessing pipeline),
                  simplify.py, leak.py (leak audit)
 src/quickdraw_exp/  config.py, paths.py, data.py, runlog.py, checkpoint.py, metrics.py, models.py, views.py,
-                 engine.py (train, evaluate), experiments.py, anytime.py (when to guess), hierarchy.py, analysis.py,
+                 engine.py (train, evaluate), experiments.py, anytime.py (when to guess), hierarchy.py, analysis.py, final_eval.py,
                  smoke.py, check_baseline.py
-configs/         base.yaml, baseline*.yaml, leak_v1.yaml, anytime_v1.yaml, hierarchy_v1.yaml (frozen), hierarchy_eval*.yaml, followup_v*.yaml,
+configs/         base.yaml, baseline*.yaml, leak_v1.yaml, anytime_v1.yaml, hierarchy_v1.yaml (frozen), hierarchy_eval*.yaml, followup_v*.yaml, final_v1.yaml,
                  smoke.yaml, country_holdout_v1.json
 scripts/         fit_resampled_stats.py, leak_audit.py, raw_pilot.py
 notebooks/       00_dataset_collection.ipynb, 01_eda.ipynb, 02_preprocessing.ipynb, kaggle_*.ipynb
@@ -115,7 +116,7 @@ Dataset © Google, released under CC BY 4.0 via the Quick, Draw! project. `src/q
 `scripts/`, the analysis notebooks and the preprocessing tests are our own; they use NumPy, pandas,
 PyArrow, OpenCV, Matplotlib, scikit-learn and PyTorch. `src/quickdraw_exp/`, `configs/`,
 `tests/test_exp_setup.py`, `tests/test_baseline.py`, `tests/test_step3.py`, `tests/test_step4.py`,
-`tests/test_step4b.py`, `tests/test_followup.py`, `tests/test_analysis.py` and the `kaggle_*.ipynb` notebooks were written with AI assistance (Claude)
+`tests/test_step4b.py`, `tests/test_followup.py`, `tests/test_analysis.py`, `tests/test_final_eval.py` and the `kaggle_*.ipynb` notebooks were written with AI assistance (Claude)
 and use PyTorch and PyYAML. `RasterResNet` follows the ResNet-18 layout of He et al. (2016); the
 confidence head follows ConfidNet (Corbière et al., 2019); threshold calibration follows Learn then
 Test (Angelopoulos et al., 2021) with the accuracy-gap risk of Ringel et al. (2024); the hierarchical
