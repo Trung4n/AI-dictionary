@@ -64,6 +64,7 @@ PYTHONPATH=src python -m quickdraw_exp.anytime --matrix configs/anytime_v1.yaml 
 PYTHONPATH=src python -m quickdraw_exp.hierarchy --matrix configs/hierarchy_eval_v1.yaml --predictions <step 4a .npz folder>  # step 4b, CPU
 PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/followup_v1.yaml --max-minutes 300   # leak_v2, extra seeds
 PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/followup_v2.yaml --max-minutes 420   # step 4a on the uniform input
+PYTHONPATH=src python -m quickdraw_exp.analysis --predictions <folder of all .npz>   # by recognized, hierarchy by group, CPU
 PYTHONPATH=src python -m pytest tests -k 'not processed_data'
 ```
 
@@ -98,7 +99,7 @@ src/quickdraw/   io.py, stats.py (EDA statistics), prefix.py, viz.py (EDA helper
                  transforms.py, prepare.py, dataset.py (preprocessing pipeline),
                  simplify.py, leak.py (leak audit)
 src/quickdraw_exp/  config.py, paths.py, data.py, runlog.py, checkpoint.py, metrics.py, models.py, views.py,
-                 engine.py (train, evaluate), experiments.py, anytime.py (when to guess), hierarchy.py,
+                 engine.py (train, evaluate), experiments.py, anytime.py (when to guess), hierarchy.py, analysis.py,
                  smoke.py, check_baseline.py
 configs/         base.yaml, baseline*.yaml, leak_v1.yaml, anytime_v1.yaml, hierarchy_v1.yaml (frozen), hierarchy_eval*.yaml, followup_v*.yaml,
                  smoke.yaml, country_holdout_v1.json
@@ -114,7 +115,7 @@ Dataset © Google, released under CC BY 4.0 via the Quick, Draw! project. `src/q
 `scripts/`, the analysis notebooks and the preprocessing tests are our own; they use NumPy, pandas,
 PyArrow, OpenCV, Matplotlib, scikit-learn and PyTorch. `src/quickdraw_exp/`, `configs/`,
 `tests/test_exp_setup.py`, `tests/test_baseline.py`, `tests/test_step3.py`, `tests/test_step4.py`,
-`tests/test_step4b.py`, `tests/test_followup.py` and the `kaggle_*.ipynb` notebooks were written with AI assistance (Claude)
+`tests/test_step4b.py`, `tests/test_followup.py`, `tests/test_analysis.py` and the `kaggle_*.ipynb` notebooks were written with AI assistance (Claude)
 and use PyTorch and PyYAML. `RasterResNet` follows the ResNet-18 layout of He et al. (2016); the
 confidence head follows ConfidNet (Corbière et al., 2019); threshold calibration follows Learn then
 Test (Angelopoulos et al., 2021) with the accuracy-gap risk of Ringel et al. (2024); the hierarchical
