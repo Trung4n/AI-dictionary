@@ -1,0 +1,57 @@
+# Follow-up runs after steps 3, 4a and 4b. Written on 2026-11-08, before any of
+# these models was trained. Results are on validation data; test stays closed.
+#
+# 1. leak_v2: the leak audit (reports/preprocessing/leak_audit.md) found that the
+#    GRU's prefix input keeps part of the scale leak, and that the step 3
+#    "resampled" input kept stroke endpoints, so it leaked too. gru_uniform trains
+#    the leak_v1 GRU baseline again, with the audit's midpoint resampling
+#    (quickdraw.transforms.resample_uniform, step 8). Everything else as gru_prefix.
+# 2. Second seed for the two step 4a conditions that had one, with exactly the
+#    anytime_v1 settings, so every pre-registered 4a comparison has two seeds.
+#    They are then scored with configs/anytime_v1.yaml together with the saved 4a
+#    predictions.
+# 3. Exploratory: gru_anytime_long trains the step 4a method for twice as many
+#    steps (8 epochs of 2 prefixes). It tests whether 4a lost because each drawing
+#    was seen half as often. It is NOT compute-matched and is reported as such.
+experiment: followup_v1
+
+common:
+  - train.train_subset=600000
+  - eval.subset_per_class=200
+  - eval.final_per_class=1000
+  - data.num_workers=2
+
+seeds: [42, 43]
+
+conditions:
+  gru_uniform:
+    config: configs/baseline_gru.yaml
+    set: [train.epochs=8, data.input_norm=prefix, data.resample_step=8.0]
+  gru_anytime_long:
+    config: configs/baseline_gru.yaml
+    seeds: [42]
+    set: [train.epochs=8, train.views_per_drawing=2, model.confidence_head=true, train.consistency_weight=0.5]
+  cnn_anytime:
+    config: configs/baseline_cnn.yaml
+    seeds: [43]
+    set: [train.epochs=4, train.views_per_drawing=2, model.confidence_head=true, train.consistency_weight=0.5]
+  gru_no_consistency:
+    config: configs/baseline_gru.yaml
+    seeds: [43]
+    set: [train.epochs=4, train.views_per_drawing=2, model.confidence_head=true, train.consistency_weight=0.0]
+
+# Scored from the saved checkpoint predictions of this matrix and of steps 3/4a
+# (same calibration and evaluation halves, same policies as anytime_v1).
+anytime:
+  baseline_conditions: [gru_prefix, gru_anytime]
+  comparisons:
+    # Primary for leak_v2. Read together with top-1 at each ink fraction against
+    # reports/leak_v1 gru_prefix. Rule fixed now: if gru_uniform early top-1 (mean
+    # over 10, 25, 50% ink) is within 1 point of gru_prefix and its AUC within
+    # 0.005, the residual leak is reported as negligible and the step 3-4 GRU
+    # numbers stand; otherwise gru_uniform becomes the GRU input for every early
+    # number in the report and the gap is reported as what the residual leak adds.
+    - {name: "residual leak: uniform resampling vs prefix, GRU", a: [gru_uniform, pmax], b: [gru_prefix, pmax]}
+    - {name: "exploratory, 2x steps: method vs baseline, GRU", a: [gru_anytime_long, conf], b: [gru_prefix, pmax]}
+    - {name: "exploratory, 2x steps vs 1x: method, GRU", a: [gru_anytime_long, conf], b: [gru_anytime, conf]}
+    - {name: "exploratory, 2x steps: same classifier max softmax vs baseline", a: [gru_anytime_long, pmax], b: [gru_prefix, pmax]}

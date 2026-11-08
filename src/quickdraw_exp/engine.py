@@ -47,9 +47,15 @@ def make_view(cfg: dict, base, frac, train: bool):
     common = dict(frac=frac, prefix_mode=data["prefix_mode"], augment=AugmentConfig() if train else None,
                   frac_range=tuple(data["frac_range"]), seed=cfg["run"]["seed"],
                   input_norm=data["input_norm"], spacing=data["resample_spacing"])
+    step = data.get("resample_step")
     if cfg["model"]["kind"] == "cnn":
+        if step is not None:
+            raise ValueError("data.resample_step applies to sequences only")
         return NormRasterView(base, size=data["image_size"], order_encoding=data["order_encoding"], **common)
-    return NormSequenceView(base, max_len=data["max_len"], **common)
+    if step is not None and data["input_norm"] != "prefix":
+        raise ValueError("data.resample_step needs input_norm=prefix")
+    # With a step, SequenceView loads the delta scale fitted for resampled sequences.
+    return NormSequenceView(base, max_len=data["max_len"], resample_step=step, **common)
 
 
 def pick_device(name: str = "auto") -> torch.device:

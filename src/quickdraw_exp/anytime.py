@@ -244,8 +244,16 @@ class CheckpointDataset:
         data = self.cfg["data"]
         if self.cfg["model"]["kind"] == "cnn":
             return rasterize(normalize(part), part_end, data["image_size"], order_encoding=data["order_encoding"]), label
-        seq, n = to_sequence(normalize(part), part_end, data["max_len"], self.delta_std)
+        seq, n = to_sequence(normalize(part), part_end, data["max_len"], self.delta_std, data.get("resample_step"))
         return seq, n, label
+
+
+def sequence_scale(cfg: dict, root):
+    """The delta scale the run was trained with: fitted for resampled sequences
+    when ``data.resample_step`` is set, otherwise the processed data's."""
+    from quickdraw.dataset import load_resampled_stats, load_seq_stats
+    step = cfg["data"].get("resample_step")
+    return load_resampled_stats(step) if step is not None else load_seq_stats(root)
 
 
 def find_runs(folders) -> list[Path]:
@@ -288,8 +296,7 @@ def predict_run(run_dir: Path, device, num_workers: int = 2, batch_size: int = 1
     items = {key: np.concatenate([p[key] for p in parts]) for key in parts[0]}
     items["half"] = np.concatenate([np.zeros(len(parts[0]["k"]), np.int8), np.ones(len(parts[1]["k"]), np.int8)])
 
-    from quickdraw.dataset import load_seq_stats
-    dataset = CheckpointDataset(val, items, cfg, load_seq_stats(root))
+    dataset = CheckpointDataset(val, items, cfg, sequence_scale(cfg, root))
     loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers,
                                          pin_memory=device.type == "cuda")
     from .models import to_inputs

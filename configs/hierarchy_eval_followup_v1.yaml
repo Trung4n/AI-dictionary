@@ -1,0 +1,14 @@
+# Step 4b scoring repeated on the leak_v2 GRU (gru_uniform), to check that the
+# hierarchical gain does not depend on the residual leak. Written on 2026-11-08,
+# before gru_uniform was trained. Same tree, rules, grid and targets as
+# configs/hierarchy_eval_v1.yaml; only the runs differ.
+experiment: hierarchy_followup_v1
+tree: configs/hierarchy_v1.yaml
+precision_targets: [0.95, 0.90]
+tau_grid: {start: 0.30, stop: 0.99, step: 0.01}
+runs: [gru_uniform_s42, gru_uniform_s43]
+comparisons:
+  - {name: "semantic tree vs flat, GRU uniform", a: semantic, b: flat, runs: [gru_uniform_s42, gru_uniform_s43]}
+  - {name: "semantic vs random tree, GRU uniform", a: semantic, b: random, runs: [gru_uniform_s42, gru_uniform_s43]}
+  - {name: "semantic vs shape tree, GRU uniform", a: semantic, b: shape, runs: [gru_uniform_s42, gru_uniform_s43]}
+primary: "semantic tree vs flat, GRU uniform"   # at precision 0.95

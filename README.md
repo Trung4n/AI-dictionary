@@ -62,6 +62,7 @@ PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/leak_v1.yaml
 PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/anytime_v1.yaml --max-minutes 120  # step 4a
 PYTHONPATH=src python -m quickdraw_exp.anytime --matrix configs/anytime_v1.yaml --runs runs/anytime_v1 --baselines <leak_v1 folder>
 PYTHONPATH=src python -m quickdraw_exp.hierarchy --matrix configs/hierarchy_eval_v1.yaml --predictions <step 4a .npz folder>  # step 4b, CPU
+PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/followup_v1.yaml --max-minutes 300   # leak_v2, extra seeds
 PYTHONPATH=src python -m pytest tests -k 'not processed_data'
 ```
 
@@ -86,6 +87,8 @@ at load time. Test data opens only with `final_evaluation=True`.
 The step 3 and step 4 runs use `input_norm: prefix` without `resample_step`
 (they predate the leak audit), so their absolute early-prefix accuracies keep the
 residual leak described above; comparisons between methods use the same input.
+`configs/followup_v1.yaml` retrains the GRU baseline with `data.resample_step: 8.0`
+(`gru_uniform`) to measure what that residual leak adds.
 
 ## Layout
 
@@ -96,10 +99,10 @@ src/quickdraw/   io.py, stats.py (EDA statistics), prefix.py, viz.py (EDA helper
 src/quickdraw_exp/  config.py, paths.py, data.py, runlog.py, checkpoint.py, metrics.py, models.py, views.py,
                  engine.py (train, evaluate), experiments.py, anytime.py (when to guess), hierarchy.py,
                  smoke.py, check_baseline.py
-configs/         base.yaml, baseline*.yaml, leak_v1.yaml, anytime_v1.yaml, hierarchy_v1.yaml (frozen), hierarchy_eval_v1.yaml,
+configs/         base.yaml, baseline*.yaml, leak_v1.yaml, anytime_v1.yaml, hierarchy_v1.yaml (frozen), hierarchy_eval*.yaml, followup_v1.yaml,
                  smoke.yaml, country_holdout_v1.json
 scripts/         fit_resampled_stats.py, leak_audit.py, raw_pilot.py
-notebooks/       00_dataset_collection.ipynb, 01_eda.ipynb, 02_preprocessing.ipynb, kaggle_step*.ipynb
+notebooks/       00_dataset_collection.ipynb, 01_eda.ipynb, 02_preprocessing.ipynb, kaggle_*.ipynb
 tests/           unit tests for transforms, checks on the processed data, experiment tests
 reports/         generated figures and tables
 ```
@@ -110,7 +113,7 @@ Dataset © Google, released under CC BY 4.0 via the Quick, Draw! project. `src/q
 `scripts/`, the analysis notebooks and the preprocessing tests are our own; they use NumPy, pandas,
 PyArrow, OpenCV, Matplotlib, scikit-learn and PyTorch. `src/quickdraw_exp/`, `configs/`,
 `tests/test_exp_setup.py`, `tests/test_baseline.py`, `tests/test_step3.py`, `tests/test_step4.py`,
-`tests/test_step4b.py` and the `kaggle_step*.ipynb` notebooks were written with AI assistance (Claude)
+`tests/test_step4b.py`, `tests/test_followup.py` and the `kaggle_*.ipynb` notebooks were written with AI assistance (Claude)
 and use PyTorch and PyYAML. `RasterResNet` follows the ResNet-18 layout of He et al. (2016); the
 confidence head follows ConfidNet (Corbière et al., 2019); threshold calibration follows Learn then
 Test (Angelopoulos et al., 2021) with the accuracy-gap risk of Ringel et al. (2024); the hierarchical

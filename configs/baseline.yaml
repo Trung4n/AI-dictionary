@@ -8,6 +8,7 @@ data:
   num_workers: 4
   input_norm: prefix    # prefix, full_bbox or resampled; see quickdraw_exp/views.py
   resample_spacing: 16  # canvas units between points, for input_norm=resampled
+  resample_step: null   # GRU only: quickdraw.transforms.resample_uniform at this step (8.0 = RESAMPLE_STEP); null keeps the stored points
 
 train:
   epochs: 10
