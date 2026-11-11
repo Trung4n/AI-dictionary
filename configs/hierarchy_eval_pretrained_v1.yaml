@@ -1,0 +1,16 @@
+# Step 4b evaluation for the pretrained_v1 models. Written on 2026-11-11, before any
+# of them was trained. Same frozen tree, rules, tau grid and precision targets as
+# configs/hierarchy_eval_v1.yaml; validation data only. cnn_prefix is scored again
+# from its saved predictions so every row comes from the same run of this code.
+experiment: hierarchy_pretrained_v1
+tree: configs/hierarchy_v1.yaml
+precision_targets: [0.95, 0.90]
+tau_grid: {start: 0.30, stop: 0.99, step: 0.01}
+runs: [cnn_imagenet_s42, cnn_imagenet_s43, cnn_resnet18_scratch_s42, cnn_resnet18_scratch_s43, cnn_prefix_s42, cnn_prefix_s43]
+comparisons:
+  - {name: "semantic tree vs flat, ImageNet ResNet-18", a: semantic, b: flat, runs: [cnn_imagenet_s42, cnn_imagenet_s43]}
+  - {name: "semantic vs random tree, ImageNet ResNet-18", a: semantic, b: random, runs: [cnn_imagenet_s42, cnn_imagenet_s43]}
+  - {name: "semantic vs shape tree, ImageNet ResNet-18", a: semantic, b: shape, runs: [cnn_imagenet_s42, cnn_imagenet_s43]}
+  - {name: "semantic tree vs flat, ResNet-18 from scratch", a: semantic, b: flat, runs: [cnn_resnet18_scratch_s42, cnn_resnet18_scratch_s43]}
+  - {name: "semantic tree vs flat, project CNN", a: semantic, b: flat, runs: [cnn_prefix_s42, cnn_prefix_s43]}
+primary: "semantic tree vs flat, ImageNet ResNet-18"   # at precision 0.95

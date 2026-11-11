@@ -1,4 +1,8 @@
-"""The two baselines. Both end in a classifier over 100 classes."""
+"""The baselines. Each ends in a classifier over 100 classes.
+
+``cnn`` and ``gru`` are the project's own models. ``tv_resnet`` is torchvision's
+ResNet-18 unchanged, from scratch or with ImageNet weights: the off-the-shelf
+base model the project's CNN is compared with."""
 from __future__ import annotations
 
 import torch
@@ -43,6 +47,49 @@ class RasterResNet(nn.Module):
 
     def classify(self, features: torch.Tensor) -> torch.Tensor:
         return self.head[2](features)
+
+    def forward(self, images: torch.Tensor) -> torch.Tensor:
+        return self.classify(self.features(images))
+
+
+IMAGENET_MEAN = (0.485, 0.456, 0.406)
+IMAGENET_STD = (0.229, 0.224, 0.225)
+RASTER_KINDS = ("cnn", "tv_resnet")
+
+
+def is_raster(model_cfg: dict) -> bool:
+    """Whether the model reads rendered images (otherwise stroke sequences)."""
+    return model_cfg["kind"] in RASTER_KINDS
+
+
+class TorchvisionResNet(nn.Module):
+    """torchvision's ResNet-18 (He et al., 2016), unchanged apart from its last layer,
+    optionally with ImageNet weights. The grey image is repeated over three channels
+    and normalised with the ImageNet statistics, the input scale the pretrained first
+    layer was trained on. At 64 x 64 it costs about as much as ``RasterResNet`` with
+    width 32 and a stride-2 stem, with four times the parameters."""
+
+    input_kind = "raster"
+
+    def __init__(self, n_classes: int = 100, arch: str = "resnet18", pretrained: bool = False):
+        super().__init__()
+        from torchvision import models
+        if arch != "resnet18":
+            raise ValueError(f"unsupported torchvision architecture {arch!r}")
+        net = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1 if pretrained else None)
+        self.feature_dim = net.fc.in_features
+        net.fc = nn.Identity()
+        self.body = net
+        self.head = nn.Linear(self.feature_dim, n_classes)
+        self.register_buffer("mean", torch.tensor(IMAGENET_MEAN).view(1, 3, 1, 1), persistent=False)
+        self.register_buffer("std", torch.tensor(IMAGENET_STD).view(1, 3, 1, 1), persistent=False)
+
+    def features(self, images: torch.Tensor) -> torch.Tensor:
+        x = images.expand(-1, 3, -1, -1)
+        return self.body((x - self.mean) / self.std)
+
+    def classify(self, features: torch.Tensor) -> torch.Tensor:
+        return self.head(features)
 
     def forward(self, images: torch.Tensor) -> torch.Tensor:
         return self.classify(self.features(images))
@@ -113,10 +160,15 @@ class AnytimeNet(nn.Module):
         return logits, torch.sigmoid(self.confidence(joined).squeeze(1))
 
 
-def build_model(model_cfg: dict, n_classes: int = 100) -> AnytimeNet:
+def build_model(model_cfg: dict, n_classes: int = 100, load_pretrained: bool = True) -> AnytimeNet:
+    """The model of a configuration. ``load_pretrained=False`` skips downloading
+    ImageNet weights, for a model whose trained weights are loaded next."""
     kind = model_cfg["kind"]
     if kind == "cnn":
         backbone = RasterResNet(n_classes, model_cfg["width"], tuple(model_cfg["blocks"]), model_cfg.get("stem_stride", 1))
+    elif kind == "tv_resnet":
+        backbone = TorchvisionResNet(n_classes, model_cfg.get("arch", "resnet18"),
+                                     bool(model_cfg.get("pretrained", False)) and load_pretrained)
     elif kind == "gru":
         backbone = CausalGRU(n_classes, model_cfg["hidden"], model_cfg["layers"], model_cfg["dropout"])
     else:

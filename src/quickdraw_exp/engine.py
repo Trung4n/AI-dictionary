@@ -21,7 +21,7 @@ from .checkpoint import TimeBudget, load_checkpoint, save_checkpoint, seed_every
 from .config import load_config, repo_path
 from .data import ResumableSampler, SubsetSplit, load_holdout, open_split
 from .metrics import classification_metrics, group_masks
-from .models import anytime_loss, build_model, to_inputs
+from .models import anytime_loss, build_model, is_raster, to_inputs
 from .paths import resolve_data_root, resolve_output_root, verify_data
 from .runlog import RunLogger, adopt_run_dir, new_run_dir
 
@@ -48,7 +48,7 @@ def make_view(cfg: dict, base, frac, train: bool):
                   frac_range=tuple(data["frac_range"]), seed=cfg["run"]["seed"],
                   input_norm=data["input_norm"], spacing=data["resample_spacing"])
     step = data.get("resample_step")
-    if cfg["model"]["kind"] == "cnn":
+    if is_raster(cfg["model"]):
         if step is not None:
             raise ValueError("data.resample_step applies to sequences only")
         return NormRasterView(base, size=data["image_size"], order_encoding=data["order_encoding"], **common)

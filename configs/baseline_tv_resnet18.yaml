@@ -1,0 +1,13 @@
+# Off-the-shelf raster base model: torchvision's ResNet-18, unchanged apart from its
+# last layer, on the same 64x64 images as baseline_cnn.yaml. pretrained=true starts
+# from the ImageNet weights (torchvision ResNet18_Weights.IMAGENET1K_V1).
+extends: baseline.yaml
+
+run:
+  name: baseline_tv_resnet18
+
+model:
+  kind: tv_resnet
+  arch: resnet18
+  pretrained: false
+  confidence_head: false

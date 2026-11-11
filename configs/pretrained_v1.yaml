@@ -1,0 +1,44 @@
+# Off-the-shelf base model. Written on 2026-11-11, before any of these models was
+# trained. Results are on VALIDATION data only: the test split was opened once in
+# final_v1 and is not opened again, so these models have no test numbers.
+#
+# Question: do the conclusions about stopping (step 4a) and the class tree (step 4b)
+# hold for a standard, larger, ImageNet-pretrained raster model, and how does the
+# project's own CNN (cnn_prefix, leak_v1) compare with it?
+#
+# cnn_imagenet          torchvision ResNet-18 with ImageNet weights, fine-tuned.
+# cnn_resnet18_scratch  the same network from random weights. Separates the effect
+#                       of pretraining from that of size (11.2M parameters against
+#                       2.8M for cnn_prefix; similar compute at 64x64).
+# Both use exactly the cnn_prefix protocol: prefix input, 600,000 training drawings,
+# 8 epochs of one prefix (9,375 steps of 512), same optimiser, learning rate,
+# augmentation and checkpoint selection. Nothing is tuned for the new models.
+experiment: pretrained_v1
+
+common:
+  - train.train_subset=600000
+  - train.epochs=8
+  - eval.subset_per_class=200
+  - eval.final_per_class=1000
+  - data.num_workers=2
+  - data.input_norm=prefix
+
+seeds: [42, 43]
+
+conditions:
+  cnn_imagenet:
+    config: configs/baseline_tv_resnet18.yaml
+    set: [model.pretrained=true]
+  cnn_resnet18_scratch:
+    config: configs/baseline_tv_resnet18.yaml
+    set: [model.pretrained=false]
+
+# Same evaluation as step 4a, validation halves of 100 drawings per class (seed 2026).
+anytime:
+  baseline_conditions: [cnn_prefix]
+  primary: {a: [cnn_imagenet, pmax], b: [cnn_prefix, pmax]}
+  comparisons:
+    - {name: "ImageNet ResNet-18 vs project CNN, max softmax", a: [cnn_imagenet, pmax], b: [cnn_prefix, pmax]}
+    - {name: "ResNet-18 from scratch vs project CNN, max softmax", a: [cnn_resnet18_scratch, pmax], b: [cnn_prefix, pmax]}
+    - {name: "ImageNet vs scratch, same ResNet-18", a: [cnn_imagenet, pmax], b: [cnn_resnet18_scratch, pmax]}
+    - {name: "margin vs max softmax, ImageNet ResNet-18", a: [cnn_imagenet, margin], b: [cnn_imagenet, pmax]}

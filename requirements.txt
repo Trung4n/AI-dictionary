@@ -11,3 +11,4 @@ pytest==9.2.0
 scikit-learn==1.9.1
 pyyaml>=6.0
 torch==2.11.0
+torchvision==0.26.0  # pretrained_v1 only (ResNet-18 base model)

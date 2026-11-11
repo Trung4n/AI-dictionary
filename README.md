@@ -66,11 +66,14 @@ PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/followup_v1.
 PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/followup_v2.yaml --max-minutes 420   # step 4a on the uniform input
 PYTHONPATH=src python -m quickdraw_exp.analysis --predictions <folder of all .npz>   # by recognized, hierarchy by group, CPU
 PYTHONPATH=src python -m quickdraw_exp.final_eval --split val --val-predictions <folder>   # check, then --split test (once)
+PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/pretrained_v1.yaml --max-minutes 480   # ResNet-18 base model (validation only)
 PYTHONPATH=src python -m pytest tests -k 'not processed_data'
 ```
 
 Set `budget.max_minutes` to stop and save before a Kaggle session or quota ends.
 Models are compared on validation data; only `final_eval.py` opens the test split, once, with `configs/final_v1.yaml`.
+`configs/pretrained_v1.yaml` (torchvision ResNet-18, ImageNet weights and from scratch) was added after
+that evaluation, so its models have validation results only; run it with `notebooks/kaggle_pretrained_v1.ipynb`.
 
 The processed data is found automatically: `data.root` in the config, then the
 `QUICKDRAW_DATA` environment variable, `dataset/processed/`, `dataset/`, and on
@@ -116,8 +119,11 @@ Dataset © Google, released under CC BY 4.0 via the Quick, Draw! project. `src/q
 `scripts/`, the analysis notebooks and the preprocessing tests are our own; they use NumPy, pandas,
 PyArrow, OpenCV, Matplotlib, scikit-learn and PyTorch. `src/quickdraw_exp/`, `configs/`,
 `tests/test_exp_setup.py`, `tests/test_baseline.py`, `tests/test_step3.py`, `tests/test_step4.py`,
-`tests/test_step4b.py`, `tests/test_followup.py`, `tests/test_analysis.py`, `tests/test_final_eval.py` and the `kaggle_*.ipynb` notebooks were written with AI assistance (Claude)
-and use PyTorch and PyYAML. `RasterResNet` follows the ResNet-18 layout of He et al. (2016); the
+`tests/test_step4b.py`, `tests/test_followup.py`, `tests/test_analysis.py`, `tests/test_final_eval.py`, `tests/test_pretrained.py`,
+`paper/make_assets.py` and the `kaggle_*.ipynb` notebooks were written with AI assistance (Claude)
+and use PyTorch, torchvision and PyYAML. The base model `TorchvisionResNet` is torchvision's ResNet-18, used
+unchanged apart from its last layer, with its ImageNet weights (BSD-3-Clause code; weights from the
+torchvision model zoo). `RasterResNet` follows the ResNet-18 layout of He et al. (2016); the
 confidence head follows ConfidNet (Corbière et al., 2019); threshold calibration follows Learn then
 Test (Angelopoulos et al., 2021) with the accuracy-gap risk of Ringel et al. (2024); the hierarchical
 reward follows Deng et al. (2012).

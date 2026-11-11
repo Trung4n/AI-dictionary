@@ -237,12 +237,14 @@ class CheckpointDataset:
 
     def __getitem__(self, j: int):
         from quickdraw.transforms import normalize, rasterize, to_sequence
+
+        from .models import is_raster
         pts, end, label = self.split[int(self.items["drawing"][j])]
         k = int(self.items["k"][j])
         part, part_end = pts[:k], end[:k].copy()
         part_end[-1] = True
         data = self.cfg["data"]
-        if self.cfg["model"]["kind"] == "cnn":
+        if is_raster(self.cfg["model"]):
             return rasterize(normalize(part), part_end, data["image_size"], order_encoding=data["order_encoding"]), label
         seq, n = to_sequence(normalize(part), part_end, data["max_len"], self.delta_std, data.get("resample_step"))
         return seq, n, label
@@ -280,7 +282,7 @@ def load_run(run_dir: Path, device):
 
     from .models import build_model, load_weights
     cfg = yaml.safe_load((run_dir / "config.yaml").read_text(encoding="utf-8"))
-    model = build_model(cfg["model"]).to(device).eval()
+    model = build_model(cfg["model"], load_pretrained=False).to(device).eval()
     state = torch.load(run_dir / "checkpoints" / "best.pt", map_location="cpu", weights_only=False)
     load_weights(model, state["model"])
     return cfg, model
