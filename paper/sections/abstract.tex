@@ -1,0 +1,24 @@
+\begin{abstract}
+A Pictionary player has to guess a drawing before it is finished, and has to decide when a
+guess is safe. We study this task on a 100-class, three-million-drawing subset of
+Quick, Draw! with a causal GRU on strokes and a ResNet on rasters, and report three findings.
+First, truncating the released, globally rescaled drawings leaks the size of the finished
+drawing: when a prefix keeps the finished drawing's frame, early top-1 rises by 11.4 (GRU) and
+12.8 (CNN) points on the test split, and even per-prefix rescaling leaves traces that uniform
+arc-length resampling reduces at a cost of 1.2 points. Second, a learned confidence head with
+a prefix-consistency loss, trained at equal compute, did \emph{not} stop better than the maximum
+softmax probability: the area under the accuracy--earliness frontier fell from 0.458 to 0.446
+(GRU) and from 0.498 to 0.491 (CNN); it helped below 25\% ink and hurt afterwards.
+Distribution-free thresholds chosen on validation kept the accuracy lost by answering early
+below 2\% and 5\% in 38 of 40 test cases (the two misses exceed the target by at most 0.04
+points), answering after about 75\% of the ink at the 5\% target. Third, answering the most
+specific node of a semantic class tree instead of staying silent raised the information reward
+from 0.137 to 0.175 (GRU) and 0.190 to 0.234 (CNN), beat trees with shuffled classes by 0.039,
+but was only 0.010 above a tree built from early shape clusters. On five countries never seen
+in training, end-of-drawing accuracy drops by 3--4 points, while the hierarchical gain and the
+risk-control guarantee largely carry over. An ImageNet-pretrained ResNet-18, evaluated on
+validation, is about one point more accurate than our CNN and leaves the findings on stopping
+thresholds and on the class tree unchanged.
+\keywords{Sketch recognition \and Early classification \and Selective prediction \and
+Risk control \and Hierarchical classification \and Data leakage}
+\end{abstract}

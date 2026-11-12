@@ -1,0 +1,59 @@
+\section{Introduction}
+\label{sec:intro}
+
+In Pictionary, and in Google's Quick, Draw! game~\cite{quickdraw_dataset}, a guesser watches a
+drawing appear stroke by stroke. Recognising the finished drawing is a well-studied
+problem~\cite{eitz2012humans,yu2017sketchanet,xu2023survey}. The game asks for two other things:
+a guess from an \emph{unfinished} drawing, and a decision about \emph{when} that guess is safe
+enough to say. A guesser that answers too early is often wrong; one that waits for the last
+stroke wins nothing. A third option is to say something less specific but still useful, such as
+``an animal'', while the drawing is ambiguous.
+
+Partial drawings are easy to make from a complete dataset: cut each drawing after a fraction of
+its ink. We found that this is also where the evaluation can go wrong. The public
+\emph{simplified} QuickDraw drawings were rescaled and simplified \emph{as finished
+drawings}~\cite{quickdraw_dataset}. A prefix cut from them still carries the scale of the drawing
+it came from, which a guesser watching a live drawing could never know. A model can read that
+scale and look better at early recognition than it is. This kind of leakage, where information
+unavailable at prediction time enters the inputs, is a known source of overstated results in
+applied machine learning~\cite{kapoor2023leakage}.
+
+Each experiment was written down as a configuration file under version control (conditions,
+comparisons, primary metric and decision rule) before any of its models was trained. The three
+hypotheses are:
+\begin{description}
+\item[H1 (leak).] Giving a model the finished drawing's frame raises its early top-1 (mean over
+10, 25 and 50\% ink) over per-prefix normalisation, and per-prefix normalisation itself keeps
+part of that advantage.
+\item[H2 (when to guess).] At equal training compute, a confidence head trained with a
+prefix-consistency loss yields a larger area under the accuracy--earliness frontier than
+stopping on the maximum softmax probability of a standard classifier.
+\item[H3 (coarse to fine).] At equal precision, answering the most specific node of a semantic
+class tree yields more information over the course of a drawing than answering classes only, and
+more than a tree of the same shape with shuffled classes.
+\end{description}
+H1 and H3 were confirmed and H2 was rejected. An off-the-shelf ResNet-18 pretrained on ImageNet,
+added afterwards and evaluated on validation only, is about one point more accurate than our CNN
+and leaves the findings on stopping thresholds and on the class tree unchanged. Our contributions are:
+\begin{enumerate}
+\item \textbf{A measured leak and a partial fix.} We show where the size of the finished drawing
+hides in truncated simplified drawings (coordinate lattice, point density, simplification
+facets), measure its effect on two architectures over five ink fractions, and show that uniform
+arc-length resampling removes most of it for a sequence model, at a cost we quantify
+(Sect.~\ref{sec:res-leak}).
+\item \textbf{A compute-matched negative result with its causes.} The learned stopping method
+loses to the maximum-softmax baseline on both architectures, on validation and test, and with
+twice the training budget. Ablations attribute the loss to training on two prefixes per drawing
+and to a consistency loss that trades late accuracy for early accuracy
+(Sect.~\ref{sec:res-anytime}).
+\item \textbf{Guaranteed stopping thresholds.} Thresholds calibrated with a Clopper--Pearson
+bound and fixed-sequence testing~\cite{clopper1934,angelopoulos2021ltt} bound the accuracy lost by
+answering early, in the sense of Ringel et al.~\cite{ringel2024early}; the bound held on the test
+split and on unseen countries with two marginal exceptions (Sect.~\ref{sec:res-risk}).
+\item \textbf{Coarse-to-fine answers.} Hedging along a class tree~\cite{deng2012hedging}, frozen
+before any result, gives more information earlier than flat answers; we locate the gain in a few
+semantic groups and show what a shape-based tree achieves (Sect.~\ref{sec:res-hier}).
+\item \textbf{A protocol that keeps the test split clean.} All decisions use validation data;
+the test split was opened once, after a gate that reproduced 86 validation numbers within
+0.002, and five countries were held out entirely (Sect.~\ref{sec:setup}).
+\end{enumerate}

@@ -1,0 +1,47 @@
+% CO3133 Deep Learning Bootcamp report. Springer LNCS template, unchanged (no margin or font edits).
+% In Prism: create the project from the official LNCS template (it provides llncs.cls and
+% splncs04.bst), then upload this file, sections/, tables/, figures/ and references.bib.
+\documentclass[runningheads]{llncs}
+
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{figures/}}
+\newcommand{\ink}{\rho}  % fraction of the drawing's ink drawn so far
+
+\begin{document}
+
+\title{When to Guess a Doodle: Scale Leakage, Stopping Rules and Coarse-to-Fine Answers
+for Early Sketch Recognition}
+\titlerunning{When to Guess a Doodle}
+
+% TODO(team): full names, in the order the team agrees; student IDs if the course asks for them.
+\author{Kiet Tran \and Member Two \and Member Three}
+\authorrunning{K. Tran et al.}
+% TODO(team): confirm faculty and university names.
+\institute{Faculty of Computer Science and Engineering, Ho Chi Minh City University of Technology
+(HCMUT), VNU-HCM, Vietnam\\
+\email{kiettran05.py@gmail.com}}
+
+\maketitle
+
+\input{sections/abstract}
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/method}
+\input{sections/setup}
+\input{sections/results}
+\input{sections/limitations}
+\input{sections/conclusion}
+
+\bibliographystyle{splncs04}
+\bibliography{references}
+
+\end{document}

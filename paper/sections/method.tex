@@ -1,0 +1,151 @@
+\section{Proposed Method}
+\label{sec:method}
+
+\subsection{Task and notation}
+A drawing is a sequence of points $P = (p_1,\dots,p_T)$, $p_t \in \mathbb{R}^2$, with a flag
+$e_t$ marking the last point of each stroke, and a label $y \in \{1,\dots,C\}$, $C = 100$. The
+\emph{ink fraction} after $k$ points, $\ink_k$, is the length of the strokes drawn up to point $k$
+divided by the drawing's total stroke length. A guesser is queried at causal checkpoints
+$k_1 < \dots < k_m = T$: the end of every stroke and every 8 points, thinned to at most 40. At
+checkpoint $j$ it sees only the prefix $P_{1:k_j}$ and returns class probabilities
+$\mathbf{q}_j \in \Delta^{C-1}$ and a stopping score $s_j$. With threshold $\tau$, the
+\emph{stopping rule} answers $\hat y = \arg\max_c q_{j^\ast,c}$ at the first checkpoint
+$j^\ast$ with $s_{j^\ast} \ge \tau$, or at the end of the drawing if there is none. Over a set of
+drawings, the rule has an accuracy and an \emph{earliness}, the mean ink fraction
+$\ink_{k_{j^\ast}}$ at which it answers. Sweeping $\tau$ traces a curve; its upper envelope
+\begin{equation}
+F(e) = \max_{\tau}\{\mathrm{acc}(\tau) : \mathrm{earliness}(\tau) \le e\}
+\end{equation}
+is the best accuracy reachable with mean ink at most $e$, and our primary metric for when to
+guess is its area, $\mathrm{AUC} = \frac{1}{101}\sum_{i=0}^{100} F(i/100)$ (higher is better).
+We compare three scores: the maximum softmax probability $\max_c q_{j,c}$
+(\emph{max softmax}, the baseline~\cite{hendrycks2017baseline}), the margin between the two
+largest probabilities, and a learned confidence $c_j$ (Sect.~\ref{sec:method-head}).
+
+\subsection{Input normalisation and the scale leak}
+\label{sec:method-norm}
+Let $N(\cdot)$ shift a point set to the origin and scale its longer side to 255, as in the
+released simplified data~\cite{quickdraw_dataset}. Three inputs are compared for a prefix
+$P_{1:k}$ of a drawing:
+\begin{align}
+\text{full\_bbox:}\quad & N(P)_{1:k}, \\
+\text{prefix:}\quad & N(P_{1:k}), \\
+\text{uniform:}\quad & U(N(P_{1:k})).
+\end{align}
+\emph{full\_bbox} keeps the frame of the finished drawing; it cannot exist while drawing and
+serves only to measure the leak. \emph{prefix} rescales each prefix by its own extent, the usual
+choice. It still leaks, because the stored drawings were rescaled and simplified as finished
+drawings: (i) stored coordinates are integers, so a rescaled prefix lies on a lattice whose step,
+$255/\text{(prefix side in finished-drawing units)}$, reveals its relative size; (ii) the spacing
+between points grows with the same factor; (iii) the Ramer--Douglas--Peucker simplification with
+$\epsilon = 2$~\cite{douglas1973} was applied at the finished drawing's scale, so a magnified prefix
+shows coarser facets. $U$ removes (i) and (ii): every stroke of length $L$ is replaced by the
+midpoints of $\lceil L/8 \rceil$ (at least 2) equal arcs, so no stored point survives. It cannot
+remove (iii), which is part of the geometry. Keeping stroke end points, as in a first version we
+tried, leaves the lattice visible at those points (Sect.~\ref{sec:res-leak}).
+
+\subsection{Models}
+\label{sec:method-models}
+\paragraph{Sequence model.} A causal GRU~\cite{cho2014gru} (2 layers, 256 units, 0.82M
+parameters) reads the prefix as stroke-3 steps $(\Delta x, \Delta y, \text{pen lift})$ with
+standardised offsets, at most 256 steps; its last state $\mathbf{h}$ feeds a linear classifier.
+\paragraph{Raster model.} A ResNet-18 layout~\cite{he2016resnet} with base width 32 and a
+stride-2 stem (2.82M parameters) reads a $64\times64$ rendering in which stroke $i$ is drawn
+with intensity $255-13\min(i,10)$, so the image keeps the drawing order; global pooling gives
+$\mathbf{h}$.
+
+\paragraph{Confidence head and consistency loss.}
+\label{sec:method-head}
+The method (Fig.~\ref{fig:arch}) adds a small head to either encoder. It reads the detached
+features and the three largest class probabilities,
+\begin{equation}
+c = \sigma\!\left(\mathbf{w}_2^\top \mathrm{ReLU}\big(W_1[\,\mathrm{sg}(\mathbf{h});\
+\mathrm{top}_3(\mathrm{sg}(\mathbf{q}))\,] + \mathbf{b}_1\big) + b_2\right),
+\end{equation}
+with a 64-unit hidden layer and $\mathrm{sg}$ the stop-gradient, so the head cannot change the
+classifier. Following ConfidNet~\cite{corbiere2019confidnet}, it regresses the probability the
+classifier gives the true class. Each training step draws two prefixes of the same drawing with
+sorted ink fractions $\ink^{(1)} < \ink^{(2)}$, both uniform in $[0.05, 1]$ and with the same
+augmentation, and minimises over a batch of $B$ drawings
+\begin{equation}
+\mathcal{L} = \frac{1}{2B}\sum_{i,v}\mathrm{CE}\big(\mathbf{q}_i^{(v)}, y_i\big)
++ \frac{\lambda}{B}\sum_i \mathrm{KL}\big(\mathrm{sg}(\mathbf{q}_i^{(2)}) \,\big\|\, \mathbf{q}_i^{(1)}\big)
++ \frac{\mu}{2B}\sum_{i,v}\big(c_i^{(v)} - \mathrm{sg}(q^{(v)}_{i,y_i})\big)^2,
+\label{eq:loss}
+\end{equation}
+with $\lambda = 0.5$ and $\mu = 1$. The consistency term pulls the prediction on the shorter
+prefix toward the one on the longer prefix, which acts as a teacher. The intuition was that a
+prediction should not change much when a few more strokes arrive, so stable early predictions
+would allow earlier, safer stops.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize, node distance=3mm and 4mm,
+  box/.style={draw, rounded corners=1pt, align=center, inner sep=2pt, minimum height=6mm},
+  arr/.style={-{Stealth[length=1.6mm]}, thick}]
+\node[box] (in) {prefix $P_{1:k}$\\(causal checkpoint)};
+\node[box, right=of in] (norm) {normalise\\$N(P_{1:k})$, $U(\cdot)$};
+\node[box, right=of norm] (enc) {encoder\\GRU / ResNet};
+\node[box, right=of enc] (cls) {linear\\softmax};
+\node[box, below=of cls] (head) {head\\$[\mathrm{sg}(\mathbf h);\mathrm{top}_3]$\\MLP, $\sigma$};
+\node[box, right=of cls] (stop) {stop if\\$s \ge \hat\tau_\epsilon$};
+\node[box, right=of stop] (tree) {answer most\\specific node\\with $q(v)\ge\tau$};
+\draw[arr] (in) -- (norm);
+\draw[arr] (norm) -- (enc);
+\draw[arr] (enc) -- node[above] {$\mathbf h$} (cls);
+\draw[arr] (enc) |- (head);
+\draw[arr] (cls) -- node[above] {$\mathbf q$} (stop);
+\draw[arr, dashed] (cls) -- (head);
+\draw[arr] (head) -| node[pos=0.25, below] {$c$} (stop);
+\draw[arr] (stop) -- (tree);
+\end{tikzpicture}
+\caption{The guesser at one checkpoint. The stopping score $s$ is the max softmax, the margin or
+the head's confidence $c$; $\hat\tau_\epsilon$ is calibrated on validation data to bound the
+accuracy gap (Sect.~\ref{sec:method-risk}). The tree answer (Sect.~\ref{sec:method-tree}) uses
+its own threshold. Dashed: detached input.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Stopping with a guaranteed accuracy gap}
+\label{sec:method-risk}
+A stopping rule should not lose much of what waiting would have won. Following Ringel et
+al.~\cite{ringel2024early} (marginal version), the \emph{accuracy gap} of threshold $\tau$ is the
+share of drawings whose final answer is right but whose early answer is wrong,
+\begin{equation}
+G(\tau) = \frac{1}{n}\sum_{i=1}^{n} \mathbf{1}\big[\hat y_{i,m} = y_i\big]\,
+\mathbf{1}\big[\hat y_{i,j^\ast(\tau)} \ne y_i\big].
+\end{equation}
+On a calibration set of $n$ drawings we test thresholds from the highest to the lowest
+(fixed-sequence testing, as in Learn then Test~\cite{angelopoulos2021ltt}) and keep going while the
+one-sided Clopper--Pearson upper bound~\cite{clopper1934} of level $1-\delta$ on $G(\tau)$ stays at
+most $\epsilon$; $\hat\tau_\epsilon$ is the last threshold accepted (answer at the end if none is).
+Under exchangeability of calibration and test drawings, the population gap of $\hat\tau_\epsilon$
+exceeds $\epsilon$ with probability at most $\delta$. We use $\delta = 0.05$ and
+$\epsilon \in \{2\%, 5\%\}$. The guarantee concerns the population gap: the gap measured on a finite
+test sample can exceed $\epsilon$ by sampling noise, and the guarantee does not cover a change of
+distribution such as unseen countries.
+
+\subsection{Coarse-to-fine answers on a class tree}
+\label{sec:method-tree}
+A tree groups the $C$ classes into subgroups and groups; a node $v$ covers a class set $S_v$ and
+gets probability $q(v) = \sum_{c \in S_v} q_c$. At each checkpoint the hierarchical rule answers the
+most specific node with $q(v) \ge \tau$ (smallest $|S_v|$, ties broken by probability) or stays
+silent;
+the flat rule answers the top class only when $q_c \ge \tau$. A correct answer earns
+$r(v) = 1 - \log|S_v|/\log C$ (1 for a class, 0.76 for a 3-class subgroup, 0.34 for the 21-class
+animal group), a wrong answer or silence earns 0~\cite{deng2012hedging}. The reward at a checkpoint
+holds until the next one, giving a step function of ink, and the \emph{reward area} of a drawing is
+\begin{equation}
+R = \sum_{j=1}^{m} r_j\,(\ink_{k_{j+1}} - \ink_{k_j}), \qquad \ink_{k_{m+1}} := 1,
+\end{equation}
+averaged over drawings (higher means more correct information, earlier). For each tree and rule,
+$\tau$ is the lowest value on a grid $\{0.30, 0.31, \dots, 0.99\}$ whose answers on the calibration
+set are right at least 95\% (or 90\%) of the time. This choice uses a point estimate and has no
+statistical guarantee, unlike Sect.~\ref{sec:method-risk}.
+
+The \emph{semantic} tree (10 groups, 28 subgroups) follows everyday meaning, what a player would
+say, and was frozen before any hierarchical result was computed. Two controls isolate what
+matters: a \emph{random} tree with the same shape and shuffled classes (5 shuffles), and a
+\emph{shape} tree with one level of clusters of early-drawing shape taken from the class-selection
+analysis.

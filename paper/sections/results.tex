@@ -1,0 +1,236 @@
+\section{Results and Analysis}
+\label{sec:results}
+
+Validation numbers decided every step; the test numbers below come from the single final
+evaluation. Where both are given, they agree within 0.2 points of top-1 and 0.003 of AUC.
+
+\subsection{The scale leak (H1)}
+\label{sec:res-leak}
+
+\IfFileExists{figures/fig_prefix_example.pdf}{%
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_prefix_example}
+\caption{One validation drawing and the three inputs for its first 25\% of ink. Dots are the
+model's input points. In the full frame the prefix is visibly small; after rescaling by its own
+box, the gaps between stored points reveal the magnification; uniform resampling evens them out.}
+\label{fig:prefix}
+\end{figure}}{}
+
+\input{tables/tab_leak}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_leak}
+\caption{Test top-1 against ink drawn (every test drawing, mean of two seeds). The leaky
+full-frame input gains most when little is drawn; at 100\% ink all inputs see the same drawing.}
+\label{fig:leak}
+\end{figure}
+
+Table~\ref{tab:leak} and Fig.~\ref{fig:leak} confirm the first part of H1. Keeping the finished
+drawing's frame raises early top-1 by 11.4 points for the GRU and 12.8 points for the CNN on test,
+and at 10\% ink it raises top-1 from 10.1\% to 23.6\% (GRU) and from 8.3\% to 23.4\% (CNN). The gain shrinks as
+ink grows, as it should: at 100\% ink the two inputs are identical, and the remaining
+0.9--1.0-point difference comes from training on different inputs. A model evaluated with the
+finished drawing's frame would thus overstate early recognition several times over.
+
+The second part, a residual leak in per-prefix inputs, took two attempts. Our pre-registered fix
+resampled each stroke at even spacing but kept its end points; it cost 1.4 points of early top-1
+on validation, more than the one-point margin we had set, so the rule kept \emph{prefix} input.
+A separate audit then attacked the inputs directly. Reading the coordinate lattice of a rescaled
+prefix recovers its size relative to the finished drawing within 3\% for 90.2\% of validation
+prefixes, against 33.7\% for always guessing ``full size'' and 87.4\% on prefixes below 0.9 of the
+full size. Using only stroke end points, which the first fix kept, still recovers it for 48.6\%.
+After uniform resampling (Sect.~\ref{sec:method-norm}) the attack succeeds for 0.01\%. Regressors
+trained to predict the log size ratio (gradient boosting on sequence features, a small CNN on
+$64\times64$ rasters) reach $R^2 = 0.754$ on stored prefixes, 0.529 after uniform resampling and
+0.501 on rasters. Part of this is legitimate, since shape alone says something about size: on two
+classes for which we cut prefixes from the raw strokes and only then simplified them, the clean
+inputs reach $R^2 \approx 0.55$. Against these clean references, stored sequences exceed by 0.24,
+resampled sequences by 0.10 and rasters by 0.08. We therefore
+report the GRU's early numbers with uniform input. It loses 1.2 points of early top-1 to
+\emph{prefix} input on test (29.8 against 31.0) and 0.005 of stopping AUC on validation. This is an
+upper bound on what the residual leak was worth to the GRU, because resampling also cuts corners
+(raster IoU before and after: median 0.87). It is roughly ten times smaller than the full-frame
+effect. For the CNN the residual is not measured in accuracy (Sect.~\ref{sec:limits}).
+
+\subsection{When to guess (H2)}
+\label{sec:res-anytime}
+
+\input{tables/tab_ablation}
+\input{tables/tab_test_anytime}
+
+H2 is rejected. At equal compute, the method's stopping AUC is lower than that of the max-softmax
+baseline in every comparison: by 0.013 for the uniform GRU on validation and 0.012 on test
+(0.446 against 0.458), by 0.006 and 0.007 for the CNN (test 0.491 against 0.498), and by 0.010 for
+the GRU with prefix input (Tables~\ref{tab:ablation} and~\ref{tab:test_anytime}). Seed-to-seed
+ranges are below 0.003, so the sign is not in doubt. The learned confidence adds nothing over the
+max softmax of the same classifier ($-0.0004$ on validation, $-0.0003$ on test): the head
+recovers, at best, what the softmax already knows. The margin is equally close to the max
+softmax ($+0.0004$), and a rule that answers after a fixed number of strokes is far behind (AUC
+0.288 against 0.459 for the uniform GRU).
+
+The ablations place the loss in the classifier, not the stopping score. Training on two prefixes
+per drawing, with the head but without consistency, costs 0.007; adding the consistency loss
+costs another 0.005. At a fixed number of steps, two prefixes per drawing means each drawing is
+visited four times instead of eight, and the baseline is clearly under-trained: doubling its steps
+adds 0.024 AUC and raises its end accuracy from 78.6\% to 81.6\%. An exploratory run that trained
+the method twice as long (prefix input) had beaten the 1$\times$ baseline by 0.011, but its own max
+softmax did the same (+0.011): the gain came from longer training. With both sides doubled, the
+method still loses by 0.009 ($-0.008$ for its own max softmax).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.75\linewidth]{fig_early_late}
+\caption{Validation top-1 of the method and of two-prefix training without consistency, minus the
+uniform-GRU baseline, at each ink fraction (two seeds). Consistency buys early accuracy with late
+accuracy.}
+\label{fig:earlylate}
+\end{figure}
+
+Fig.~\ref{fig:earlylate} shows what the consistency loss does. It improves top-1 by 0.8 points at
+10\% and 25\% ink (9.6\% against 8.8\% at 10\%) and lowers it by 1.0 to 2.8 points from 50\% ink
+on (75.7\% against 78.5\% at the end). Two prefixes without consistency are slightly worse at
+every fraction. Pulling the short prefix toward the long one does make early predictions better,
+as intended, but most accuracy, and hence most of the AUC, is earned after half the ink. We do not
+know why late accuracy drops; two explanations we have \emph{not} tested are that the shared
+encoder trades capacity toward short prefixes, and that a teacher which is itself often wrong at
+mid-drawing propagates its errors.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_frontier}
+\caption{Accuracy against mean ink used, as the stopping threshold varies (validation evaluation
+half, seed 42, prefix input; these are the runs whose full curves were saved). Squares and
+circles: thresholds calibrated for $\epsilon = 2\%$ and $5\%$. Star: an oracle answering at the
+first correct checkpoint.}
+\label{fig:frontier}
+\end{figure}
+
+Fig.~\ref{fig:frontier} shows the size of the problem that remains. An oracle that answers at the
+first correct checkpoint would be right 88--92\% of the time after 54--57\% of the ink, while the
+calibrated threshold rules need 74--84\% of the ink to come within 2--5 points of their final
+accuracy.
+Neither score identifies the moment an answer becomes right.
+
+\subsection{Stopping with a guaranteed accuracy gap}
+\label{sec:res-risk}
+Thresholds calibrated on 10{,}000 validation drawings kept the realised accuracy gap below its
+target in 38 of 40 test cases (8 runs, 2--3 scores, 2 targets; Table~\ref{tab:test_anytime}). Both
+misses use the margin score and exceed the target by little: 2.02\% for $\epsilon = 2\%$ and 5.04\%
+for $\epsilon = 5\%$. With 50{,}000 test drawings, the standard error of a 5\% rate is about 0.1
+point, so these are within sampling noise of a population gap at the target, which is what the
+guarantee bounds. At $\epsilon = 5\%$, max-softmax stopping answers after 74\% of the ink for the
+CNN (accuracy 81.0\% against 84.0\% at the end) and 77\% for the GRU (75.1\% against 78.5\%); at
+$\epsilon = 2\%$ it needs 81--84\%. The guarantee holds, but the savings are modest: about a
+quarter of the ink at a 5\% gap.
+
+\subsection{Coarse-to-fine answers (H3)}
+\label{sec:res-hier}
+
+\input{tables/tab_hierarchy}
+
+H3 is confirmed (Table~\ref{tab:hierarchy}). At precision 0.95, the semantic tree raises the
+reward area from 0.137 to 0.175 for the GRU and from 0.190 to 0.234 for the CNN on test, with
+realised precision 0.952--0.956. It answers at 35\% of checkpoints against 23\% for flat answers
+(GRU). A tree of the same shape with shuffled classes does no better than flat answers (0.135), so
+the gain comes from which classes are grouped, not from having coarse nodes. The shape tree,
+however, comes close: 0.165 at precision 0.95, a tie at 0.90 for the GRU (0.2297 against 0.2302), and
+slightly ahead at 0.90 for the CNN (0.293 against 0.291). An
+everyday-meaning tree is thus a good tree, but we cannot claim it beats one derived from how
+drawings start.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.75\linewidth]{fig_groups}
+\caption{Gain of the semantic tree over flat answers per top-level group (validation evaluation
+half, precision 0.95, mean of two seeds; number of classes in brackets).}
+\label{fig:groups}
+\end{figure}
+
+Fig.~\ref{fig:groups} locates the gain. Weather and nature (+0.09 per drawing), animal (+0.08) and
+clothing (+0.06) dominate; the 21 animal classes alone bring 40--44\% of the total gain. Shape and
+pattern, and sport, music and toy gain nothing. The classes that gain most are tornado, hurricane,
+sweater, jacket, horse, zebra and t-shirt, pairs whose early strokes look alike (spirals, garment
+outlines, four-legged bodies) and also share a meaning. Where meaning and early shape coincide, a
+group can be named long before the class; where they do not (a cello and a megaphone, a square and
+camouflage), the group is no easier than the class. This also explains why the shape tree ties.
+
+\subsection{Recognised and unrecognised drawings}
+\label{sec:res-recognized}
+
+\input{tables/tab_recognized}
+
+Since a recognised drawing stops when the game recognised it, we repeat every comparison on the
+two groups (Table~\ref{tab:recognized}). Every method-versus-baseline difference keeps its sign
+in both. Unrecognised drawings are a different regime: end accuracy falls to 30--36\% and AUC to
+about 0.2. There the uniform input is slightly \emph{better} than prefix input ($+0.005$
+against $-0.007$ on recognised drawings); one reading, not tested further, is that the residual
+leak helps mainly on recognised drawings.
+
+\subsection{Unseen countries}
+\label{sec:res-unseen}
+
+\input{tables/tab_unseen}
+
+On the five held-out countries (Table~\ref{tab:unseen}), end accuracy drops from 78.3\% to 74.7\%
+(GRU) and from 83.9\% to 80.8\% (CNN), but early accuracy is unchanged (8.2--8.6\% at 10\% ink):
+what differs between countries is the finished drawing, not its first strokes. Stopping AUC falls
+by 0.014--0.019. Thresholds calibrated on validation still met the accuracy-gap target in 15 of 16
+cases (one margin miss at 5.06\%), although the guarantee does not formally cover this shift. The
+semantic tree's gain over flat answers is the same as in distribution (+0.040 GRU, +0.044 CNN),
+but its realised precision falls to 0.941--0.944 for a 0.95 target.
+
+\subsection{An off-the-shelf base model}
+\label{sec:res-base}
+
+\input{tables/tab_pretrained}
+
+To check that the conclusions do not rest on a small network of our own, we repeated the stopping
+and hierarchy evaluations with torchvision's ResNet-18 (Table~\ref{tab:pretrained}, validation only).
+Trained from scratch, it matches our CNN (top-1 83.8\% against 83.9\% at the end of the drawing, AUC
+0.503 against 0.500) with four times the parameters, so our CNN is not a weak baseline for this
+input. ImageNet weights help modestly: +1.1 points of top-1 at the end (85.0\%), +1.2 points of early
+top-1 (33.1\% against 32.0\%), and +0.012 AUC, of which +0.009 over the same network from scratch.
+Pretraining on photographs thus transfers a little to doodles, but does not change the picture.
+The findings on stopping and on the tree hold for the pretrained model (the leak and the learned
+stopping method were not re-run with it): the margin is not better than the max softmax
+($-0.0015$); the risk-control targets are met for both seeds, both scores and both targets, and at
+$\epsilon = 5\%$ it answers after 72\% of the ink instead of 74\%; and the semantic tree gains
+$+0.045$ over flat answers and $+0.043$ over a shuffled tree, but only $+0.011$ over the shape tree at
+precision 0.95 and $-0.004$ at 0.90. These models were added after the single test evaluation, so
+they have no test numbers; elsewhere validation and test agree within 0.003 AUC, but we have not
+shown it here.
+
+\subsection{Successes and failures}
+\label{sec:res-examples}
+
+\IfFileExists{figures/fig_qualitative.pdf}{%
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_qualitative}
+\caption{Max-softmax stopping of the CNN at $\epsilon = 5\%$ on validation drawings. Black: ink
+seen when answering (percentage in brackets); gray: the rest of the drawing. Top: early and right.
+Bottom: early and wrong, although the end of the drawing is classified correctly.}
+\label{fig:qualitative}
+\end{figure}}{%
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.9\linewidth}{\centering\vspace{1cm}Run \texttt{python paper/make\_assets.py
+--val-predictions <folder>} with the processed dataset to draw this figure.\vspace{1cm}}}
+\caption{Qualitative successes and failures (placeholder).}
+\label{fig:qualitative}
+\end{figure}}
+
+Fig.~\ref{fig:qualitative} shows typical cases. % TODO(Kiet): describe the drawn examples once the figure exists.
+The model answers early and correctly when the first strokes are already distinctive, and fails
+early when the first strokes are shared with another class and the deciding detail comes last.
+
+\subsection{What did not work}
+\label{sec:res-failed}
+For completeness: (i) resampling that kept stroke end points did not remove the leak;
+(ii) the learned stopping method lost to max softmax on every architecture, input and budget we
+tried; (iii) its one apparent success, the exploratory $2\times$ run, was explained by training
+length; (iv) the semantic tree did not beat a shape-derived tree; (v) an early version of the
+risk-control code compared thresholds in float32 during calibration and float64 during evaluation
+(NumPy type promotion); we fixed it and rescored, and every reported number was unchanged.

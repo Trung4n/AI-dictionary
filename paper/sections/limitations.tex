@@ -1,0 +1,34 @@
+\section{Limitations}
+\label{sec:limits}
+
+\paragraph{Scale of the study.} We use 100 classes and train on 6{,}000 drawings per class, about a
+quarter of the training split, with two seeds. The baseline gains 0.024 AUC from twice the steps, so
+all models are under-trained, and we have not shown that the negative result for H2 survives
+training to convergence. Seed ranges are small next to the reported differences, but two seeds
+give no interval over data resampling.
+
+\paragraph{The leak is reduced, not removed.} Uniform resampling removes the lattice and point
+density but not the simplification facets: on the two classes with a clean reference, resampled
+sequences still predict the size ratio better than clean ones. The raster model keeps a similar
+residual whose effect on accuracy we did not measure. The only complete fix is to cut prefixes
+from the raw strokes and simplify them afterwards, which needs the raw files (about 53\,GiB for 99 of our 100
+classes). The 1.2-point cost of resampling mixes leak removal with lost detail.
+
+\paragraph{Ink is not time.} Earliness is measured in ink, which correlated only 0.55 with time on
+the two classes we checked, and 100\% ink is where the game stopped, which for 91.8\% of drawings is
+when Google's model recognised it. A guesser that is ``early'' in ink may not be early in a real
+game.
+
+\paragraph{Guarantees.} The accuracy-gap bound is marginal over drawings and assumes calibration
+and test drawings are exchangeable. It says nothing about individual classes, and it does not cover
+shifts such as new countries, where it held in 15 of 16 cases without a formal reason to. The
+hierarchy's precision target is met only in estimate; under the country shift it fell to about
+0.94.
+
+\paragraph{Controls and evaluation.} The shape tree comes from a class-selection analysis whose
+statistics may include drawings now in the validation split, so that control may be slightly
+favoured. The checkpoint-selection subset (200 validation drawings per class) can overlap the
+calibration and evaluation halves, which makes validation numbers slightly optimistic; the test
+numbers are not affected. The AUC uses mean earliness and an envelope taken on the evaluation
+drawings. Only five held-out countries were tested, none from Africa or South America. The
+off-the-shelf ResNet-18 was added after the test evaluation and has validation results only.

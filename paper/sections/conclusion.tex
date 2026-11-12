@@ -1,0 +1,35 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+Early recognition of sketches is easy to overstate. Truncating drawings that were normalised as
+finished drawings hands the model their final size; with the finished frame, early top-1 was more
+than ten points higher, and per-prefix rescaling still leaked enough to be visible in the
+coordinates. Once inputs are made fair, learning when to guess was harder than we expected: a
+ConfidNet-style head with a prefix-consistency loss did not beat the maximum softmax probability
+at equal compute, because two-prefix training and consistency cost late accuracy, which is where
+most accuracy is earned. Two simpler tools did work. Distribution-free calibration gives stopping
+thresholds whose accuracy loss is bounded, and it held on test and largely on unseen countries.
+Answering the most specific safe node of a class tree gives a player useful information earlier,
+mostly for groups whose members also start alike.
+
+For a deployed guesser we would therefore use the CNN with prefix input (test top-1 83.9\% at
+the end of the drawing), max-softmax stopping with a calibrated threshold, and the semantic tree;
+the uniform-input GRU is the sequence alternative with the least leak. An ImageNet-pretrained
+ResNet-18 is about one point better on validation and would be the stronger choice once confirmed on
+fresh test data. Future work should cut
+prefixes from raw strokes to remove the leak entirely, measure earliness in time, train to
+convergence before revisiting learned stopping, and control the gap per class.
+
+\paragraph{Code, data and checkpoints.}
+% TODO(Kiet): add the public repository URL and the checkpoint download link before submission.
+Code, configuration files, every reported number (\texttt{reports/}) and the scripts that produce
+this paper's tables and figures (\texttt{paper/make\_assets.py}) are in the project repository,
+with instructions for downloading the data and the trained checkpoints.
+
+\paragraph{Use of AI assistance.}
+% TODO(team): adjust to what each member actually used.
+The team used Claude (Anthropic), an AI assistant, to help write and review code, design
+experiment configurations, run and monitor the Kaggle notebooks, check references and draft
+parts of this report. All experiments were run on our accounts, every number was produced by
+the code in the repository, and the team reviewed the text and is responsible for all claims.
+No proprietary model is part of the proposed method.

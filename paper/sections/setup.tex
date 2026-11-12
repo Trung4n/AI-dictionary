@@ -1,0 +1,123 @@
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{Data}
+\label{sec:setup-data}
+\paragraph{Source and licence.} We use the \texttt{train\_simplified} files of the Kaggle
+Quick, Draw! competition~\cite{kaggle_quickdraw}, drawn from Google's Quick, Draw!
+dataset~\cite{quickdraw_dataset} (CC~BY~4.0). The drawings were collected by an online game in
+which a player draws a given word within 20 seconds while a neural network tries to guess it; a
+\texttt{recognized} flag records whether it did. The simplified version is aligned to the top-left
+corner, scaled so that the longer side is 255, resampled at one-pixel spacing and simplified
+with Ramer--Douglas--Peucker at $\epsilon = 2$~\cite{quickdraw_dataset}.
+
+\paragraph{Subset.} We keep 100 of the 345 classes and 30{,}000 drawings per class (3{,}000{,}000
+drawings). The classes were chosen from an analysis of early drawing shape: 76 are confusable
+with another class early in the drawing, the others serve as controls; the selection and its
+rationale are in the repository. Each drawing is a sequence of strokes: the median drawing has 4
+strokes (p95 13, p99 19) and 41 points (p95 96, p99 151), and 15.6\% have a single stroke.
+
+\paragraph{Quality.} No \texttt{key\_id} is repeated, but 39 groups of drawings have identical
+strokes under different labels; we drop all 99 rows involved. 298 drawings have at most two points,
+51 have no ink, and 0.85\% do not match the stated normalisation (offset above 2 or longer side
+below 253). We keep them, since a game would see them too.
+
+\paragraph{Biases.} 8.24\% of drawings were not recognised by the game, from 2.3\% for
+\emph{triangle} to 18.5\% for \emph{bat}. Players come from 207 countries, but 44.3\% are from
+the US and 69.9\% from the ten largest countries. The game stops a round once its model
+recognises the drawing, so for the 91.8\% recognised drawings ``100\% ink'' means ``the round
+stopped'', not ``the drawing was finished''. On the raw timed strokes of two classes, recognised
+drawings were much shorter (median 1.9\,s for recognised triangles against 15.7\,s for the
+others), and ink fraction correlated only 0.55 with elapsed time. Earliness in this paper is
+therefore measured in ink, not in time.
+
+\subsection{Splits and leakage prevention}
+\label{sec:setup-splits}
+The data is split per class into 24{,}000 / 3{,}000 / 3{,}000 drawings for training, validation and
+test (seed 42), with identical drawings always in the same split (Table~\ref{tab:data}). Five
+countries are held out entirely: IN, IT, KR, SA and TH, the largest country of five regions among
+those with at least 100 drawings in every class, outside the ten largest. They were chosen from
+counts and geography only, before any model was trained, and are removed from training,
+validation and test at load time. No African or South American country met the rule.
+
+\input{tables/tab_data}
+
+Every decision (input normalisation, checkpoint, thresholds, trees, hyper-parameters) was taken
+on validation data. For stopping and hierarchy experiments, validation is split once, per class,
+into a \emph{calibration half} and an \emph{evaluation half} of 100 drawings each (seed 2026):
+thresholds come from the first, reported numbers from the second. The data loader refuses to open
+the test split or the held-out countries unless called by the final evaluation, which ran once,
+after a gate that recomputed every validation number from the saved checkpoints and stopped on
+any difference above 0.002 (86 numbers compared, largest difference 0.00195). The final
+evaluation reuses the validation calibration half for thresholds; nothing is re-chosen on test.
+
+\subsection{Training protocol}
+\label{sec:setup-train}
+All models are trained from scratch with AdamW~\cite{loshchilov2019adamw} (learning rate
+$10^{-3}$, weight decay 0.01), 500 warm-up steps then cosine decay, batches of 512 prefixes,
+gradient clipping at 1.0 and mixed precision, on a random subset of 600{,}000 training
+drawings (6{,}000 per class, drawn with the run's seed). Each training example is a prefix with ink fraction uniform in
+$[0.05, 1]$, after a random affine augmentation applied before normalisation (rotation
+$\pm10^\circ$, independent axis scaling in $[0.9, 1.1]$, shear 0.1, no flips, since symmetry was
+not checked per class). Baselines train for 8 epochs of one prefix per drawing; the method trains
+for 4 epochs of two prefixes per drawing, so both take the same 9{,}375 steps of 512 prefixes. A
+second pair trains both for twice as many steps (16 epochs of one prefix, 8 epochs of two). After
+every epoch, the checkpoint is scored by its mean top-1 over ink fractions
+$\{0.1, 0.25, 0.5, 0.75, 1\}$ on 200 validation drawings per class, and the best is kept. Every
+condition is trained with seeds 42 and 43, except the $2\times$ runs (seed 42 only). Runs used
+Kaggle notebooks with two NVIDIA T4 GPUs, PyTorch 2.11 and Python 3.13.
+
+\subsection{Metrics}
+\label{sec:setup-metrics}
+\paragraph{Leak (H1).} Top-1 accuracy at ink fractions 10, 25, 50, 75 and 100\%, and \emph{early
+top-1}, its mean over 10, 25 and 50\%, on 1{,}000 validation drawings per class and on every test
+drawing. Top-3, macro-F1 and calibration error are recorded as well.
+\paragraph{When to guess (H2).} The AUC of Sect.~3.1 is primary. It summarises all thresholds, but
+it uses mean earliness, it rewards a frontier point regardless of whether a threshold could be
+chosen to reach it, and its frontier is taken on the evaluation drawings, which flatters every
+method equally. We therefore also report the risk-controlled operating points (realised gap,
+accuracy and earliness at $\epsilon = 2\%$ and $5\%$), which do choose the threshold in advance.
+\paragraph{Hierarchy (H3).} Reward area at precision 0.95 (primary) and 0.90, with the realised
+precision and the share of checkpoints answered. The reward measures information, not usefulness
+to a player, and depends on the tree's sizes.
+
+\subsection{Baselines and experiments}
+\label{sec:setup-matrix}
+Table~\ref{tab:matrix} lists the trained conditions. The stopping baselines are the maximum
+softmax probability~\cite{hendrycks2017baseline} and the margin of a standard classifier, a rule
+that answers after a fixed number of strokes, and an oracle that answers at the first correct
+checkpoint (unreachable, for reference). The hierarchy baseline is the flat rule with its own
+calibrated threshold. As an off-the-shelf base model for the raster input, we fine-tune
+torchvision's ResNet-18~\cite{he2016resnet} from its ImageNet weights, unchanged apart from its last
+layer (the grey image is repeated over three channels and normalised with the ImageNet statistics),
+and train the same network from scratch to separate the effect of pretraining from that of size
+(11.2M parameters against 2.8M). Both follow exactly the protocol of our CNN. They were added after
+the test evaluation and therefore have validation results only (Sect.~\ref{sec:res-base}).
+
+\begin{table}[t]
+\centering
+\caption{Trained conditions. All use 600{,}000 training drawings and seeds 42 and 43 unless
+noted. Method: confidence head, consistency loss ($\lambda = 0.5$) and two prefixes per drawing.}
+\label{tab:matrix}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{2.2cm}p{1.3cm}p{2.3cm}p{5.4cm}}
+\toprule
+Experiment & Model & Input & Training \\
+\midrule
+Leak (H1) & GRU, CNN & full\_bbox & baseline, 8 epochs \\
+& GRU, CNN & prefix & baseline, 8 epochs \\
+& GRU & resampled, end points kept & baseline, 8 epochs \\
+& GRU & uniform & baseline, 8 epochs \\
+\midrule
+When to guess (H2) & GRU, CNN & prefix & method, 4 epochs $\times$ 2 prefixes \\
+& GRU & prefix, uniform & 2 prefixes and head, no consistency \\
+& GRU & uniform & method, 4 epochs $\times$ 2 prefixes \\
+& GRU & uniform & baseline 16 epochs; method 8 $\times$ 2 (seed 42) \\
+& GRU & prefix & method 8 $\times$ 2, exploratory, not compute-matched (seed 42) \\
+\midrule
+Hierarchy (H3) & \multicolumn{3}{p{9.4cm}}{no training: saved predictions of the baselines, four trees} \\
+\midrule
+Base model & ResNet-18 (torchvision) & prefix & ImageNet weights or from scratch, 8 epochs; validation only \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,46 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Sketch recognition.}
+Free-hand sketch recognition moved from hand-crafted features on the TU-Berlin
+set~\cite{eitz2012humans} to CNNs on rasters~\cite{yu2017sketchanet} and recurrent models on
+stroke sequences~\cite{ha2018sketchrnn}; Xu et al.~\cite{xu2023survey} survey the field. The
+Quick, Draw! data (50 million drawings in 345 categories, CC~BY~4.0)~\cite{quickdraw_dataset} and
+the Kaggle doodle-recognition competition built on it~\cite{kaggle_quickdraw} made large-scale
+training common. These works classify finished drawings; SketchGPT~\cite{tiwari2024sketchgpt}, for
+example, recognises complete sketches after min--max normalisation.
+
+\paragraph{Partial sketches.}
+SketchGAN~\cite{liu2019sketchgan} completes a partial sketch before recognising it.
+SketchMamba~\cite{jhaveri2026sketchmamba} trains a state-space model for progressive
+classification on a 58-class QuickDraw subset and reports accuracy at 10\% increments of the
+drawing. Neither work states whether a prefix is rescaled by its own extent or keeps the frame of
+the finished drawing, which our results suggest matters by more than ten points at low ink
+(Sect.~\ref{sec:res-leak}). We do not claim that these works are affected; we only show that the
+choice must be reported.
+
+\paragraph{Early classification and when to stop.}
+Early classification of time series trades accuracy against earliness~\cite{mori2018early}.
+Ringel et al.~\cite{ringel2024early} define the accuracy gap between an early answer and the answer
+at the end of a sequence and calibrate stopping rules that control it with high probability; we
+use the marginal version of their risk. The calibration follows Learn then
+Test~\cite{angelopoulos2021ltt}: test candidate thresholds in a fixed order with a binomial upper
+bound~\cite{clopper1934}. Anytime networks such as MSDNet~\cite{huang2018msdnet} stop computation
+early on a fixed input; here the input itself grows.
+
+\paragraph{Confidence and selective prediction.}
+The maximum softmax probability is a strong baseline for detecting errors~\cite{hendrycks2017baseline},
+selective classifiers abstain below a calibrated threshold~\cite{geifman2017selective}, and
+ConfidNet~\cite{corbiere2019confidnet} learns a confidence score regressed on the probability of
+the true class, which our confidence head follows. Calibration of deep networks is discussed by
+Guo et al.~\cite{guo2017calibration}.
+
+\paragraph{Hierarchical answers.}
+Deng et al.~\cite{deng2012hedging} let a classifier ``hedge its bets'' by answering an internal
+node of a class hierarchy, rewarded by its information gain. We apply the same reward over the
+course of a drawing rather than to one finished image.
+
+\paragraph{Leakage.}
+Kapoor and Narayanan~\cite{kapoor2023leakage} catalogue leakage in machine-learning-based science,
+including features that would not be available at prediction time. The scale of a finished
+drawing is such a feature.
