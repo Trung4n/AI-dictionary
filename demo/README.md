@@ -20,8 +20,12 @@ src/quickdraw_exp/demo.py   Guesser: nét vẽ -> dự đoán (dùng chung code 
    git clone -b pipeline-step1 https://github.com/Trung4n/AI-dictionary.git
    cd AI-dictionary
    python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
-   pip install -r demo/requirements.txt
+   pip install -U pip
+   pip install --timeout 120 --resume-retries 10 -r demo/requirements.txt
    ```
+   `demo/requirements.txt` lấy torch bản CPU (khoảng 200 MB) từ download.pytorch.org, không cần GPU.
+   Nếu thấy pip tải các gói `nvidia-*` hay `triton` (vài GB) thì nó đang lấy bản CUDA: dừng lại và kiểm tra
+   dòng `--extra-index-url` đầu file. Mạng chậm: `--resume-retries` cho pip nối lại khi bị ngắt; nếu vẫn lỗi thì chạy lại lệnh, các gói đã tải xong nằm sẵn trong cache.
 2. Tải gói checkpoint (Kaggle, công khai, CC BY 4.0): https://www.kaggle.com/datasets/kittrnmuhaha/ai-pictionary-checkpoints-ds (nút Download, hoặc
    `kaggle datasets download -d kittrnmuhaha/ai-pictionary-checkpoints-ds --unzip`). Giải nén, rồi chọn **một** run, ví dụ
    `package/runs/cnn_imagenet_s42` (chính xác nhất, khoảng 45 MB) hoặc `package/runs/cnn_prefix_s42`

@@ -1,4 +1,6 @@
 # Demo server only (CPU is enough). The training code needs requirements.txt instead.
+# The CPU build of torch (about 200 MB) instead of the CUDA build from PyPI (about 3 GB on Linux).
+--extra-index-url https://download.pytorch.org/whl/cpu
 numpy
 pandas
 pyarrow
