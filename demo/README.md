@@ -26,16 +26,24 @@ src/quickdraw_exp/demo.py   Guesser: nét vẽ -> dự đoán (dùng chung code 
    `demo/requirements.txt` lấy torch bản CPU (khoảng 200 MB) từ download.pytorch.org, không cần GPU.
    Nếu thấy pip tải các gói `nvidia-*` hay `triton` (vài GB) thì nó đang lấy bản CUDA: dừng lại và kiểm tra
    dòng `--extra-index-url` đầu file. Mạng chậm: `--resume-retries` cho pip nối lại khi bị ngắt; nếu vẫn lỗi thì chạy lại lệnh, các gói đã tải xong nằm sẵn trong cache.
-2. Tải gói checkpoint (Kaggle, công khai, CC BY 4.0): https://www.kaggle.com/datasets/kittrnmuhaha/ai-pictionary-checkpoints-ds (nút Download, hoặc
-   `kaggle datasets download -d kittrnmuhaha/ai-pictionary-checkpoints-ds --unzip`). Giải nén, rồi chọn **một** run, ví dụ
-   `package/runs/cnn_imagenet_s42` (chính xác nhất, khoảng 45 MB) hoặc `package/runs/cnn_prefix_s42`
-   (nhẹ hơn, khoảng 11 MB). Mỗi run gồm `config.yaml` và `checkpoints/best.pt`.
+2. Tải một run trong gói checkpoint (Kaggle, công khai, CC BY 4.0):
+   https://www.kaggle.com/datasets/kittrnmuhaha/ai-pictionary-checkpoints-ds. Mỗi run gồm `config.yaml` và
+   `checkpoints/best.pt`. Ví dụ `cnn_prefix_s42` (nhẹ, khoảng 11 MB) hoặc `cnn_imagenet_s42` (chính xác nhất, khoảng 45 MB):
+   ```bash
+   mkdir -p ~/ckpt && cd ~/ckpt
+   kaggle datasets download -d kittrnmuhaha/ai-pictionary-checkpoints-ds -f package/runs/cnn_prefix_s42/config.yaml
+   kaggle datasets download -d kittrnmuhaha/ai-pictionary-checkpoints-ds -f package/runs/cnn_prefix_s42/checkpoints/best.pt
+   ls -R ~/ckpt     # phải thấy package/runs/cnn_prefix_s42/config.yaml và .../checkpoints/best.pt
+   cd -             # quay lại thư mục repo
+   ```
+   Kaggle giữ nguyên đường dẫn trong dataset, nên run nằm ở `~/ckpt/package/runs/cnn_prefix_s42`. Đừng thêm `-p`
+   (file sẽ vào sai chỗ). Không có Kaggle CLI thì tải hai file trên trang dataset và xếp đúng cấu trúc đó.
 3. Chạy server:
    ```bash
    # Linux/macOS
-   DEMO_RUN=<đường dẫn>/package/runs/cnn_imagenet_s42 PYTHONPATH=src uvicorn demo.server:app --port 8000
+   DEMO_RUN=~/ckpt/package/runs/cnn_prefix_s42 PYTHONPATH=src uvicorn demo.server:app --port 8000
    # Windows PowerShell
-   $env:DEMO_RUN="<đường dẫn>\package\runs\cnn_imagenet_s42"; $env:PYTHONPATH="src"; uvicorn demo.server:app --port 8000
+   $env:DEMO_RUN="$HOME\ckpt\package\runs\cnn_prefix_s42"; $env:PYTHONPATH="src"; uvicorn demo.server:app --port 8000
    ```
 4. Mở http://localhost:8000, vẽ thử. Kiểm tra code: `PYTHONPATH=src python -m pytest tests/test_demo.py`.
 
