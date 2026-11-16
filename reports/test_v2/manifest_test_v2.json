@@ -1,0 +1,933 @@
+{
+ "split": "test_v2",
+ "config": {
+  "split": "test_v2",
+  "per_class": 3000,
+  "reserve": 300,
+  "seed": 2027,
+  "holdout_file": "/kaggle/working/repo/configs/country_holdout_v1.json"
+ },
+ "drawings": 300000,
+ "per_class": 3000,
+ "totals": {
+  "rows": 14806267,
+  "used_key_id": 3000000,
+  "held_out_country": 736196,
+  "repeats_split_v1": 431,
+  "repeat_within_class": 671,
+  "eligible_before_conflicts": 11068969,
+  "label_conflict_in_reserve": 10
+ },
+ "per_class_counts": {
+  "The Mona Lisa": {
+   "rows": 121383,
+   "used_key_id": 30000,
+   "held_out_country": 5873,
+   "repeats_split_v1": 0,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 85510,
+   "label_conflict_in_reserve": 0
+  },
+  "alarm clock": {
+   "rows": 123399,
+   "used_key_id": 30000,
+   "held_out_country": 6530,
+   "repeats_split_v1": 0,
+   "repeat_within_class": 5,
+   "eligible_before_conflicts": 86864,
+   "label_conflict_in_reserve": 0
+  },
+  "angel": {
+   "rows": 149736,
+   "used_key_id": 30000,
+   "held_out_country": 7844,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 6,
+   "eligible_before_conflicts": 111880,
+   "label_conflict_in_reserve": 0
+  },
+  "ant": {
+   "rows": 124612,
+   "used_key_id": 30000,
+   "held_out_country": 6438,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 7,
+   "eligible_before_conflicts": 88164,
+   "label_conflict_in_reserve": 0
+  },
+  "anvil": {
+   "rows": 126231,
+   "used_key_id": 30000,
+   "held_out_country": 4951,
+   "repeats_split_v1": 8,
+   "repeat_within_class": 5,
+   "eligible_before_conflicts": 91267,
+   "label_conflict_in_reserve": 1
+  },
+  "apple": {
+   "rows": 144722,
+   "used_key_id": 30000,
+   "held_out_country": 7768,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 106953,
+   "label_conflict_in_reserve": 0
+  },
+  "basketball": {
+   "rows": 133793,
+   "used_key_id": 30000,
+   "held_out_country": 5780,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 98007,
+   "label_conflict_in_reserve": 0
+  },
+  "bat": {
+   "rows": 118114,
+   "used_key_id": 30000,
+   "held_out_country": 6070,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 5,
+   "eligible_before_conflicts": 82035,
+   "label_conflict_in_reserve": 0
+  },
+  "bathtub": {
+   "rows": 174336,
+   "used_key_id": 30000,
+   "held_out_country": 8021,
+   "repeats_split_v1": 10,
+   "repeat_within_class": 18,
+   "eligible_before_conflicts": 136287,
+   "label_conflict_in_reserve": 1
+  },
+  "bird": {
+   "rows": 133572,
+   "used_key_id": 30000,
+   "held_out_country": 6819,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 12,
+   "eligible_before_conflicts": 96739,
+   "label_conflict_in_reserve": 0
+  },
+  "blackberry": {
+   "rows": 128153,
+   "used_key_id": 30000,
+   "held_out_country": 5804,
+   "repeats_split_v1": 8,
+   "repeat_within_class": 11,
+   "eligible_before_conflicts": 92330,
+   "label_conflict_in_reserve": 0
+  },
+  "boomerang": {
+   "rows": 142682,
+   "used_key_id": 30000,
+   "held_out_country": 6590,
+   "repeats_split_v1": 8,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 106082,
+   "label_conflict_in_reserve": 0
+  },
+  "bowtie": {
+   "rows": 130283,
+   "used_key_id": 30000,
+   "held_out_country": 5367,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 94911,
+   "label_conflict_in_reserve": 0
+  },
+  "bracelet": {
+   "rows": 119416,
+   "used_key_id": 30000,
+   "held_out_country": 5303,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 84109,
+   "label_conflict_in_reserve": 0
+  },
+  "butterfly": {
+   "rows": 117999,
+   "used_key_id": 30000,
+   "held_out_country": 5621,
+   "repeats_split_v1": 0,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 82377,
+   "label_conflict_in_reserve": 0
+  },
+  "camel": {
+   "rows": 121399,
+   "used_key_id": 30000,
+   "held_out_country": 5981,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 85415,
+   "label_conflict_in_reserve": 0
+  },
+  "camouflage": {
+   "rows": 172710,
+   "used_key_id": 30000,
+   "held_out_country": 6785,
+   "repeats_split_v1": 16,
+   "repeat_within_class": 35,
+   "eligible_before_conflicts": 135874,
+   "label_conflict_in_reserve": 0
+  },
+  "castle": {
+   "rows": 122534,
+   "used_key_id": 30000,
+   "held_out_country": 5420,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 87113,
+   "label_conflict_in_reserve": 0
+  },
+  "cello": {
+   "rows": 149725,
+   "used_key_id": 30000,
+   "held_out_country": 7006,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 25,
+   "eligible_before_conflicts": 112688,
+   "label_conflict_in_reserve": 1
+  },
+  "chandelier": {
+   "rows": 167502,
+   "used_key_id": 30000,
+   "held_out_country": 7582,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 21,
+   "eligible_before_conflicts": 129893,
+   "label_conflict_in_reserve": 0
+  },
+  "church": {
+   "rows": 164225,
+   "used_key_id": 30000,
+   "held_out_country": 7930,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 12,
+   "eligible_before_conflicts": 126280,
+   "label_conflict_in_reserve": 0
+  },
+  "computer": {
+   "rows": 123885,
+   "used_key_id": 30000,
+   "held_out_country": 6250,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 87634,
+   "label_conflict_in_reserve": 1
+  },
+  "cruise ship": {
+   "rows": 123410,
+   "used_key_id": 30000,
+   "held_out_country": 5079,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 88324,
+   "label_conflict_in_reserve": 0
+  },
+  "diamond": {
+   "rows": 131587,
+   "used_key_id": 30000,
+   "held_out_country": 6442,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 4,
+   "eligible_before_conflicts": 95135,
+   "label_conflict_in_reserve": 0
+  },
+  "drill": {
+   "rows": 136786,
+   "used_key_id": 30000,
+   "held_out_country": 6558,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 18,
+   "eligible_before_conflicts": 100207,
+   "label_conflict_in_reserve": 0
+  },
+  "duck": {
+   "rows": 135480,
+   "used_key_id": 30000,
+   "held_out_country": 7440,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 98037,
+   "label_conflict_in_reserve": 0
+  },
+  "face": {
+   "rows": 161666,
+   "used_key_id": 30000,
+   "held_out_country": 8710,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 7,
+   "eligible_before_conflicts": 122948,
+   "label_conflict_in_reserve": 0
+  },
+  "fan": {
+   "rows": 136158,
+   "used_key_id": 30000,
+   "held_out_country": 7202,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 8,
+   "eligible_before_conflicts": 98942,
+   "label_conflict_in_reserve": 0
+  },
+  "fence": {
+   "rows": 129426,
+   "used_key_id": 30000,
+   "held_out_country": 5502,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 93919,
+   "label_conflict_in_reserve": 0
+  },
+  "finger": {
+   "rows": 167957,
+   "used_key_id": 30000,
+   "held_out_country": 9445,
+   "repeats_split_v1": 5,
+   "repeat_within_class": 7,
+   "eligible_before_conflicts": 128500,
+   "label_conflict_in_reserve": 0
+  },
+  "flip flops": {
+   "rows": 121518,
+   "used_key_id": 30000,
+   "held_out_country": 4839,
+   "repeats_split_v1": 0,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 86677,
+   "label_conflict_in_reserve": 1
+  },
+  "floor lamp": {
+   "rows": 166355,
+   "used_key_id": 30000,
+   "held_out_country": 7790,
+   "repeats_split_v1": 8,
+   "repeat_within_class": 22,
+   "eligible_before_conflicts": 128535,
+   "label_conflict_in_reserve": 0
+  },
+  "foot": {
+   "rows": 203086,
+   "used_key_id": 30000,
+   "held_out_country": 11662,
+   "repeats_split_v1": 8,
+   "repeat_within_class": 22,
+   "eligible_before_conflicts": 161394,
+   "label_conflict_in_reserve": 0
+  },
+  "giraffe": {
+   "rows": 127182,
+   "used_key_id": 30000,
+   "held_out_country": 6444,
+   "repeats_split_v1": 0,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 90738,
+   "label_conflict_in_reserve": 0
+  },
+  "grapes": {
+   "rows": 155305,
+   "used_key_id": 30000,
+   "held_out_country": 8543,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 3,
+   "eligible_before_conflicts": 116756,
+   "label_conflict_in_reserve": 0
+  },
+  "hand": {
+   "rows": 291773,
+   "used_key_id": 30000,
+   "held_out_country": 17738,
+   "repeats_split_v1": 5,
+   "repeat_within_class": 28,
+   "eligible_before_conflicts": 244002,
+   "label_conflict_in_reserve": 0
+  },
+  "helicopter": {
+   "rows": 159938,
+   "used_key_id": 30000,
+   "held_out_country": 8170,
+   "repeats_split_v1": 5,
+   "repeat_within_class": 4,
+   "eligible_before_conflicts": 121759,
+   "label_conflict_in_reserve": 0
+  },
+  "helmet": {
+   "rows": 121899,
+   "used_key_id": 30000,
+   "held_out_country": 5609,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 86285,
+   "label_conflict_in_reserve": 0
+  },
+  "hockey stick": {
+   "rows": 130110,
+   "used_key_id": 30000,
+   "held_out_country": 5690,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 4,
+   "eligible_before_conflicts": 94412,
+   "label_conflict_in_reserve": 0
+  },
+  "horse": {
+   "rows": 178286,
+   "used_key_id": 30000,
+   "held_out_country": 9784,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 6,
+   "eligible_before_conflicts": 138492,
+   "label_conflict_in_reserve": 0
+  },
+  "house plant": {
+   "rows": 122996,
+   "used_key_id": 30000,
+   "held_out_country": 4169,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 88824,
+   "label_conflict_in_reserve": 0
+  },
+  "hurricane": {
+   "rows": 136245,
+   "used_key_id": 30000,
+   "held_out_country": 7037,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 3,
+   "eligible_before_conflicts": 99199,
+   "label_conflict_in_reserve": 0
+  },
+  "jacket": {
+   "rows": 214124,
+   "used_key_id": 30000,
+   "held_out_country": 12139,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 25,
+   "eligible_before_conflicts": 171956,
+   "label_conflict_in_reserve": 0
+  },
+  "kangaroo": {
+   "rows": 174470,
+   "used_key_id": 30000,
+   "held_out_country": 9834,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 10,
+   "eligible_before_conflicts": 134624,
+   "label_conflict_in_reserve": 0
+  },
+  "key": {
+   "rows": 160965,
+   "used_key_id": 30000,
+   "held_out_country": 9305,
+   "repeats_split_v1": 5,
+   "repeat_within_class": 15,
+   "eligible_before_conflicts": 121640,
+   "label_conflict_in_reserve": 0
+  },
+  "knee": {
+   "rows": 267540,
+   "used_key_id": 30000,
+   "held_out_country": 15560,
+   "repeats_split_v1": 7,
+   "repeat_within_class": 23,
+   "eligible_before_conflicts": 221950,
+   "label_conflict_in_reserve": 0
+  },
+  "lighthouse": {
+   "rows": 160903,
+   "used_key_id": 30000,
+   "held_out_country": 6820,
+   "repeats_split_v1": 9,
+   "repeat_within_class": 18,
+   "eligible_before_conflicts": 124056,
+   "label_conflict_in_reserve": 0
+  },
+  "lightning": {
+   "rows": 151560,
+   "used_key_id": 30000,
+   "held_out_country": 6937,
+   "repeats_split_v1": 8,
+   "repeat_within_class": 5,
+   "eligible_before_conflicts": 114610,
+   "label_conflict_in_reserve": 0
+  },
+  "lobster": {
+   "rows": 140175,
+   "used_key_id": 30000,
+   "held_out_country": 7144,
+   "repeats_split_v1": 7,
+   "repeat_within_class": 13,
+   "eligible_before_conflicts": 103011,
+   "label_conflict_in_reserve": 0
+  },
+  "lollipop": {
+   "rows": 128849,
+   "used_key_id": 30000,
+   "held_out_country": 6060,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 92783,
+   "label_conflict_in_reserve": 0
+  },
+  "mailbox": {
+   "rows": 130053,
+   "used_key_id": 30000,
+   "held_out_country": 5225,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 94823,
+   "label_conflict_in_reserve": 1
+  },
+  "map": {
+   "rows": 120629,
+   "used_key_id": 30000,
+   "held_out_country": 5858,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 84769,
+   "label_conflict_in_reserve": 0
+  },
+  "megaphone": {
+   "rows": 137334,
+   "used_key_id": 30000,
+   "held_out_country": 6475,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 6,
+   "eligible_before_conflicts": 100850,
+   "label_conflict_in_reserve": 0
+  },
+  "monkey": {
+   "rows": 127633,
+   "used_key_id": 30000,
+   "held_out_country": 6470,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 91155,
+   "label_conflict_in_reserve": 0
+  },
+  "mountain": {
+   "rows": 128540,
+   "used_key_id": 30000,
+   "held_out_country": 6213,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 6,
+   "eligible_before_conflicts": 92318,
+   "label_conflict_in_reserve": 0
+  },
+  "mouth": {
+   "rows": 134135,
+   "used_key_id": 30000,
+   "held_out_country": 7410,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 5,
+   "eligible_before_conflicts": 96716,
+   "label_conflict_in_reserve": 0
+  },
+  "mushroom": {
+   "rows": 142167,
+   "used_key_id": 30000,
+   "held_out_country": 7115,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 105045,
+   "label_conflict_in_reserve": 0
+  },
+  "nose": {
+   "rows": 197573,
+   "used_key_id": 30000,
+   "held_out_country": 11512,
+   "repeats_split_v1": 13,
+   "repeat_within_class": 18,
+   "eligible_before_conflicts": 156030,
+   "label_conflict_in_reserve": 0
+  },
+  "octopus": {
+   "rows": 150152,
+   "used_key_id": 30000,
+   "held_out_country": 8133,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 112016,
+   "label_conflict_in_reserve": 0
+  },
+  "onion": {
+   "rows": 132297,
+   "used_key_id": 30000,
+   "held_out_country": 7190,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 95102,
+   "label_conflict_in_reserve": 0
+  },
+  "owl": {
+   "rows": 169632,
+   "used_key_id": 30000,
+   "held_out_country": 9470,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 6,
+   "eligible_before_conflicts": 130152,
+   "label_conflict_in_reserve": 1
+  },
+  "parachute": {
+   "rows": 127319,
+   "used_key_id": 30000,
+   "held_out_country": 5400,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 91916,
+   "label_conflict_in_reserve": 0
+  },
+  "picture frame": {
+   "rows": 122371,
+   "used_key_id": 30000,
+   "held_out_country": 5542,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 86826,
+   "label_conflict_in_reserve": 0
+  },
+  "pig": {
+   "rows": 186770,
+   "used_key_id": 30000,
+   "held_out_country": 11428,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 6,
+   "eligible_before_conflicts": 145335,
+   "label_conflict_in_reserve": 0
+  },
+  "popsicle": {
+   "rows": 126707,
+   "used_key_id": 30000,
+   "held_out_country": 4473,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 92232,
+   "label_conflict_in_reserve": 0
+  },
+  "purse": {
+   "rows": 123320,
+   "used_key_id": 30000,
+   "held_out_country": 4413,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 88902,
+   "label_conflict_in_reserve": 0
+  },
+  "rabbit": {
+   "rows": 155288,
+   "used_key_id": 30000,
+   "held_out_country": 9471,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 10,
+   "eligible_before_conflicts": 115803,
+   "label_conflict_in_reserve": 1
+  },
+  "rake": {
+   "rows": 154639,
+   "used_key_id": 30000,
+   "held_out_country": 6253,
+   "repeats_split_v1": 8,
+   "repeat_within_class": 10,
+   "eligible_before_conflicts": 118368,
+   "label_conflict_in_reserve": 0
+  },
+  "rollerskates": {
+   "rows": 119772,
+   "used_key_id": 30000,
+   "held_out_country": 5033,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 84734,
+   "label_conflict_in_reserve": 0
+  },
+  "sailboat": {
+   "rows": 136506,
+   "used_key_id": 30000,
+   "held_out_country": 5934,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 100569,
+   "label_conflict_in_reserve": 0
+  },
+  "saxophone": {
+   "rows": 118107,
+   "used_key_id": 30000,
+   "held_out_country": 4757,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 83346,
+   "label_conflict_in_reserve": 0
+  },
+  "scissors": {
+   "rows": 123390,
+   "used_key_id": 30000,
+   "held_out_country": 6221,
+   "repeats_split_v1": 7,
+   "repeat_within_class": 7,
+   "eligible_before_conflicts": 87155,
+   "label_conflict_in_reserve": 0
+  },
+  "scorpion": {
+   "rows": 165689,
+   "used_key_id": 30000,
+   "held_out_country": 8479,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 11,
+   "eligible_before_conflicts": 127193,
+   "label_conflict_in_reserve": 0
+  },
+  "skateboard": {
+   "rows": 128733,
+   "used_key_id": 30000,
+   "held_out_country": 6043,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 92688,
+   "label_conflict_in_reserve": 0
+  },
+  "sleeping bag": {
+   "rows": 119691,
+   "used_key_id": 30000,
+   "held_out_country": 5592,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 5,
+   "eligible_before_conflicts": 84091,
+   "label_conflict_in_reserve": 0
+  },
+  "snail": {
+   "rows": 133757,
+   "used_key_id": 30000,
+   "held_out_country": 6296,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 97460,
+   "label_conflict_in_reserve": 0
+  },
+  "snowflake": {
+   "rows": 116685,
+   "used_key_id": 30000,
+   "held_out_country": 4433,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 82247,
+   "label_conflict_in_reserve": 0
+  },
+  "snowman": {
+   "rows": 340029,
+   "used_key_id": 30000,
+   "held_out_country": 20233,
+   "repeats_split_v1": 13,
+   "repeat_within_class": 16,
+   "eligible_before_conflicts": 289767,
+   "label_conflict_in_reserve": 0
+  },
+  "sock": {
+   "rows": 205715,
+   "used_key_id": 30000,
+   "held_out_country": 11630,
+   "repeats_split_v1": 16,
+   "repeat_within_class": 18,
+   "eligible_before_conflicts": 164051,
+   "label_conflict_in_reserve": 0
+  },
+  "spider": {
+   "rows": 209447,
+   "used_key_id": 30000,
+   "held_out_country": 11557,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 13,
+   "eligible_before_conflicts": 167874,
+   "label_conflict_in_reserve": 0
+  },
+  "square": {
+   "rows": 125145,
+   "used_key_id": 30000,
+   "held_out_country": 5500,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 89641,
+   "label_conflict_in_reserve": 0
+  },
+  "squirrel": {
+   "rows": 156883,
+   "used_key_id": 30000,
+   "held_out_country": 8091,
+   "repeats_split_v1": 8,
+   "repeat_within_class": 7,
+   "eligible_before_conflicts": 118777,
+   "label_conflict_in_reserve": 0
+  },
+  "star": {
+   "rows": 137619,
+   "used_key_id": 30000,
+   "held_out_country": 7204,
+   "repeats_split_v1": 5,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 100410,
+   "label_conflict_in_reserve": 0
+  },
+  "stop sign": {
+   "rows": 119814,
+   "used_key_id": 30000,
+   "held_out_country": 4717,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 85091,
+   "label_conflict_in_reserve": 0
+  },
+  "sun": {
+   "rows": 133781,
+   "used_key_id": 30000,
+   "held_out_country": 6980,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 96799,
+   "label_conflict_in_reserve": 0
+  },
+  "sweater": {
+   "rows": 120184,
+   "used_key_id": 30000,
+   "held_out_country": 5194,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 84985,
+   "label_conflict_in_reserve": 0
+  },
+  "t-shirt": {
+   "rows": 125233,
+   "used_key_id": 30000,
+   "held_out_country": 6205,
+   "repeats_split_v1": 4,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 89024,
+   "label_conflict_in_reserve": 1
+  },
+  "teddy-bear": {
+   "rows": 179568,
+   "used_key_id": 30000,
+   "held_out_country": 9720,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 6,
+   "eligible_before_conflicts": 139841,
+   "label_conflict_in_reserve": 0
+  },
+  "television": {
+   "rows": 123137,
+   "used_key_id": 30000,
+   "held_out_country": 5738,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 87398,
+   "label_conflict_in_reserve": 0
+  },
+  "tent": {
+   "rows": 131527,
+   "used_key_id": 30000,
+   "held_out_country": 6200,
+   "repeats_split_v1": 3,
+   "repeat_within_class": 0,
+   "eligible_before_conflicts": 95324,
+   "label_conflict_in_reserve": 0
+  },
+  "tornado": {
+   "rows": 143271,
+   "used_key_id": 30000,
+   "held_out_country": 7134,
+   "repeats_split_v1": 9,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 106127,
+   "label_conflict_in_reserve": 0
+  },
+  "tractor": {
+   "rows": 116677,
+   "used_key_id": 30000,
+   "held_out_country": 4316,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 6,
+   "eligible_before_conflicts": 82353,
+   "label_conflict_in_reserve": 0
+  },
+  "triangle": {
+   "rows": 123170,
+   "used_key_id": 30000,
+   "held_out_country": 5741,
+   "repeats_split_v1": 0,
+   "repeat_within_class": 3,
+   "eligible_before_conflicts": 87426,
+   "label_conflict_in_reserve": 0
+  },
+  "umbrella": {
+   "rows": 124084,
+   "used_key_id": 30000,
+   "held_out_country": 6197,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 87884,
+   "label_conflict_in_reserve": 0
+  },
+  "waterslide": {
+   "rows": 185364,
+   "used_key_id": 30000,
+   "held_out_country": 8606,
+   "repeats_split_v1": 9,
+   "repeat_within_class": 17,
+   "eligible_before_conflicts": 146732,
+   "label_conflict_in_reserve": 0
+  },
+  "whale": {
+   "rows": 116502,
+   "used_key_id": 30000,
+   "held_out_country": 4946,
+   "repeats_split_v1": 1,
+   "repeat_within_class": 2,
+   "eligible_before_conflicts": 81553,
+   "label_conflict_in_reserve": 0
+  },
+  "wine bottle": {
+   "rows": 126373,
+   "used_key_id": 30000,
+   "held_out_country": 5866,
+   "repeats_split_v1": 5,
+   "repeat_within_class": 1,
+   "eligible_before_conflicts": 90501,
+   "label_conflict_in_reserve": 1
+  },
+  "wristwatch": {
+   "rows": 162645,
+   "used_key_id": 30000,
+   "held_out_country": 9508,
+   "repeats_split_v1": 6,
+   "repeat_within_class": 13,
+   "eligible_before_conflicts": 123118,
+   "label_conflict_in_reserve": 0
+  },
+  "yoga": {
+   "rows": 280442,
+   "used_key_id": 30000,
+   "held_out_country": 16955,
+   "repeats_split_v1": 10,
+   "repeat_within_class": 19,
+   "eligible_before_conflicts": 233458,
+   "label_conflict_in_reserve": 0
+  },
+  "zebra": {
+   "rows": 144608,
+   "used_key_id": 30000,
+   "held_out_country": 7734,
+   "repeats_split_v1": 2,
+   "repeat_within_class": 5,
+   "eligible_before_conflicts": 106867,
+   "label_conflict_in_reserve": 0
+  }
+ },
+ "recognized_share": 0.91878,
+ "countries": 183,
+ "us_share": 0.47201333333333334,
+ "key_id_digest": "c62bde16e5e93fb2a628b281679094756b50c7b0e198a6b076c23a54025f6c17",
+ "files": {
+  "test_v2_end.npy": "a334dda62da8de967bdc98648a270a1e9b30f17228abe99f2ce19482788920ea",
+  "test_v2_meta.parquet": "bbe7ffd56353905df362241dee157e0f283f823face26042d61167d9e00b3e2a",
+  "test_v2_offsets.npy": "5ccf9bd733c3e1641ba87b592bc6c944b927b675b518f5d74264d14dd1142403",
+  "test_v2_xy.npy": "bafd133fe782a3642a2e71680ecb53897746e092914f0bf885bb7142cbab252c"
+ }
+}

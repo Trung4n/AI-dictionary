@@ -74,6 +74,18 @@ def open_split(split: str, root, holdout, final_evaluation: bool = False):
     return without_countries(QuickDrawSplit(split, root=Path(root)), holdout)
 
 
+def open_test_v2(test_v2_root, data_root, holdout, final_evaluation: bool = False):
+    """test_v2 (configs/test_v2.yaml), without the held-out countries (it has none).
+    Its files live in their own folder; ``root`` is set to split v1's folder so that
+    sequence models read the delta scale fitted on split v1's training drawings."""
+    from quickdraw.dataset import QuickDrawSplit
+    if not final_evaluation:
+        raise PermissionError("test_v2 is only for the final evaluation final_v2")
+    base = QuickDrawSplit("test_v2", root=Path(test_v2_root))
+    base.root = Path(data_root)
+    return without_countries(base, holdout)
+
+
 def open_unseen_countries(root, holdout, final_evaluation: bool = False) -> ConcatSplit:
     """Every drawing of the held-out countries, across the three v1 splits."""
     from quickdraw.dataset import QuickDrawSplit

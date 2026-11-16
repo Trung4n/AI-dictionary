@@ -69,6 +69,8 @@ PYTHONPATH=src python -m quickdraw_exp.final_eval --split val --val-predictions 
 PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/pretrained_v1.yaml --max-minutes 480   # ResNet-18 base model (validation only)
 PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/convergence_v1.yaml --max-minutes 600   # all data, ~3.75x steps (validation)
 PYTHONPATH=src python -m quickdraw_exp.test_v2 --kaggle <competition folder> --out <folder>   # build test_v2, CPU, opens nothing
+PYTHONPATH=src python -m quickdraw_exp.gather --inputs <folders> --out <package> --expect configs/final_v2.yaml   # checkpoint package, CPU
+PYTHONPATH=src python -m quickdraw_exp.final_eval --matrix configs/final_v2.yaml --split val --val-predictions <package>/val_predictions --runs <package>/runs   # check, then --split test_v2 --test-v2 <folder> (once)
 PYTHONPATH=src python -m quickdraw_exp.bootstrap --val-predictions <predictions_all> --final-predictions <final_v1 output>   # 95% intervals, CPU
 PYTHONPATH=src python -m quickdraw_exp.errors --predictions <predictions_all>   # early confusions, stopping by class, CPU
 python paper/make_assets.py [--val-predictions <predictions_all>]   # the report's tables and figures
@@ -76,7 +78,8 @@ PYTHONPATH=src python -m pytest tests -k 'not processed_data'
 ```
 
 Set `budget.max_minutes` to stop and save before a Kaggle session or quota ends.
-Models are compared on validation data; only `final_eval.py` opens the test split, once, with `configs/final_v1.yaml`.
+Models are compared on validation data; only `final_eval.py` opens the test split, once, with `configs/final_v1.yaml`,
+and test_v2 (a fresh test set built by `test_v2.py`), once, with `configs/final_v2.yaml`.
 `configs/pretrained_v1.yaml` (torchvision ResNet-18, ImageNet weights and from scratch) was added after
 that evaluation, so its models have validation results only; run it with `notebooks/kaggle_pretrained_v1.ipynb`.
 
@@ -109,7 +112,7 @@ src/quickdraw/   io.py, stats.py (EDA statistics), prefix.py, viz.py (EDA helper
                  simplify.py, leak.py (leak audit)
 src/quickdraw_exp/  config.py, paths.py, data.py, runlog.py, checkpoint.py, metrics.py, models.py, views.py,
                  engine.py (train, evaluate), experiments.py, anytime.py (when to guess), hierarchy.py, analysis.py, final_eval.py,
-                 bootstrap.py (intervals for the final results), errors.py (error analysis), test_v2.py (fresh test set),
+                 bootstrap.py (intervals for the final results), errors.py (error analysis), test_v2.py (fresh test set), gather.py (checkpoint package),
                  smoke.py, check_baseline.py
 configs/         base.yaml, baseline*.yaml, leak_v1.yaml, anytime_v1.yaml, hierarchy_v1.yaml (frozen), hierarchy_eval*.yaml, followup_v*.yaml, final_v1.yaml,
                  smoke.yaml, country_holdout_v1.json
@@ -126,7 +129,7 @@ Dataset © Google, released under CC BY 4.0 via the Quick, Draw! project. `src/q
 PyArrow, OpenCV, Matplotlib, scikit-learn and PyTorch. `src/quickdraw_exp/`, `configs/`,
 `tests/test_exp_setup.py`, `tests/test_baseline.py`, `tests/test_step3.py`, `tests/test_step4.py`,
 `tests/test_step4b.py`, `tests/test_followup.py`, `tests/test_analysis.py`, `tests/test_final_eval.py`, `tests/test_pretrained.py`,
-`tests/test_bootstrap.py`, `tests/test_errors.py`, `tests/test_convergence.py`, `tests/test_test_v2.py`,
+`tests/test_bootstrap.py`, `tests/test_errors.py`, `tests/test_convergence.py`, `tests/test_test_v2.py`, `tests/test_gather.py`,
 `paper/make_assets.py` and the `kaggle_*.ipynb` notebooks were written with AI assistance (Claude)
 and use PyTorch, torchvision and PyYAML. The base model `TorchvisionResNet` is torchvision's ResNet-18, used
 unchanged apart from its last layer, with its ImageNet weights (BSD-3-Clause code; weights from the

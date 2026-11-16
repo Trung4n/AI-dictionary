@@ -1,0 +1,63 @@
+# Final evaluation on test_v2. Written on 2026-11-16, before test_v2 was opened and
+# before the convergence_v1 results were known. Nothing is trained, no checkpoint is
+# re-chosen, and every threshold comes from the validation calibration halves, as in
+# final_v1. test_v2 (configs/test_v2.yaml) is opened once.
+#
+# Run first with --split val: every run must reproduce its reported validation numbers
+# (top-1 from the results.csv files below, everything else from the saved validation
+# predictions) or the notebook stops. Then once with --split test_v2.
+#
+# It repeats every final_v1 comparison on fresh data, and gives test numbers to the
+# models added after final_v1: the off-the-shelf ResNet-18 (pretrained_v1) and the
+# models trained on all the data (convergence_v1).
+experiment: final_v2
+reported_top1: [reports/leak_v1/results.csv, reports/followup_v1/results.csv, reports/followup_v2/results.csv,
+                reports/pretrained_v1/results.csv, reports/convergence_v1/results.csv]
+
+# Top-1 at each ink fraction, every test_v2 drawing (on val: 1,000 per class, as reported).
+leak_runs: [gru_prefix_s42, gru_prefix_s43, gru_full_bbox_s42, gru_full_bbox_s43, gru_uniform_s42, gru_uniform_s43,
+            cnn_prefix_s42, cnn_prefix_s43, cnn_full_bbox_s42, cnn_full_bbox_s43,
+            gru_anytime_uniform_s42, gru_anytime_uniform_s43,
+            cnn_imagenet_s42, cnn_imagenet_s43, cnn_resnet18_scratch_s42, cnn_resnet18_scratch_s43,
+            gru_uniform_full_s42, gru_uniform_full_s43, gru_anytime_uniform_full_s42, gru_anytime_uniform_full_s43]
+leak_comparisons:
+  - {name: "full_bbox minus prefix, GRU", a: gru_full_bbox, b: gru_prefix}
+  - {name: "full_bbox minus prefix, CNN", a: cnn_full_bbox, b: cnn_prefix}
+  - {name: "uniform minus prefix, GRU", a: gru_uniform, b: gru_prefix}
+  - {name: "ImageNet ResNet-18 minus project CNN", a: cnn_imagenet, b: cnn_prefix}
+  - {name: "ResNet-18 from scratch minus project CNN", a: cnn_resnet18_scratch, b: cnn_prefix}
+  - {name: "all data minus 600k, GRU baseline", a: gru_uniform_full, b: gru_uniform}
+early_fracs: [0.1, 0.25, 0.5]
+
+# When to guess and the hierarchy: 500 drawings per class of test_v2, seed 2026.
+per_class: 500
+sample_seed: 2026
+anytime_runs: [gru_uniform_s42, gru_uniform_s43, gru_anytime_uniform_s42, gru_anytime_uniform_s43,
+               cnn_prefix_s42, cnn_prefix_s43, cnn_anytime_s42, cnn_anytime_s43,
+               cnn_imagenet_s42, cnn_imagenet_s43, cnn_resnet18_scratch_s42, cnn_resnet18_scratch_s43,
+               gru_uniform_full_s42, gru_uniform_full_s43, gru_anytime_uniform_full_s42, gru_anytime_uniform_full_s43]
+anytime_comparisons:
+  - {name: "method vs baseline, GRU uniform", a: [gru_anytime_uniform, conf], b: [gru_uniform, pmax]}
+  - {name: "confidence head vs max softmax, GRU uniform", a: [gru_anytime_uniform, conf], b: [gru_anytime_uniform, pmax]}
+  - {name: "method vs baseline, CNN", a: [cnn_anytime, conf], b: [cnn_prefix, pmax]}
+  - {name: "ImageNet ResNet-18 vs project CNN, max softmax", a: [cnn_imagenet, pmax], b: [cnn_prefix, pmax]}
+  - {name: "ResNet-18 from scratch vs project CNN, max softmax", a: [cnn_resnet18_scratch, pmax], b: [cnn_prefix, pmax]}
+  - {name: "ImageNet vs scratch, same ResNet-18", a: [cnn_imagenet, pmax], b: [cnn_resnet18_scratch, pmax]}
+  - {name: "all data: method vs baseline, GRU uniform", a: [gru_anytime_uniform_full, conf], b: [gru_uniform_full, pmax]}
+  - {name: "all data: confidence head vs max softmax", a: [gru_anytime_uniform_full, conf], b: [gru_anytime_uniform_full, pmax]}
+  - {name: "baseline, all data vs 600k", a: [gru_uniform_full, pmax], b: [gru_uniform, pmax]}
+  - {name: "method, all data vs 600k", a: [gru_anytime_uniform_full, conf], b: [gru_anytime_uniform, conf]}
+hierarchy_runs: [gru_uniform_s42, gru_uniform_s43, cnn_prefix_s42, cnn_prefix_s43, cnn_imagenet_s42, cnn_imagenet_s43,
+                 gru_uniform_full_s42, gru_uniform_full_s43]
+hierarchy_matrix: configs/hierarchy_eval_v1.yaml   # tree, rules, tau grid and precision targets
+hierarchy_comparisons:
+  - {name: "semantic tree vs flat, GRU uniform", a: semantic, b: flat, runs: [gru_uniform_s42, gru_uniform_s43]}
+  - {name: "semantic vs random tree, GRU uniform", a: semantic, b: random, runs: [gru_uniform_s42, gru_uniform_s43]}
+  - {name: "semantic vs shape tree, GRU uniform", a: semantic, b: shape, runs: [gru_uniform_s42, gru_uniform_s43]}
+  - {name: "semantic tree vs flat, CNN", a: semantic, b: flat, runs: [cnn_prefix_s42, cnn_prefix_s43]}
+  - {name: "semantic tree vs flat, ImageNet ResNet-18", a: semantic, b: flat, runs: [cnn_imagenet_s42, cnn_imagenet_s43]}
+  - {name: "semantic vs shape tree, ImageNet ResNet-18", a: semantic, b: shape, runs: [cnn_imagenet_s42, cnn_imagenet_s43]}
+  - {name: "semantic tree vs flat, GRU all data", a: semantic, b: flat, runs: [gru_uniform_full_s42, gru_uniform_full_s43]}
+
+# The held-out countries were evaluated in final_v1 and are not repeated here.
+unseen_runs: []

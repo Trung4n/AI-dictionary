@@ -98,3 +98,31 @@ def test_namibia_is_a_country_and_empty_is_missing(tmp_path):
     df = read_class(path)
     assert df["countrycode"].iloc[0] == "NA" and pd.isna(df["countrycode"].iloc[1])
     assert df["recognized"].tolist() == [True, False]
+
+
+def test_open_test_v2_needs_the_final_evaluation_and_reads_scale_from_v1(tmp_path):
+    from quickdraw_exp.data import open_test_v2
+    kaggle, root, spec = _fake(tmp_path)
+    build(kaggle, root, tmp_path / "v2", spec)
+    with pytest.raises(PermissionError):
+        open_test_v2(tmp_path / "v2", root, ["IN"])
+    split = open_test_v2(tmp_path / "v2", root, ["IN"], final_evaluation=True)
+    assert len(split) == 500 and split.root == root
+    pts, end, label = split[0]
+    assert len(pts) == len(end) and 0 <= label < 100
+
+
+def test_final_v2_matrix_is_consistent():
+    import yaml
+    spec = yaml.safe_load(open("configs/final_v2.yaml"))
+    cond = lambda runs: {r.rsplit("_s", 1)[0] for r in runs}
+    assert spec["experiment"] == "final_v2" and spec["hierarchy_matrix"] == "configs/hierarchy_eval_v1.yaml"
+    for c in spec["leak_comparisons"]:
+        assert {c["a"], c["b"]} <= cond(spec["leak_runs"]), c["name"]
+    for c in spec["anytime_comparisons"]:
+        assert {c["a"][0], c["b"][0]} <= cond(spec["anytime_runs"]), c["name"]
+    for c in spec["hierarchy_comparisons"]:
+        assert set(c["runs"]) <= set(spec["hierarchy_runs"]), c["name"]
+    v1 = yaml.safe_load(open("configs/final_v1.yaml"))
+    assert set(v1["leak_runs"]) <= set(spec["leak_runs"]) and set(v1["anytime_runs"]) <= set(spec["anytime_runs"])
+    assert {c["name"] for c in v1["anytime_comparisons"]} <= {c["name"] for c in spec["anytime_comparisons"]}

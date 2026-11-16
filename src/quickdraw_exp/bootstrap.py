@@ -209,9 +209,9 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--val-predictions", required=True, help="folder with the validation <run>.npz (predictions_all)")
     parser.add_argument("--final-predictions", required=True,
-                        help="folder holding predictions_test/ and predictions_unseen_countries/ from final_v1")
+                        help="folder holding the predictions_<set>/ folders written by final_eval")
     parser.add_argument("--matrix", default="configs/final_v1.yaml")
-    parser.add_argument("--report", default="reports/final_v1_test/results.json")
+    parser.add_argument("--report", default="reports/final_v1_test/results.json", help="the final evaluation's results.json")
     parser.add_argument("--b", type=int, default=B)
     parser.add_argument("--out", default=None)
     args = parser.parse_args(argv)
@@ -228,13 +228,14 @@ def main(argv=None) -> int:
     targets = spec_h["precision_targets"]
     trees = build_trees(spec_h, class_names_from_data())
     reported = json.loads(repo_path(args.report).read_text(encoding="utf-8"))["sets"]
-    out = Path(args.out) if args.out else resolve_output_root(None) / "bootstrap_v1"
+    out = Path(args.out) if args.out else resolve_output_root(None) / spec["experiment"].replace("final_", "bootstrap_")
     out.mkdir(parents=True, exist_ok=True)
 
     result = {"b": args.b, "seed": SEED, "interval": "percentile 2.5-97.5", "sets": {}}
     sets_points, sets_draws = {}, {}
-    for set_name, runs in (("test", sorted(set(spec["anytime_runs"]) | set(spec["hierarchy_runs"]))),
-                           ("unseen_countries", sorted(spec["unseen_runs"]))):
+    in_distribution = sorted(set(spec["anytime_runs"]) | set(spec["hierarchy_runs"]))
+    for set_name in reported:
+        runs = sorted(spec["unseen_runs"]) if set_name == "unseen_countries" else in_distribution
         per_run = {}
         for run in runs:
             saved = dict(np.load(Path(args.val_predictions) / f"{run}.npz"))
@@ -260,7 +261,7 @@ def main(argv=None) -> int:
 
     # Unseen countries minus test, same model (independent drawings, so independent resamples).
     shift = []
-    for cond in sorted({condition(r) for r in spec["unseen_runs"]}):
+    for cond in sorted({condition(r) for r in spec["unseen_runs"]} if {"test", "unseen_countries"} <= set(sets_points) else []):
         for key in ("end_accuracy", "auc/pmax", "reward/0.95/semantic"):
             pu, pt = seed_mean(sets_points["unseen_countries"], cond, key), seed_mean(sets_points["test"], cond, key)
             if pu is None or pt is None:

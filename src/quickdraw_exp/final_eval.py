@@ -2,6 +2,8 @@
 
     PYTHONPATH=src python -m quickdraw_exp.final_eval --split val  --val-predictions <folder of val .npz>
     PYTHONPATH=src python -m quickdraw_exp.final_eval --split test --val-predictions <folder of val .npz>
+    PYTHONPATH=src python -m quickdraw_exp.final_eval --matrix configs/final_v2.yaml --split test_v2 \
+        --test-v2 <folder of test_v2_*> --val-predictions <folder of val .npz>
 
 ``--split val`` repeats the whole pipeline on validation data and checks it against
 the reported numbers (``reports/`` and the saved validation predictions); it exits
@@ -93,10 +95,11 @@ def reported_top1(paths) -> dict:
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--split", choices=["val", "test"], required=True)
+    parser.add_argument("--split", choices=["val", "test", "test_v2"], required=True)
     parser.add_argument("--matrix", default="configs/final_v1.yaml")
     parser.add_argument("--val-predictions", required=True, help="folder with the saved validation <run>.npz")
     parser.add_argument("--runs", nargs="*", default=["/kaggle/input"], help="folders searched for checkpoints")
+    parser.add_argument("--test-v2", default=None, help="folder holding test_v2_* (only with --split test_v2)")
     parser.add_argument("--out", default=None)
     parser.add_argument("--num-workers", type=int, default=4)
     parser.add_argument("--smoke", type=int, default=None,
@@ -106,13 +109,15 @@ def main(argv=None) -> int:
     import torch
 
     from .config import repo_path
-    from .data import load_holdout, open_split, open_unseen_countries
+    from .data import load_holdout, open_split, open_test_v2, open_unseen_countries
     from .engine import evaluate, pick_device, stratified_subset
     from .hierarchy import build_trees, class_names_from_data, run_trees
     from .hierarchy import compare as hierarchy_compare
     from .paths import resolve_data_root, resolve_output_root
 
     spec = yaml.safe_load(repo_path(args.matrix).read_text(encoding="utf-8"))
+    if {"test": "final_v1", "test_v2": "final_v2"}.get(args.split, spec["experiment"]) != spec["experiment"]:
+        raise SystemExit("test goes with configs/final_v1.yaml and test_v2 with configs/final_v2.yaml")
     out = Path(args.out) if args.out else resolve_output_root(None) / f"{spec['experiment']}_{args.split}{'_smoke' if args.smoke else ''}"
     out.mkdir(parents=True, exist_ok=True)
     device = pick_device("auto")
@@ -121,6 +126,12 @@ def main(argv=None) -> int:
     holdout = load_holdout(repo_path(base["data"]["holdout_file"]))
 
     names = set(spec["leak_runs"]) | set(spec["anytime_runs"]) | set(spec["hierarchy_runs"]) | set(spec["unseen_runs"])
+    reported_paths = [repo_path(p) for p in spec.get("reported_top1", ["reports/leak_v1/results.csv",
+                                                                       "reports/followup_v1/results.csv"])]
+    if args.split == "val":  # before any GPU work: every leak run needs a reported number to be checked against
+        missing_top1 = sorted(set(spec["leak_runs"]) - set(reported_top1(reported_paths)))
+        if missing_top1:
+            raise SystemExit(f"no reported top-1 for {missing_top1}: add their results.csv to reports/")
     runs = find_run_dirs(names, args.runs)
     missing = sorted(names - set(runs))
     print("checkpoints:", {k: str(v) for k, v in sorted(runs.items())}, flush=True)
@@ -134,6 +145,13 @@ def main(argv=None) -> int:
     if args.split == "val":
         evals = calibration_split(np.asarray(val.labels), *([args.smoke] if args.smoke else []))[1]
         sets = {"val": {"split": val, "positions": evals, "leak": "per_run_final", "runs": names}}
+    elif args.split == "test_v2":
+        if not args.test_v2:
+            raise SystemExit("--test-v2 is required")
+        test2 = open_test_v2(args.test_v2, root, holdout, final_evaluation=True)
+        per_class = args.smoke or spec["per_class"]
+        sets = {"test_v2": {"split": test2, "positions": sample_positions(np.asarray(test2.labels), per_class, spec["sample_seed"]),
+                            "leak": "all", "runs": names}}
     else:
         test = open_split("test", root, holdout, final_evaluation=True)
         unseen = open_unseen_countries(root, holdout, final_evaluation=True)
@@ -206,7 +224,7 @@ def main(argv=None) -> int:
 
         if args.split == "val":
             # Same numbers as reported? Top-1 against the results.csv files, the rest against the saved predictions.
-            reported = reported_top1([repo_path(p) for p in ("reports/leak_v1/results.csv", "reports/followup_v1/results.csv")])
+            reported = reported_top1(reported_paths)
             diffs = {}
             for name, by_frac in leak.items():
                 for f, v in by_frac.items():
