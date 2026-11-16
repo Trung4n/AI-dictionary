@@ -71,6 +71,7 @@ PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/convergence_
 PYTHONPATH=src python -m quickdraw_exp.test_v2 --kaggle <competition folder> --out <folder>   # build test_v2, CPU, opens nothing
 PYTHONPATH=src python -m quickdraw_exp.gather --inputs <folders> --out <package> --expect configs/final_v2.yaml   # checkpoint package, CPU
 PYTHONPATH=src python -m quickdraw_exp.final_eval --matrix configs/final_v2.yaml --split val --val-predictions <package>/val_predictions --runs <package>/runs   # check, then --split test_v2 --test-v2 <folder> (once)
+DEMO_RUN=<package>/runs/cnn_imagenet_s42 PYTHONPATH=src uvicorn demo.server:app   # live demo (see demo/README.md)
 PYTHONPATH=src python -m quickdraw_exp.bootstrap --val-predictions <predictions_all> --final-predictions <final_v1 output>   # 95% intervals, CPU
 PYTHONPATH=src python -m quickdraw_exp.errors --predictions <predictions_all>   # early confusions, stopping by class, CPU
 python paper/make_assets.py [--val-predictions <predictions_all>]   # the report's tables and figures
@@ -129,7 +130,7 @@ Dataset © Google, released under CC BY 4.0 via the Quick, Draw! project. `src/q
 PyArrow, OpenCV, Matplotlib, scikit-learn and PyTorch. `src/quickdraw_exp/`, `configs/`,
 `tests/test_exp_setup.py`, `tests/test_baseline.py`, `tests/test_step3.py`, `tests/test_step4.py`,
 `tests/test_step4b.py`, `tests/test_followup.py`, `tests/test_analysis.py`, `tests/test_final_eval.py`, `tests/test_pretrained.py`,
-`tests/test_bootstrap.py`, `tests/test_errors.py`, `tests/test_convergence.py`, `tests/test_test_v2.py`, `tests/test_gather.py`,
+`tests/test_bootstrap.py`, `tests/test_errors.py`, `tests/test_convergence.py`, `tests/test_test_v2.py`, `tests/test_gather.py`, `tests/test_demo.py`, `demo/`,
 `paper/make_assets.py` and the `kaggle_*.ipynb` notebooks were written with AI assistance (Claude)
 and use PyTorch, torchvision and PyYAML. The base model `TorchvisionResNet` is torchvision's ResNet-18, used
 unchanged apart from its last layer, with its ImageNet weights (BSD-3-Clause code; weights from the

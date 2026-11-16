@@ -1,0 +1,421 @@
+{
+ "source": "reports/errors_v1, configs/hierarchy_v1.yaml, reports/final_v2_test_v2",
+ "classes": [
+  "The Mona Lisa",
+  "alarm clock",
+  "angel",
+  "ant",
+  "anvil",
+  "apple",
+  "basketball",
+  "bat",
+  "bathtub",
+  "bird",
+  "blackberry",
+  "boomerang",
+  "bowtie",
+  "bracelet",
+  "butterfly",
+  "camel",
+  "camouflage",
+  "castle",
+  "cello",
+  "chandelier",
+  "church",
+  "computer",
+  "cruise ship",
+  "diamond",
+  "drill",
+  "duck",
+  "face",
+  "fan",
+  "fence",
+  "finger",
+  "flip flops",
+  "floor lamp",
+  "foot",
+  "giraffe",
+  "grapes",
+  "hand",
+  "helicopter",
+  "helmet",
+  "hockey stick",
+  "horse",
+  "house plant",
+  "hurricane",
+  "jacket",
+  "kangaroo",
+  "key",
+  "knee",
+  "lighthouse",
+  "lightning",
+  "lobster",
+  "lollipop",
+  "mailbox",
+  "map",
+  "megaphone",
+  "monkey",
+  "mountain",
+  "mouth",
+  "mushroom",
+  "nose",
+  "octopus",
+  "onion",
+  "owl",
+  "parachute",
+  "picture frame",
+  "pig",
+  "popsicle",
+  "purse",
+  "rabbit",
+  "rake",
+  "rollerskates",
+  "sailboat",
+  "saxophone",
+  "scissors",
+  "scorpion",
+  "skateboard",
+  "sleeping bag",
+  "snail",
+  "snowflake",
+  "snowman",
+  "sock",
+  "spider",
+  "square",
+  "squirrel",
+  "star",
+  "stop sign",
+  "sun",
+  "sweater",
+  "t-shirt",
+  "teddy-bear",
+  "television",
+  "tent",
+  "tornado",
+  "tractor",
+  "triangle",
+  "umbrella",
+  "waterslide",
+  "whale",
+  "wine bottle",
+  "wristwatch",
+  "yoga",
+  "zebra"
+ ],
+ "tree": {
+  "animal": {
+   "bird": [
+    "bird",
+    "duck",
+    "owl"
+   ],
+   "sea animal": [
+    "lobster",
+    "octopus",
+    "whale"
+   ],
+   "small creature": [
+    "ant",
+    "butterfly",
+    "scorpion",
+    "snail",
+    "spider"
+   ],
+   "mammal": [
+    "bat",
+    "camel",
+    "giraffe",
+    "horse",
+    "kangaroo",
+    "monkey",
+    "pig",
+    "rabbit",
+    "squirrel",
+    "zebra"
+   ]
+  },
+  "person": {
+   "body part": [
+    "face",
+    "finger",
+    "foot",
+    "hand",
+    "knee",
+    "mouth",
+    "nose"
+   ],
+   "figure": [
+    "angel",
+    "The Mona Lisa",
+    "yoga"
+   ]
+  },
+  "clothing and accessory": {
+   "clothing": [
+    "jacket",
+    "sweater",
+    "t-shirt",
+    "sock",
+    "flip flops"
+   ],
+   "accessory": [
+    "bowtie",
+    "bracelet",
+    "helmet",
+    "purse",
+    "wristwatch",
+    "umbrella"
+   ]
+  },
+  "food and plant": {
+   "fruit": [
+    "apple",
+    "blackberry",
+    "grapes"
+   ],
+   "sweet": [
+    "lollipop",
+    "popsicle"
+   ],
+   "vegetable and plant": [
+    "mushroom",
+    "onion",
+    "house plant"
+   ]
+  },
+  "weather and nature": {
+   "weather": [
+    "hurricane",
+    "lightning",
+    "sun",
+    "tornado"
+   ],
+   "winter": [
+    "snowflake",
+    "snowman"
+   ],
+   "landscape": [
+    "mountain"
+   ]
+  },
+  "building and place": {
+   "building": [
+    "castle",
+    "church",
+    "lighthouse",
+    "tent"
+   ],
+   "street and yard": [
+    "fence",
+    "mailbox",
+    "stop sign",
+    "waterslide"
+   ],
+   "map": [
+    "map"
+   ]
+  },
+  "vehicle": {
+   "on water": [
+    "cruise ship",
+    "sailboat"
+   ],
+   "in the air": [
+    "helicopter",
+    "parachute"
+   ],
+   "on land": [
+    "tractor"
+   ]
+  },
+  "household object": {
+   "electronic": [
+    "alarm clock",
+    "computer",
+    "television",
+    "fan"
+   ],
+   "furniture and fitting": [
+    "bathtub",
+    "chandelier",
+    "floor lamp",
+    "picture frame",
+    "sleeping bag",
+    "wine bottle"
+   ],
+   "tool": [
+    "anvil",
+    "drill",
+    "key",
+    "rake",
+    "scissors"
+   ]
+  },
+  "sport, music and toy": {
+   "sport": [
+    "basketball",
+    "boomerang",
+    "hockey stick",
+    "skateboard",
+    "rollerskates"
+   ],
+   "music and sound": [
+    "cello",
+    "saxophone",
+    "megaphone"
+   ],
+   "toy": [
+    "teddy-bear"
+   ]
+  },
+  "shape and pattern": {
+   "shape": [
+    "square",
+    "star",
+    "triangle",
+    "diamond"
+   ],
+   "pattern": [
+    "camouflage"
+   ]
+  }
+ },
+ "thresholds": {
+  "cnn_anytime_s42": {
+   "stop_pmax": {
+    "0.02": 0.884765625,
+    "0.05": 0.77587890625
+   },
+   "tree": null
+  },
+  "cnn_anytime_s43": {
+   "stop_pmax": {
+    "0.02": 0.88134765625,
+    "0.05": 0.779296875
+   },
+   "tree": null
+  },
+  "cnn_imagenet_s42": {
+   "stop_pmax": {
+    "0.02": 0.93017578125,
+    "0.05": 0.8466796875
+   },
+   "tree": {
+    "0.95": 0.87,
+    "0.9": 0.73
+   }
+  },
+  "cnn_imagenet_s43": {
+   "stop_pmax": {
+    "0.02": 0.9375,
+    "0.05": 0.84912109375
+   },
+   "tree": {
+    "0.95": 0.88,
+    "0.9": 0.74
+   }
+  },
+  "cnn_prefix_s42": {
+   "stop_pmax": {
+    "0.02": 0.912109375,
+    "0.05": 0.81494140625
+   },
+   "tree": {
+    "0.95": 0.87,
+    "0.9": 0.72
+   }
+  },
+  "cnn_prefix_s43": {
+   "stop_pmax": {
+    "0.02": 0.9130859375,
+    "0.05": 0.82568359375
+   },
+   "tree": {
+    "0.95": 0.86,
+    "0.9": 0.73
+   }
+  },
+  "cnn_resnet18_scratch_s42": {
+   "stop_pmax": {
+    "0.02": 0.92138671875,
+    "0.05": 0.83056640625
+   },
+   "tree": null
+  },
+  "cnn_resnet18_scratch_s43": {
+   "stop_pmax": {
+    "0.02": 0.9169921875,
+    "0.05": 0.833984375
+   },
+   "tree": null
+  },
+  "gru_anytime_uniform_full_s42": {
+   "stop_pmax": {
+    "0.02": 0.8564453125,
+    "0.05": 0.74951171875
+   },
+   "tree": null
+  },
+  "gru_anytime_uniform_full_s43": {
+   "stop_pmax": {
+    "0.02": 0.85400390625,
+    "0.05": 0.74951171875
+   },
+   "tree": null
+  },
+  "gru_anytime_uniform_s42": {
+   "stop_pmax": {
+    "0.02": 0.80419921875,
+    "0.05": 0.69677734375
+   },
+   "tree": null
+  },
+  "gru_anytime_uniform_s43": {
+   "stop_pmax": {
+    "0.02": 0.8125,
+    "0.05": 0.70068359375
+   },
+   "tree": null
+  },
+  "gru_uniform_full_s42": {
+   "stop_pmax": {
+    "0.02": 0.8876953125,
+    "0.05": 0.79150390625
+   },
+   "tree": {
+    "0.95": 0.84,
+    "0.9": 0.71
+   }
+  },
+  "gru_uniform_full_s43": {
+   "stop_pmax": {
+    "0.02": 0.8896484375,
+    "0.05": 0.78955078125
+   },
+   "tree": {
+    "0.95": 0.84,
+    "0.9": 0.7
+   }
+  },
+  "gru_uniform_s42": {
+   "stop_pmax": {
+    "0.02": 0.85009765625,
+    "0.05": 0.74560546875
+   },
+   "tree": {
+    "0.95": 0.85,
+    "0.9": 0.73
+   }
+  },
+  "gru_uniform_s43": {
+   "stop_pmax": {
+    "0.02": 0.85595703125,
+    "0.05": 0.75
+   },
+   "tree": {
+    "0.95": 0.85,
+    "0.9": 0.73
+   }
+  }
+ }
+}

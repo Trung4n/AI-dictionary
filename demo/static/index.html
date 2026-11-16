@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Pictionary demo</title>
+<style>
+  :root { --ink: #1d1d1b; --muted: #6b6a65; --line: #dcdad4; --accent: #2a78d6; --bg: #fbfaf8; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.4 system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+  main { max-width: 860px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  @media (max-width: 720px) { main { grid-template-columns: 1fr; } }
+  h1 { font-size: 20px; margin: 16px 16px 0; max-width: 860px; }
+  canvas { width: 100%; aspect-ratio: 1; background: #fff; border: 1px solid var(--line); border-radius: 8px; touch-action: none; cursor: crosshair; }
+  button { margin-top: 8px; padding: 8px 16px; border: 1px solid var(--line); background: #fff; border-radius: 6px; font: inherit; cursor: pointer; }
+  #answer { font-size: 28px; font-weight: 600; min-height: 40px; }
+  #why { color: var(--muted); min-height: 22px; }
+  .row { display: grid; grid-template-columns: 9em 1fr 3.5em; gap: 8px; align-items: center; margin: 6px 0; }
+  .bar { height: 10px; background: var(--line); border-radius: 5px; overflow: hidden; }
+  .bar > div { height: 100%; background: var(--accent); }
+  .small { color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>AI Pictionary: draw, and the model guesses when it is sure enough</h1>
+<main>
+  <section>
+    <canvas id="pad" width="512" height="512"></canvas>
+    <button id="clear">Clear</button>
+    <p class="small">Draw one of the 100 classes. The model is asked again after every stroke.</p>
+  </section>
+  <section>
+    <div id="answer">…</div>
+    <div id="why"></div>
+    <div id="top"></div>
+    <p class="small" id="meta"></p>
+  </section>
+</main>
+<script>
+const api = new URLSearchParams(location.search).get("api") || "";
+const pad = document.getElementById("pad"), ctx = pad.getContext("2d");
+let strokes = [], current = null, busy = false, pending = false;
+
+function point(e) {
+  const r = pad.getBoundingClientRect();
+  return [(e.clientX - r.left) * pad.width / r.width, (e.clientY - r.top) * pad.height / r.height];
+}
+pad.addEventListener("pointerdown", e => {
+  pad.setPointerCapture(e.pointerId);
+  const [x, y] = point(e); current = [[x], [y]];
+  ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#1d1d1b";
+  ctx.beginPath(); ctx.moveTo(x, y);
+});
+pad.addEventListener("pointermove", e => {
+  if (!current) return;
+  const [x, y] = point(e); current[0].push(x); current[1].push(y);
+  ctx.lineTo(x, y); ctx.stroke();
+});
+function endStroke() {
+  if (!current) return;
+  strokes.push(current); current = null; ask();
+}
+pad.addEventListener("pointerup", endStroke);
+pad.addEventListener("pointercancel", endStroke);
+document.getElementById("clear").onclick = () => {
+  strokes = []; ctx.clearRect(0, 0, pad.width, pad.height); show({ ready: false });
+};
+
+async function ask() {
+  if (busy) { pending = true; return; }
+  busy = true;
+  try {
+    const r = await fetch(api + "/guess", { method: "POST", headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify({ strokes }) });
+    show(await r.json());
+  } catch (err) {
+    document.getElementById("why").textContent = "Server not reachable: " + err;
+  } finally {
+    busy = false;
+    if (pending) { pending = false; ask(); }
+  }
+}
+
+function show(g) {
+  const answer = document.getElementById("answer"), why = document.getElementById("why"), top = document.getElementById("top");
+  top.innerHTML = "";
+  if (!g.ready) { answer.textContent = "…"; why.textContent = ""; document.getElementById("meta").textContent = ""; return; }
+  if (g.should_answer) { answer.textContent = "It's a " + g.answer + "!"; why.textContent = "Sure enough to answer."; }
+  else if (g.group_answer) { answer.textContent = "Some kind of " + g.group_answer.name.split("/").pop() + "…"; why.textContent = "Not sure of the class yet, sure of the " + g.group_answer.level + "."; }
+  else { answer.textContent = "Hmm…"; why.textContent = "Not sure yet: keep drawing."; }
+  for (const t of g.top) {
+    const row = document.createElement("div"); row.className = "row";
+    row.innerHTML = `<span></span><div class="bar"><div style="width:${(100 * t.probability).toFixed(1)}%"></div></div><span>${(100 * t.probability).toFixed(0)}%</span>`;
+    row.firstChild.textContent = t.class; top.appendChild(row);
+  }
+  document.getElementById("meta").textContent = `Model ${g.run}; answers when the top probability reaches ${(100 * g.stop_threshold).toFixed(0)}% (calibrated for at most 5% accuracy lost by answering early).`;
+}
+</script>
+</body>
+</html>

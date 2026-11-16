@@ -1,0 +1,10 @@
+# Demo server only (CPU is enough). The training code needs requirements.txt instead.
+numpy
+pandas
+pyarrow
+opencv-python-headless
+pyyaml
+torch==2.11.0
+torchvision==0.26.0
+fastapi
+uvicorn
