@@ -16,9 +16,10 @@ specific node of a semantic class tree instead of staying silent raised the info
 from 0.137 to 0.175 (GRU) and 0.190 to 0.234 (CNN), beat trees with shuffled classes by 0.039,
 but was only 0.010 above a tree built from early shape clusters. On five countries never seen
 in training, end-of-drawing accuracy drops by 3--4 points, while the hierarchical gain and the
-risk-control guarantee largely carry over. An ImageNet-pretrained ResNet-18, evaluated on
-validation, is about one point more accurate than our CNN and leaves the findings on stopping
-thresholds and on the class tree unchanged.
+risk-control guarantee largely carry over. Training on all 2.25 million drawings for 3.75 times
+longer raises every model but leaves the method 0.008 behind, and an ImageNet-pretrained ResNet-18
+is one point more accurate than our CNN without changing any conclusion. A fresh test set of
+300{,}000 unused drawings, opened once for every model, reproduces every comparison.
 \keywords{Sketch recognition \and Early classification \and Selective prediction \and
 Risk control \and Hierarchical classification \and Data leakage}
 \end{abstract}

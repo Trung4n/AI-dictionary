@@ -656,13 +656,142 @@ Model & Params & 10\% & 100\% & Early & End & AUC & Ink & Tree \\
     write_table("tab_pretrained", "reports/pretrained_v1*, reports/hierarchy_pretrained_v1, reports/leak_v1", body)
 
 
+# ---------------------------------------------------------------- test_v2 (final_v2) and convergence_v1
+
+REPLICATION = [
+    # (section label, kind, name in the reports, label in the paper)
+    ("Leak (early top-1, points)", "leak", "full_bbox minus prefix, GRU", "full\\_bbox $-$ prefix, GRU"),
+    (None, "leak", "full_bbox minus prefix, CNN", "full\\_bbox $-$ prefix, CNN"),
+    (None, "leak", "uniform minus prefix, GRU", "uniform $-$ prefix, GRU"),
+    ("When to guess (AUC)", "anytime", "method vs baseline, GRU uniform", "method $-$ baseline, GRU uniform"),
+    (None, "anytime", "confidence head vs max softmax, GRU uniform", "head $-$ max softmax, same GRU"),
+    (None, "anytime", "method vs baseline, CNN", "method $-$ baseline, CNN"),
+    ("Hierarchy (reward area, 0.95)", "hierarchy", "semantic tree vs flat, GRU uniform @ 0.95", "semantic $-$ flat, GRU"),
+    (None, "hierarchy", "semantic tree vs flat, CNN @ 0.95", "semantic $-$ flat, CNN"),
+    (None, "hierarchy", "semantic vs random tree, GRU uniform @ 0.95", "semantic $-$ shuffled, GRU"),
+    (None, "hierarchy", "semantic vs shape tree, GRU uniform @ 0.95", "semantic $-$ shape, GRU"),
+    (None, "hierarchy", "semantic vs shape tree, GRU uniform @ 0.9", "semantic $-$ shape, GRU, at 0.90"),
+    ("Added after final\\_v1 (test\\_v2 only)", "anytime", "ImageNet ResNet-18 vs project CNN, max softmax", "ImageNet ResNet-18 $-$ project CNN (AUC)"),
+    (None, "anytime", "ResNet-18 from scratch vs project CNN, max softmax", "ResNet-18 from scratch $-$ project CNN (AUC)"),
+    (None, "anytime", "all data: method vs baseline, GRU uniform", "all data: method $-$ baseline (AUC)"),
+    (None, "anytime", "baseline, all data vs 600k", "baseline, all data $-$ 600k (AUC)"),
+    (None, "hierarchy", "semantic tree vs flat, ImageNet ResNet-18 @ 0.95", "semantic $-$ flat, ImageNet ResNet-18"),
+    (None, "hierarchy", "semantic vs shape tree, ImageNet ResNet-18 @ 0.9", "semantic $-$ shape, ImageNet, at 0.90"),
+]
+
+
+def _v1_value(v1: dict, kind: str, name: str):
+    if kind == "leak":
+        rows = v1["leak"]["comparisons"]
+    elif kind == "anytime":
+        rows = v1["anytime"]["comparisons"]
+    else:
+        base, target = name.rsplit(" @ ", 1)
+        rows = [r for r in v1["hierarchy"]["comparisons"] if r["precision_target"] == target]
+        name = base
+    row = next((r for r in rows if r["name"] == name), None)
+    return None if row is None or row.get("difference") is None else row["difference"]
+
+
+def table_replication() -> None:
+    needed = ["final_v2_test_v2/results.json", "bootstrap_v2/results.json"]
+    if not all((REPORTS / n).is_file() for n in needed):
+        print("skip tab_test_v2: reports/final_v2_test_v2 or bootstrap_v2 not there yet")
+        return
+    v1 = load("final_v1_test/results.json")["sets"]["test"]
+    v2 = load("final_v2_test_v2/results.json")["sets"]["test_v2"]
+    boot = load("bootstrap_v2/results.json")["sets"]["test_v2"]
+    ci = {r["name"]: r for r in boot["anytime_comparisons"] + boot["hierarchy_comparisons"] if r.get("difference") is not None}
+    lines = []
+    for section, kind, name, label in REPLICATION:
+        if section:
+            if lines:
+                lines.append(r"\midrule")
+            lines.append(f"\\multicolumn{{3}}{{l}}{{\\emph{{{section}}}}} \\\\")
+        scale = 100.0 if kind == "leak" else 1.0
+        digits = 1 if kind == "leak" else 4
+        old = _v1_value(v1, kind, name)
+        if kind == "leak":
+            new = next(r for r in v2["leak"]["comparisons"] if r["name"] == name)["difference"]
+            interval = ""
+        else:
+            row = ci[name]
+            new = row["difference"]
+            interval = f" $[{row['ci95'][0]:+.4f}, {row['ci95'][1]:+.4f}]$"
+        fmt = lambda x: "--" if x is None else signed(scale * x, digits)
+        lines.append(f"\\quad {label} & {fmt(old)} & {fmt(new)}{interval} \\\\")
+    body = r"""\begin{table}[t]
+\centering
+\caption{Replication on test\_v2, 300{,}000 fresh drawings opened once after every model was trained
+(Sect.~\ref{sec:setup-splits}). Differences A $-$ B, mean of two seeds, thresholds from validation.
+Bracketed: 95\% bootstrap interval over test\_v2 drawings. The first column repeats final\_v1 (the
+original test split) where the comparison existed.}
+\label{tab:replication}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{5.4cm}rl}
+\toprule
+Comparison & Test (v1) & test\_v2 \\
+\midrule
+""" + "\n".join(lines) + r"""
+\bottomrule
+\end{tabular}
+\end{table}
+"""
+    write_table("tab_replication", "reports/final_v1_test, reports/final_v2_test_v2, reports/bootstrap_v2", body)
+
+
+CONVERGENCE_ROWS = [("gru_uniform", "600k, 9.4k steps", "baseline"),
+                    ("gru_anytime_uniform", "600k, 9.4k steps", "method"),
+                    ("gru_uniform_full", "2.25M, 35k steps", "baseline"),
+                    ("gru_anytime_uniform_full", "2.25M, 35k steps", "method")]
+
+
+def table_convergence() -> None:
+    needed = ["convergence_v1_anytime/results.json", "final_v2_test_v2/results.json"]
+    if not all((REPORTS / n).is_file() for n in needed):
+        print("skip tab_convergence: reports/convergence_v1_anytime or final_v2_test_v2 not there yet")
+        return
+    val = load("convergence_v1_anytime/results.json")["table"]
+    t = load("final_v2_test_v2/results.json")["sets"]["test_v2"]
+    leak, anytime = by_condition(t["leak"]["per_run"]), by_condition(t["anytime"]["per_run"])
+    lines, last = [], None
+    for cond, data, training in CONVERGENCE_ROWS:
+        if last and data != last:
+            lines.append(r"\midrule")
+        last = data
+        policy = "conf" if "anytime" in cond else "pmax"
+        cells = [data if training == "baseline" else "", training,
+                 pct(mean(r["0.1"]["top1"] for r in leak[cond])), pct(mean(r["1.0"]["top1"] for r in leak[cond])),
+                 f"{val[cond][policy]['auc']['mean']:.3f}", f"{mean(r[policy]['auc'] for r in anytime[cond]):.3f}",
+                 f"{mean(r[policy]['risk_control']['0.05']['earliness'] for r in anytime[cond]):.3f}"]
+        lines.append(" & ".join(cells) + r" \\")
+    body = r"""\begin{table}[t]
+\centering
+\caption{The GRU with uniform input trained longer on all the data (about 3.75 times the steps).
+Top-1 (\%) at 10 and 100\% ink on test\_v2; stopping AUC of the method's own score (confidence head
+for the method, max softmax for the baseline) on validation and test\_v2; ink used at $\epsilon = 5\%$
+on test\_v2. Two seeds; both trainings of a row pair take the same number of steps.}
+\label{tab:convergence}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{llrrrrr}
+\toprule
+Data, steps & Model & 10\% & 100\% & \multicolumn{2}{c}{AUC: val / test\_v2} & Ink \\
+\midrule
+""" + "\n".join(lines) + r"""
+\bottomrule
+\end{tabular}
+\end{table}
+"""
+    write_table("tab_convergence", "reports/convergence_v1_anytime, reports/final_v2_test_v2", body)
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--val-predictions", type=Path, default=None, help="folder of saved validation <run>.npz")
     parser.add_argument("--data-root", type=Path, default=None, help="processed dataset (default: as the code finds it)")
     args = parser.parse_args(argv)
     for make in (table_data, table_leak, table_ablation, table_test_anytime, table_hierarchy, table_recognized, table_unseen,
-                 table_pretrained):
+                 table_pretrained, table_replication, table_convergence):
         make()
     plt = setup_matplotlib()
     figure_leak(plt)

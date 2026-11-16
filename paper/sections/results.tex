@@ -2,7 +2,8 @@
 \label{sec:results}
 
 Validation numbers decided every step; the test numbers below come from the single final
-evaluation. Where both are given, they agree within 0.2 points of top-1 and 0.003 of AUC.
+evaluation. Where both are given, they agree within 0.2 points of top-1 and 0.003 of AUC. Every
+comparison was then repeated once on the fresh test\_v2 (Sect.~\ref{sec:res-replication}).
 
 \subsection{The scale leak (H1)}
 \label{sec:res-leak}
@@ -187,6 +188,23 @@ semantic tree's gain over flat answers is the same as in distribution (+0.040 GR
 its own reward area barely moves (CNN $-0.0004$, $[-0.003, +0.002]$; GRU $-0.003$,
 $[-0.006, -0.001]$), but its realised precision falls to 0.941--0.944 for a 0.95 target.
 
+\subsection{Training longer on all the data}
+\label{sec:res-long}
+
+\input{tables/tab_convergence}
+
+Our models were under-trained (Sect.~\ref{sec:res-anytime}), so we trained the uniform-input GRU
+baseline and method again on all 2.25 million training drawings for about 3.75 times the steps
+(Table~\ref{tab:convergence}). Both improve a lot: the baseline's stopping AUC rises from 0.459 to
+0.503 on validation and from 0.456 to 0.501 on test\_v2, and its top-1 at the end of the drawing
+reaches 83.9\%, as high as the CNN. H2 is still rejected: the method trails by 0.008 on validation
+and on test\_v2 ($-0.0083$, $[-0.0092, -0.0072]$), against 0.012--0.013 before, and its confidence
+head still adds nothing over its own max softmax ($-0.0007$). The trade-off of
+Sect.~\ref{sec:res-anytime} persists: the method is ahead at 10\% ink (11.2\% against 10.5\% on
+test\_v2) and behind at the end (82.0\% against 83.9\%). One caveat remains: the baseline's checkpoint
+score gained only 0.001 in its last epoch, the method's 0.005, so the method was further from
+convergence and the gap might narrow further with even longer training.
+
 \subsection{An off-the-shelf base model}
 \label{sec:res-base}
 
@@ -204,9 +222,9 @@ stopping method were not re-run with it): the margin is not better than the max 
 ($-0.0015$); the risk-control targets are met for both seeds, both scores and both targets, and at
 $\epsilon = 5\%$ it answers after 72\% of the ink instead of 74\%; and the semantic tree gains
 $+0.045$ over flat answers and $+0.043$ over a shuffled tree, but only $+0.011$ over the shape tree at
-precision 0.95 and $-0.004$ at 0.90. These models were added after the single test evaluation, so
-they have no test numbers; elsewhere validation and test agree within 0.003 AUC, but we have not
-shown it here.
+precision 0.95 and $-0.004$ at 0.90. On test\_v2 the picture is the same: ImageNet weights add
+0.013 AUC over our CNN ($[0.012, 0.014]$) and the same network from scratch only 0.002
+($[0.001, 0.003]$); the ImageNet model reaches 84.9\% top-1 at the end of the drawing against 83.9\%.
 
 \subsection{Error analysis}
 \label{sec:res-examples}
@@ -261,11 +279,27 @@ an alarm clock's round body and bells read as an angel's head and wings at 38\% 
 squirrel's head and body as a kangaroo, an anvil's top as a diamond, and a jacket is taken for a
 sweater until its opening is drawn.
 
+\subsection{Replication on a fresh test set}
+\label{sec:res-replication}
+
+\input{tables/tab_replication}
+
+Table~\ref{tab:replication} repeats every comparison of the first final evaluation on test\_v2,
+300{,}000 drawings no model or decision had seen. Every difference keeps its sign and size: the leak
+adds 11.4 and 12.8 points of early top-1 again, the method trails the baseline by 0.012 (GRU) and
+0.008 (CNN), and the semantic tree gains 0.039 over flat answers and 0.040 over shuffled ones. Even
+the small effects reappear: the head is 0.0006 below the max softmax, and the semantic tree's lead
+over the shape tree is 0.010 at precision 0.95 and close to zero at 0.90 ($+0.0012$, $[0.0004,
+0.0020]$; for the ImageNet model the shape tree is ahead at 0.90, $-0.0033$). Risk control met its
+target in 75 of 76 cases; the miss is again the margin score of one GRU seed at $\epsilon = 5\%$
+(5.06\%). Realised hierarchy precision ranged from 0.949 to 0.956 for the 0.95 target and from 0.898
+to 0.908 for 0.90: the point-estimated thresholds land on target to within 0.002.
+
 \subsection{What did not work}
 \label{sec:res-failed}
 For completeness: (i) resampling that kept stroke end points did not remove the leak;
-(ii) the learned stopping method lost to max softmax on every architecture, input and budget we
-tried; (iii) its one apparent success, the exploratory $2\times$ run, was explained by training
+(ii) the learned stopping method lost to max softmax on every architecture, input, budget and test
+set we tried, including all the data and 3.75 times the steps; (iii) its one apparent success, the exploratory $2\times$ run, was explained by training
 length; (iv) the semantic tree beat a shape-derived tree only narrowly, and not at every precision
 target; (v) an early version of the
 risk-control code compared thresholds in float32 during calibration and float64 during evaluation

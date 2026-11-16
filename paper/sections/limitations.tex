@@ -2,9 +2,10 @@
 \label{sec:limits}
 
 \paragraph{Scale of the study.} We use 100 classes and train on 6{,}000 drawings per class, about a
-quarter of the training split, with two seeds. The baseline gains 0.024 AUC from twice the steps, so
-all models are under-trained, and we have not shown that the negative result for H2 survives
-training to convergence. Seed ranges are small next to the reported differences, but two seeds
+quarter of the training split, with two seeds. These models are under-trained (twice the steps
+add 0.024 AUC). Trained on all the data for 3.75 times the steps, the method still loses, by 0.008,
+but it was still improving faster than the baseline, so we cannot exclude that it would catch up
+with much longer training. Seed ranges are small next to the reported differences, but two seeds
 give no interval over data resampling.
 
 \paragraph{The leak is reduced, not removed.} Uniform resampling removes the lattice and point
@@ -31,4 +32,6 @@ favoured. The checkpoint-selection subset (200 validation drawings per class) ca
 calibration and evaluation halves, which makes validation numbers slightly optimistic; the test
 numbers are not affected. The AUC uses mean earliness and an envelope taken on the evaluation
 drawings. Only five held-out countries were tested, none from Africa or South America. The
-off-the-shelf ResNet-18 was added after the test evaluation and has validation results only.
+off-the-shelf ResNet-18 and the longer runs were added after the first test evaluation and are
+tested only on test\_v2, drawn from the same files as split v1, so it guards against overfitting
+to a test sample but not against a shift of data source.

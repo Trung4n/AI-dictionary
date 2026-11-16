@@ -14,11 +14,11 @@ mostly for groups whose members also start alike.
 
 For a deployed guesser we would therefore use the CNN with prefix input (test top-1 83.9\% at
 the end of the drawing), max-softmax stopping with a calibrated threshold, and the semantic tree;
-the uniform-input GRU is the sequence alternative with the least leak. An ImageNet-pretrained
-ResNet-18 is about one point better on validation and would be the stronger choice once confirmed on
-fresh test data. Future work should cut
-prefixes from raw strokes to remove the leak entirely, measure earliness in time, train to
-convergence before revisiting learned stopping, and control the gap per class.
+the uniform-input GRU is the sequence alternative with the least leak. Two stronger options are
+confirmed on the fresh test set: the ImageNet-pretrained ResNet-18 (84.9\% top-1, AUC 0.511) and the
+GRU trained on all the data (83.9\%, AUC 0.501). Every conclusion above holds for them and on that
+test set. Future work should cut prefixes from raw strokes to remove the leak entirely, measure
+earliness in time, train learned stopping even longer, and control the gap per class.
 
 \paragraph{Code, data and checkpoints.}
 % TODO(Kiet): add the public repository URL and the checkpoint download link before submission.

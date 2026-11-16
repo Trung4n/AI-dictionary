@@ -51,9 +51,20 @@ after a gate that recomputed every validation number from the saved checkpoints 
 any difference above 0.002 (86 numbers compared, largest difference 0.00195). The final
 evaluation reuses the validation calibration half for thresholds; nothing is re-chosen on test.
 
+\paragraph{A second, fresh test set.} Models added after that evaluation (the base model and the
+longer training below) could not use the test split again. The competition files hold about
+148{,}000 drawings per class, of which split v1 used 30{,}000. We therefore built \emph{test\_v2}
+before any of these models was evaluated: per class, 3{,}000 drawings drawn at random (seed 2027)
+among those whose key is not in split v1, whose strokes do not repeat any split v1 drawing, that do
+not come from a held-out country and that have no label conflict or repeat (11.1 million were
+eligible; 431 were excluded as repeats of split v1). Its statistics match the original test split
+(recognised 91.9\%; US 47.2\%, as in split v1 once the held-out countries are removed). test\_v2 was opened once, by a
+second final evaluation of every model, after a validation gate that reproduced 170 reported
+numbers within 0.002.
+
 \subsection{Training protocol}
 \label{sec:setup-train}
-All models are trained from scratch with AdamW~\cite{loshchilov2019adamw} (learning rate
+All models except the ImageNet-initialised base model are trained from scratch with AdamW~\cite{loshchilov2019adamw} (learning rate
 $10^{-3}$, weight decay 0.01), 500 warm-up steps then cosine decay, batches of 512 prefixes,
 gradient clipping at 1.0 and mixed precision, on a random subset of 600{,}000 training
 drawings (6{,}000 per class, drawn with the run's seed). Each training example is a prefix with ink fraction uniform in
@@ -64,7 +75,10 @@ for 4 epochs of two prefixes per drawing, so both take the same 9{,}375 steps of
 second pair trains both for twice as many steps (16 epochs of one prefix, 8 epochs of two). After
 every epoch, the checkpoint is scored by its mean top-1 over ink fractions
 $\{0.1, 0.25, 0.5, 0.75, 1\}$ on 200 validation drawings per class, and the best is kept. Every
-condition is trained with seeds 42 and 43, except the $2\times$ runs (seed 42 only). Runs used
+condition is trained with seeds 42 and 43, except the $2\times$ runs (seed 42 only). A last pair,
+added once the method had lost, trains the GRU baseline and method on all 2.25 million training
+drawings for about 3.75 times the steps (8 epochs of one prefix, 4 epochs of two; 35{,}000 steps),
+to test whether H2 fails only because the models were under-trained. Runs used
 Kaggle notebooks with two NVIDIA T4 GPUs, PyTorch 2.11 and Python 3.13.
 
 \subsection{Metrics}
@@ -97,7 +111,7 @@ torchvision's ResNet-18~\cite{he2016resnet} from its ImageNet weights, unchanged
 layer (the grey image is repeated over three channels and normalised with the ImageNet statistics),
 and train the same network from scratch to separate the effect of pretraining from that of size
 (11.2M parameters against 2.8M). Both follow exactly the protocol of our CNN. They were added after
-the test evaluation and therefore have validation results only (Sect.~\ref{sec:res-base}).
+the first test evaluation and are therefore tested on test\_v2 only (Sect.~\ref{sec:res-base}).
 
 \begin{table}[t]
 \centering
@@ -122,7 +136,9 @@ When to guess (H2) & GRU, CNN & prefix & method, 4 epochs $\times$ 2 prefixes \\
 \midrule
 Hierarchy (H3) & \multicolumn{3}{p{9.4cm}}{no training: saved predictions of the baselines, four trees} \\
 \midrule
-Base model & ResNet-18 (torchvision) & prefix & ImageNet weights or from scratch, 8 epochs; validation only \\
+Base model & ResNet-18 (torchvision) & prefix & ImageNet weights or from scratch, 8 epochs; tested on test\_v2 \\
+\midrule
+Longer training & GRU & uniform & all 2.25M drawings, baseline 8 epochs vs method 4 $\times$ 2 (35k steps) \\
 \bottomrule
 \end{tabular}
 \end{table}

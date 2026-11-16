@@ -32,9 +32,10 @@ stopping on the maximum softmax probability of a standard classifier.
 class tree yields more information over the course of a drawing than answering classes only, and
 more than a tree of the same shape with shuffled classes.
 \end{description}
-H1 and H3 were confirmed and H2 was rejected. An off-the-shelf ResNet-18 pretrained on ImageNet,
-added afterwards and evaluated on validation only, is about one point more accurate than our CNN
-and leaves the findings on stopping thresholds and on the class tree unchanged. Our contributions are:
+H1 and H3 were confirmed and H2 was rejected. Two checks added afterwards leave these answers
+unchanged: an off-the-shelf ResNet-18 pretrained on ImageNet is about one point more accurate than
+our CNN, and training on all the data for 3.75 times longer narrows but does not close the gap
+against H2. Our contributions are:
 \begin{enumerate}
 \item \textbf{A measured leak and a partial fix.} We show where the size of the finished drawing
 hides in truncated simplified drawings (coordinate lattice, point density, simplification
@@ -42,8 +43,8 @@ facets), measure its effect on two architectures over five ink fractions, and sh
 arc-length resampling removes most of it for a sequence model, at a cost we quantify
 (Sect.~\ref{sec:res-leak}).
 \item \textbf{A compute-matched negative result with its causes.} The learned stopping method
-loses to the maximum-softmax baseline on both architectures, on validation and test, and with
-twice the training budget. Ablations attribute the loss to training on two prefixes per drawing
+loses to the maximum-softmax baseline on both architectures, on validation and two test sets,
+and with twice the training budget or all the data for 3.75 times the steps. Ablations attribute the loss to training on two prefixes per drawing
 and to a consistency loss that trades late accuracy for early accuracy
 (Sect.~\ref{sec:res-anytime}).
 \item \textbf{Guaranteed stopping thresholds.} Thresholds calibrated with a Clopper--Pearson
@@ -55,5 +56,7 @@ before any result, gives more information earlier than flat answers; we locate t
 semantic groups and show what a shape-based tree achieves (Sect.~\ref{sec:res-hier}).
 \item \textbf{A protocol that keeps the test split clean.} All decisions use validation data;
 the test split was opened once, after a gate that reproduced 86 validation numbers within
-0.002, and five countries were held out entirely (Sect.~\ref{sec:setup}).
+0.002, and five countries were held out entirely (Sect.~\ref{sec:setup}). For the models added
+later we built a second test set from 300{,}000 unused drawings and opened it once; it reproduces
+every earlier comparison (Sect.~\ref{sec:res-replication}).
 \end{enumerate}
