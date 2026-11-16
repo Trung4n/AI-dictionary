@@ -1,0 +1,21 @@
+# test_v2: a fresh test set. Written on 2026-11-16, before any of its drawings was read.
+# Built by `python -m quickdraw_exp.test_v2` (see its docstring for every rule).
+#
+# Why: the test split of v1 was opened once, in final_v1. Models added afterwards
+# (pretrained_v1, convergence_v1) have validation results only. test_v2 gives every
+# model of the report one more, untouched test set, opened once, by final_v2, after
+# all of them are trained. Nothing is chosen on it.
+#
+# Source: the Kaggle competition's train_simplified files, from which split v1 drew
+# 30,000 drawings per class at random. Same game, same classes, same preprocessing.
+# Kept: drawings outside split v1 (by key_id and by identical strokes), outside the
+# five held-out countries, without label conflicts or repeats.
+#
+# Known limits: the class selection (before any model) used class-level statistics of
+# random samples of these files, which may include test_v2 drawings; no drawing-level
+# choice was made with them.
+split: test_v2
+per_class: 3000          # as the v1 test split
+reserve: 300             # extra drawings per class, used only if some are dropped as label conflicts
+seed: 2027               # never used before in the project
+holdout_file: configs/country_holdout_v1.json
