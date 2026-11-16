@@ -105,6 +105,44 @@ residual leak described above; comparisons between methods use the same input.
 `configs/followup_v1.yaml` retrains the GRU baseline with `data.resample_step: 8.0`
 (`gru_uniform`) to measure what that residual leak adds.
 
+## Checkpoints
+
+Every trained run of the report is on Kaggle (public, CC BY 4.0): https://www.kaggle.com/datasets/kittrnmuhaha/ai-pictionary-checkpoints-ds
+
+```bash
+pip install kaggle   # needs a Kaggle API token in ~/.kaggle/kaggle.json
+kaggle datasets download -d kittrnmuhaha/ai-pictionary-checkpoints-ds -p checkpoints --unzip
+```
+
+```
+package/runs/<run>/config.yaml            resolved configuration of the run
+package/runs/<run>/summary.json           training summary and final validation scores
+package/runs/<run>/checkpoints/best.pt    best checkpoint (model weights and counters, no optimiser)
+package/val_predictions/<run>.npz         checkpoint predictions on the validation halves
+package/manifest.json                     source of every file and its sha256
+```
+
+Built by `python -m quickdraw_exp.gather` (`notebooks/kaggle_gather.ipynb`). Run names are
+`<condition>_s<seed>` as in `configs/*.yaml` and `reports/`. To check the checkpoints against the
+reported validation numbers (needs the processed data, a GPU is advised):
+
+```bash
+PYTHONPATH=src python -m quickdraw_exp.final_eval --matrix configs/final_v2.yaml --split val \
+    --val-predictions checkpoints/package/val_predictions --runs checkpoints/package/runs
+```
+
+It stops with an error if any of 170 numbers differs by more than 0.002. To load one model in Python:
+
+```python
+# PYTHONPATH=src
+from pathlib import Path
+import torch
+from quickdraw_exp.anytime import load_run
+cfg, model = load_run(Path("checkpoints/package/runs/cnn_imagenet_s42"), torch.device("cpu"))
+```
+
+To try a model live, see `demo/README.md`.
+
 ## Layout
 
 ```

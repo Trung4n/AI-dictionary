@@ -22,7 +22,8 @@ src/quickdraw_exp/demo.py   Guesser: nét vẽ -> dự đoán (dùng chung code 
    python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
    pip install -r demo/requirements.txt
    ```
-2. Tải gói checkpoint: <LINK DATASET KAGGLE: Kiet điền>. Giải nén, rồi chọn **một** run, ví dụ
+2. Tải gói checkpoint (Kaggle, công khai, CC BY 4.0): https://www.kaggle.com/datasets/kittrnmuhaha/ai-pictionary-checkpoints-ds (nút Download, hoặc
+   `kaggle datasets download -d kittrnmuhaha/ai-pictionary-checkpoints-ds --unzip`). Giải nén, rồi chọn **một** run, ví dụ
    `package/runs/cnn_imagenet_s42` (chính xác nhất, khoảng 45 MB) hoặc `package/runs/cnn_prefix_s42`
    (nhẹ hơn, khoảng 11 MB). Mỗi run gồm `config.yaml` và `checkpoints/best.pt`.
 3. Chạy server:
