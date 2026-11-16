@@ -80,6 +80,11 @@ accuracy and earliness at $\epsilon = 2\%$ and $5\%$), which do choose the thres
 \paragraph{Hierarchy (H3).} Reward area at precision 0.95 (primary) and 0.90, with the realised
 precision and the share of checkpoints answered. The reward measures information, not usefulness
 to a player, and depends on the tree's sizes.
+\paragraph{Uncertainty.} Every condition has two seeds. For the test results we also give 95\%
+percentile intervals from 1{,}000 bootstrap resamples of the evaluated drawings, the same resamples
+for every run so that differences are paired. Thresholds are not re-chosen on a resample, and the
+rebuilt point values match the reported ones to $10^{-16}$. These intervals cover the sampling of
+test drawings, not the randomness of training.
 
 \subsection{Baselines and experiments}
 \label{sec:setup-matrix}

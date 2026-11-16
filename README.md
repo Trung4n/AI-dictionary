@@ -67,6 +67,7 @@ PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/followup_v2.
 PYTHONPATH=src python -m quickdraw_exp.analysis --predictions <folder of all .npz>   # by recognized, hierarchy by group, CPU
 PYTHONPATH=src python -m quickdraw_exp.final_eval --split val --val-predictions <folder>   # check, then --split test (once)
 PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/pretrained_v1.yaml --max-minutes 480   # ResNet-18 base model (validation only)
+PYTHONPATH=src python -m quickdraw_exp.experiments --matrix configs/convergence_v1.yaml --max-minutes 600   # all data, ~3.75x steps (validation)
 PYTHONPATH=src python -m quickdraw_exp.bootstrap --val-predictions <predictions_all> --final-predictions <final_v1 output>   # 95% intervals, CPU
 PYTHONPATH=src python -m quickdraw_exp.errors --predictions <predictions_all>   # early confusions, stopping by class, CPU
 python paper/make_assets.py [--val-predictions <predictions_all>]   # the report's tables and figures
@@ -124,7 +125,7 @@ Dataset © Google, released under CC BY 4.0 via the Quick, Draw! project. `src/q
 PyArrow, OpenCV, Matplotlib, scikit-learn and PyTorch. `src/quickdraw_exp/`, `configs/`,
 `tests/test_exp_setup.py`, `tests/test_baseline.py`, `tests/test_step3.py`, `tests/test_step4.py`,
 `tests/test_step4b.py`, `tests/test_followup.py`, `tests/test_analysis.py`, `tests/test_final_eval.py`, `tests/test_pretrained.py`,
-`tests/test_bootstrap.py`, `tests/test_errors.py`,
+`tests/test_bootstrap.py`, `tests/test_errors.py`, `tests/test_convergence.py`,
 `paper/make_assets.py` and the `kaggle_*.ipynb` notebooks were written with AI assistance (Claude)
 and use PyTorch, torchvision and PyYAML. The base model `TorchvisionResNet` is torchvision's ResNet-18, used
 unchanged apart from its last layer, with its ImageNet weights (BSD-3-Clause code; weights from the

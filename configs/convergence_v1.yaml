@@ -1,0 +1,44 @@
+# Training towards convergence. Written on 2026-11-16, before any of these models was
+# trained. Results are on validation data; the test split of final_v1 stays closed
+# (a fresh test set, test_v2, is planned separately and opened once at the end).
+#
+# Every earlier run used 600,000 training drawings and 9,375 steps, and the GRU
+# baseline was still improving (twice the steps: +0.024 AUC). Is H2 still rejected
+# when both models are trained much longer on all the data?
+#
+# Both conditions use every training drawing (train_subset=null, about 2.25M after
+# the held-out countries are removed) and the same number of steps, about 3.75 times
+# the earlier budget: the baseline 8 epochs of one prefix per drawing, the method
+# 4 epochs of two prefixes. Everything else is exactly gru_uniform and
+# gru_anytime_uniform (followup_v1, followup_v2). Nothing is tuned.
+experiment: convergence_v1
+
+common:
+  - train.train_subset=null
+  - eval.subset_per_class=200
+  - eval.final_per_class=1000
+  - data.num_workers=2
+  - data.input_norm=prefix
+  - data.resample_step=8.0
+
+seeds: [42, 43]
+
+conditions:
+  gru_uniform_full:
+    config: configs/baseline_gru.yaml
+    set: [train.epochs=8]
+  gru_anytime_uniform_full:
+    config: configs/baseline_gru.yaml
+    set: [train.epochs=4, train.views_per_drawing=2, model.confidence_head=true, train.consistency_weight=0.5]
+
+# Same evaluation as step 4a: validation halves of 100 drawings per class (seed 2026).
+# The 600,000-drawing runs are scored again from their saved predictions.
+anytime:
+  baseline_conditions: [gru_uniform, gru_anytime_uniform]
+  primary: {a: [gru_anytime_uniform_full, conf], b: [gru_uniform_full, pmax]}
+  comparisons:
+    - {name: "all data: method vs baseline, GRU uniform", a: [gru_anytime_uniform_full, conf], b: [gru_uniform_full, pmax]}
+    - {name: "all data: confidence head vs max softmax, same classifier", a: [gru_anytime_uniform_full, conf], b: [gru_anytime_uniform_full, pmax]}
+    - {name: "all data: max softmax of both", a: [gru_anytime_uniform_full, pmax], b: [gru_uniform_full, pmax]}
+    - {name: "baseline, all data vs 600k", a: [gru_uniform_full, pmax], b: [gru_uniform, pmax]}
+    - {name: "method, all data vs 600k", a: [gru_anytime_uniform_full, conf], b: [gru_anytime_uniform, conf]}

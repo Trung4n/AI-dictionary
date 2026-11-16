@@ -64,8 +64,10 @@ H2 is rejected. At equal compute, the method's stopping AUC is lower than that o
 baseline in every comparison: by 0.013 for the uniform GRU on validation and 0.012 on test
 (0.446 against 0.458), by 0.006 and 0.007 for the CNN (test 0.491 against 0.498), and by 0.010 for
 the GRU with prefix input (Tables~\ref{tab:ablation} and~\ref{tab:test_anytime}). Seed-to-seed
-ranges are below 0.003, so the sign is not in doubt. The learned confidence adds nothing over the
-max softmax of the same classifier ($-0.0004$ on validation, $-0.0003$ on test): the head
+ranges are below 0.003, and the 95\% bootstrap intervals on test are $[-0.013, -0.011]$ (GRU) and
+$[-0.008, -0.006]$ (CNN), so the sign is not in doubt. The learned confidence adds nothing over the
+max softmax of the same classifier ($-0.0004$ on validation, $-0.0003$ on test, interval
+$[-0.0006, -0.0001]$): the head
 recovers, at best, what the softmax already knows. The margin is equally close to the max
 softmax ($+0.0004$), and a rule that answers after a fixed number of strokes is far behind (AUC
 0.288 against 0.459 for the uniform GRU).
@@ -134,11 +136,13 @@ H3 is confirmed (Table~\ref{tab:hierarchy}). At precision 0.95, the semantic tre
 reward area from 0.137 to 0.175 for the GRU and from 0.190 to 0.234 for the CNN on test, with
 realised precision 0.952--0.956. It answers at 35\% of checkpoints against 23\% for flat answers
 (GRU). A tree of the same shape with shuffled classes does no better than flat answers (0.135), so
-the gain comes from which classes are grouped, not from having coarse nodes. The shape tree,
-however, comes close: 0.165 at precision 0.95, a tie at 0.90 for the GRU (0.2297 against 0.2302), and
-slightly ahead at 0.90 for the CNN (0.293 against 0.291). An
-everyday-meaning tree is thus a good tree, but we cannot claim it beats one derived from how
-drawings start.
+the gain comes from which classes are grouped, not from having coarse nodes. Both gains are far
+outside sampling noise (GRU: $+0.038$, interval $[0.037, 0.039]$, over flat; $+0.039$,
+$[0.038, 0.040]$, over shuffled). The shape tree, however, comes close: at precision 0.95 the semantic
+tree leads it by only $0.0095$ ($[0.0087, 0.0102]$), at 0.90 the two tie for the GRU ($+0.0005$,
+$[-0.0003, +0.0014]$), and for the CNN at 0.90 the shape tree is slightly ahead (0.293 against
+0.291). An everyday-meaning tree is thus a good tree, but its advantage over one derived from how
+drawings start is small and depends on the precision target.
 
 \begin{figure}[t]
 \centering
@@ -174,12 +178,14 @@ leak helps mainly on recognised drawings.
 \input{tables/tab_unseen}
 
 On the five held-out countries (Table~\ref{tab:unseen}), end accuracy drops from 78.3\% to 74.7\%
-(GRU) and from 83.9\% to 80.8\% (CNN), but early accuracy is unchanged (8.2--8.6\% at 10\% ink):
+(GRU) and from 83.9\% to 80.8\% (CNN); on the drawings used for stopping the drops are 3.7 points
+($[3.2, 4.2]$) and 3.1 points ($[2.6, 3.6]$). Early accuracy is unchanged (8.2--8.6\% at 10\% ink):
 what differs between countries is the finished drawing, not its first strokes. Stopping AUC falls
-by 0.014--0.019. Thresholds calibrated on validation still met the accuracy-gap target in 15 of 16
+by 0.014 ($[0.011, 0.017]$, CNN) and 0.019 ($[0.015, 0.022]$, GRU). Thresholds calibrated on validation still met the accuracy-gap target in 15 of 16
 cases (one margin miss at 5.06\%), although the guarantee does not formally cover this shift. The
-semantic tree's gain over flat answers is the same as in distribution (+0.040 GRU, +0.044 CNN),
-but its realised precision falls to 0.941--0.944 for a 0.95 target.
+semantic tree's gain over flat answers is the same as in distribution (+0.040 GRU, +0.044 CNN), and
+its own reward area barely moves (CNN $-0.0004$, $[-0.003, +0.002]$; GRU $-0.003$,
+$[-0.006, -0.001]$), but its realised precision falls to 0.941--0.944 for a 0.95 target.
 
 \subsection{An off-the-shelf base model}
 \label{sec:res-base}
@@ -202,16 +208,41 @@ precision 0.95 and $-0.004$ at 0.90. These models were added after the single te
 they have no test numbers; elsewhere validation and test agree within 0.003 AUC, but we have not
 shown it here.
 
-\subsection{Successes and failures}
+\subsection{Error analysis}
 \label{sec:res-examples}
+
+\paragraph{Early confusions.} We take, for every validation drawing, the answer in force once 25\%
+and 50\% of its ink is drawn (pooled over two seeds; at 25\% a third of the drawings have no
+checkpoint yet). Of the drawings with an answer, the CNN gets 18.7\% and 46.2\% right, the GRU 15.9\% and 41.6\%. The
+most frequent confusions at 50\% ink are \emph{picture frame}$\to$\emph{square} (52\% of picture
+frames), \emph{hurricane}$\to$\emph{tornado} (43\%), \emph{map}$\to$\emph{square} (39\%),
+\emph{zebra}$\to$\emph{horse} (33\%), \emph{jacket}$\to$\emph{sweater} (32\%) and \emph{The Mona
+Lisa}$\to$\emph{square} (29\%; CNN, the GRU is similar). Two kinds of error stand out. Some pairs
+share both an outline and a meaning (storms, striped and plain horses, garments); they are what the
+semantic tree turns into correct group answers. Others share only an outline: a picture frame, a map
+and a portrait all begin as a rectangle. At 50\% ink, 23\% of wrong answers stay in the true class's
+semantic group against 11.5\% by chance, but 27\% stay in its early-shape cluster against 5\% by chance
+(25\% and 4.9\% for the GRU). Early errors follow shape more closely than meaning, which is why the
+shape tree comes so close (Sect.~\ref{sec:res-hier}).
+
+\paragraph{When each class is answered.} With max-softmax stopping at $\epsilon = 5\%$, the CNN answers
+\emph{butterfly} and \emph{hand} after about half of their ink, but \emph{square} only at the end and
+\emph{triangle}, \emph{tornado}, \emph{sweater} and \emph{picture frame} after 94--96\%. A square is
+told apart from a frame or a map mostly by what is \emph{not} added, which only the end of the
+drawing reveals. Across classes, the ink needed correlates with the early confusability measured
+before training (Spearman $\rho = 0.31$, $p = 0.002$; GRU $0.18$, $p = 0.08$) and inversely with the
+median number of strokes ($\rho = -0.34$ and $-0.27$, $p < 0.01$), but not with the game's
+recognition rate ($\rho = 0.13$ and $0.00$). Classes drawn in few long strokes put their deciding
+stroke late in the ink.
 
 \IfFileExists{figures/fig_qualitative.pdf}{%
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{fig_qualitative}
-\caption{Max-softmax stopping of the CNN at $\epsilon = 5\%$ on validation drawings. Black: ink
-seen when answering (percentage in brackets); gray: the rest of the drawing. Top: early and right.
-Bottom: early and wrong, although the end of the drawing is classified correctly.}
+\caption{Max-softmax stopping of the CNN at $\epsilon = 5\%$ on validation drawings (seed 42). Black:
+ink seen when answering (share in brackets); gray: the rest of the drawing. Top: answered right with
+less than 40\% of the ink. Bottom: answered wrong, although the end of the drawing is classified
+correctly.}
 \label{fig:qualitative}
 \end{figure}}{%
 \begin{figure}[t]
@@ -222,15 +253,20 @@ Bottom: early and wrong, although the end of the drawing is classified correctly
 \label{fig:qualitative}
 \end{figure}}
 
-Fig.~\ref{fig:qualitative} shows typical cases. % TODO(Kiet): describe the drawn examples once the figure exists.
-The model answers early and correctly when the first strokes are already distinctive, and fails
-early when the first strokes are shared with another class and the deciding detail comes last.
+\paragraph{Examples.} Fig.~\ref{fig:qualitative} shows random cases of both kinds (for this run, 816
+drawings were answered right with less than 40\% of the ink, and 455 were answered wrong although
+the end would have been right). Successes start with a distinctive part: the fan's blade, the
+helicopter's cabin and rotor, the snail's spiral. Failures start with a part another class also has:
+an alarm clock's round body and bells read as an angel's head and wings at 38\% of the ink, a
+squirrel's head and body as a kangaroo, an anvil's top as a diamond, and a jacket is taken for a
+sweater until its opening is drawn.
 
 \subsection{What did not work}
 \label{sec:res-failed}
 For completeness: (i) resampling that kept stroke end points did not remove the leak;
 (ii) the learned stopping method lost to max softmax on every architecture, input and budget we
 tried; (iii) its one apparent success, the exploratory $2\times$ run, was explained by training
-length; (iv) the semantic tree did not beat a shape-derived tree; (v) an early version of the
+length; (iv) the semantic tree beat a shape-derived tree only narrowly, and not at every precision
+target; (v) an early version of the
 risk-control code compared thresholds in float32 during calibration and float64 during evaluation
 (NumPy type promotion); we fixed it and rescored, and every reported number was unchanged.

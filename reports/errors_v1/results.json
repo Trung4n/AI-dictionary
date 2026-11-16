@@ -1,0 +1,2264 @@
+{
+ "runs": [
+  "cnn_prefix_s42",
+  "cnn_prefix_s43",
+  "gru_uniform_s42",
+  "gru_uniform_s43"
+ ],
+ "models": {
+  "cnn_prefix": {
+   "seeds": 2,
+   "early_confusions": [
+    {
+     "at": 0.25,
+     "drawings": 20000,
+     "no_checkpoint_yet": 6462,
+     "accuracy": 0.18695523711035603,
+     "errors": 11007,
+     "top_pairs": [
+      {
+       "true": "hurricane",
+       "predicted": "tornado",
+       "share_of_true_class": 0.35789473684210527,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "zebra",
+       "predicted": "horse",
+       "share_of_true_class": 0.24468085106382978,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "grapes",
+       "predicted": "ant",
+       "share_of_true_class": 0.2222222222222222,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "monkey",
+       "predicted": "sun",
+       "share_of_true_class": 0.21,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "basketball",
+       "predicted": "helmet",
+       "share_of_true_class": 0.21,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "snowman",
+       "predicted": "sun",
+       "share_of_true_class": 0.21578947368421053,
+       "same_semantic_group": true,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "teddy-bear",
+       "predicted": "sun",
+       "share_of_true_class": 0.20202020202020202,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "picture frame",
+       "predicted": "square",
+       "share_of_true_class": 0.39,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "key",
+       "predicted": "sun",
+       "share_of_true_class": 0.1927710843373494,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "The Mona Lisa",
+       "predicted": "square",
+       "share_of_true_class": 0.2719298245614035,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "snowflake",
+       "predicted": "finger",
+       "share_of_true_class": 0.23809523809523808,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "face",
+       "predicted": "helmet",
+       "share_of_true_class": 0.15591397849462366,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "mailbox",
+       "predicted": "finger",
+       "share_of_true_class": 0.25925925925925924,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "blackberry",
+       "predicted": "ant",
+       "share_of_true_class": 0.14432989690721648,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "wristwatch",
+       "predicted": "sun",
+       "share_of_true_class": 0.15217391304347827,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      }
+     ],
+     "errors_within_semantic_group": {
+      "share": 0.1736167893158899,
+      "chance": 0.1224959690481631
+     },
+     "errors_within_semantic_subgroup": {
+      "share": 0.08894339965476515,
+      "chance": 0.039176171637332724
+     },
+     "errors_within_shape_cluster": {
+      "share": 0.14490778595439266,
+      "chance": 0.049096396875083166
+     }
+    },
+    {
+     "at": 0.5,
+     "drawings": 20000,
+     "no_checkpoint_yet": 1108,
+     "accuracy": 0.4620474274825323,
+     "errors": 10163,
+     "top_pairs": [
+      {
+       "true": "picture frame",
+       "predicted": "square",
+       "share_of_true_class": 0.5153061224489796,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "hurricane",
+       "predicted": "tornado",
+       "share_of_true_class": 0.43434343434343436,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "map",
+       "predicted": "square",
+       "share_of_true_class": 0.3858695652173913,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "zebra",
+       "predicted": "horse",
+       "share_of_true_class": 0.3333333333333333,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "jacket",
+       "predicted": "sweater",
+       "share_of_true_class": 0.32,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "tornado",
+       "predicted": "hurricane",
+       "share_of_true_class": 0.29797979797979796,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "The Mona Lisa",
+       "predicted": "square",
+       "share_of_true_class": 0.29292929292929293,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "sweater",
+       "predicted": "jacket",
+       "share_of_true_class": 0.25257731958762886,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "star",
+       "predicted": "mountain",
+       "share_of_true_class": 0.2388888888888889,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "television",
+       "predicted": "map",
+       "share_of_true_class": 0.21649484536082475,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "blackberry",
+       "predicted": "grapes",
+       "share_of_true_class": 0.21,
+       "same_semantic_group": true,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "face",
+       "predicted": "basketball",
+       "share_of_true_class": 0.21,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "television",
+       "predicted": "square",
+       "share_of_true_class": 0.211340206185567,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "bathtub",
+       "predicted": "skateboard",
+       "share_of_true_class": 0.205,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "tent",
+       "predicted": "mountain",
+       "share_of_true_class": 0.22413793103448276,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      }
+     ],
+     "errors_within_semantic_group": {
+      "share": 0.2323132933189019,
+      "chance": 0.11485910964411408
+     },
+     "errors_within_semantic_subgroup": {
+      "share": 0.13696743087670962,
+      "chance": 0.0382343557587088
+     },
+     "errors_within_shape_cluster": {
+      "share": 0.2658663780379809,
+      "chance": 0.04915732151784498
+     }
+    }
+   ],
+   "stopping": {
+    "gap_target": 0.05,
+    "overall": {
+     "mean_ink": 0.7400800185378156,
+     "early_error": 0.04545
+    },
+    "classes": [
+     {
+      "class": "The Mona Lisa",
+      "drawings": 200,
+      "mean_ink": 0.6867402685043075,
+      "accuracy": 0.86,
+      "early_error": 0.105
+     },
+     {
+      "class": "alarm clock",
+      "drawings": 200,
+      "mean_ink": 0.7442434645668969,
+      "accuracy": 0.83,
+      "early_error": 0.085
+     },
+     {
+      "class": "angel",
+      "drawings": 200,
+      "mean_ink": 0.5788100067872556,
+      "accuracy": 0.81,
+      "early_error": 0.075
+     },
+     {
+      "class": "ant",
+      "drawings": 200,
+      "mean_ink": 0.8233949943899855,
+      "accuracy": 0.8,
+      "early_error": 0.025
+     },
+     {
+      "class": "anvil",
+      "drawings": 200,
+      "mean_ink": 0.7330956206500423,
+      "accuracy": 0.845,
+      "early_error": 0.07
+     },
+     {
+      "class": "apple",
+      "drawings": 200,
+      "mean_ink": 0.7332087516985226,
+      "accuracy": 0.895,
+      "early_error": 0.0
+     },
+     {
+      "class": "basketball",
+      "drawings": 200,
+      "mean_ink": 0.6845982628522128,
+      "accuracy": 0.92,
+      "early_error": 0.0
+     },
+     {
+      "class": "bat",
+      "drawings": 200,
+      "mean_ink": 0.6624439648827773,
+      "accuracy": 0.745,
+      "early_error": 0.05
+     },
+     {
+      "class": "bathtub",
+      "drawings": 200,
+      "mean_ink": 0.8271016126304711,
+      "accuracy": 0.845,
+      "early_error": 0.02
+     },
+     {
+      "class": "bird",
+      "drawings": 200,
+      "mean_ink": 0.8373020600031702,
+      "accuracy": 0.45,
+      "early_error": 0.085
+     },
+     {
+      "class": "blackberry",
+      "drawings": 200,
+      "mean_ink": 0.7622734825706877,
+      "accuracy": 0.57,
+      "early_error": 0.095
+     },
+     {
+      "class": "boomerang",
+      "drawings": 200,
+      "mean_ink": 0.8384162519495115,
+      "accuracy": 0.82,
+      "early_error": 0.015
+     },
+     {
+      "class": "bowtie",
+      "drawings": 200,
+      "mean_ink": 0.6817757544201599,
+      "accuracy": 0.835,
+      "early_error": 0.065
+     },
+     {
+      "class": "bracelet",
+      "drawings": 200,
+      "mean_ink": 0.7642538926086155,
+      "accuracy": 0.755,
+      "early_error": 0.045
+     },
+     {
+      "class": "butterfly",
+      "drawings": 200,
+      "mean_ink": 0.5052791518081193,
+      "accuracy": 0.94,
+      "early_error": 0.01
+     },
+     {
+      "class": "camel",
+      "drawings": 200,
+      "mean_ink": 0.6653588434653437,
+      "accuracy": 0.87,
+      "early_error": 0.035
+     },
+     {
+      "class": "camouflage",
+      "drawings": 200,
+      "mean_ink": 0.7932693954862462,
+      "accuracy": 0.675,
+      "early_error": 0.08
+     },
+     {
+      "class": "castle",
+      "drawings": 200,
+      "mean_ink": 0.6645777191252401,
+      "accuracy": 0.875,
+      "early_error": 0.05
+     },
+     {
+      "class": "cello",
+      "drawings": 200,
+      "mean_ink": 0.5863604367216285,
+      "accuracy": 0.77,
+      "early_error": 0.065
+     },
+     {
+      "class": "chandelier",
+      "drawings": 200,
+      "mean_ink": 0.6178158101782288,
+      "accuracy": 0.885,
+      "early_error": 0.03
+     },
+     {
+      "class": "church",
+      "drawings": 200,
+      "mean_ink": 0.7253237620051627,
+      "accuracy": 0.81,
+      "early_error": 0.085
+     },
+     {
+      "class": "computer",
+      "drawings": 200,
+      "mean_ink": 0.7530095893546299,
+      "accuracy": 0.87,
+      "early_error": 0.04
+     },
+     {
+      "class": "cruise ship",
+      "drawings": 200,
+      "mean_ink": 0.8273156596899337,
+      "accuracy": 0.8,
+      "early_error": 0.06
+     },
+     {
+      "class": "diamond",
+      "drawings": 200,
+      "mean_ink": 0.6328862421659044,
+      "accuracy": 0.96,
+      "early_error": 0.02
+     },
+     {
+      "class": "drill",
+      "drawings": 200,
+      "mean_ink": 0.7917055983956761,
+      "accuracy": 0.695,
+      "early_error": 0.06
+     },
+     {
+      "class": "duck",
+      "drawings": 200,
+      "mean_ink": 0.7712110497007181,
+      "accuracy": 0.69,
+      "early_error": 0.045
+     },
+     {
+      "class": "face",
+      "drawings": 200,
+      "mean_ink": 0.7739401488177875,
+      "accuracy": 0.82,
+      "early_error": 0.045
+     },
+     {
+      "class": "fan",
+      "drawings": 200,
+      "mean_ink": 0.5680618503839355,
+      "accuracy": 0.76,
+      "early_error": 0.12
+     },
+     {
+      "class": "fence",
+      "drawings": 200,
+      "mean_ink": 0.6393685483982628,
+      "accuracy": 0.97,
+      "early_error": 0.01
+     },
+     {
+      "class": "finger",
+      "drawings": 200,
+      "mean_ink": 0.889471649107443,
+      "accuracy": 0.725,
+      "early_error": 0.005
+     },
+     {
+      "class": "flip flops",
+      "drawings": 200,
+      "mean_ink": 0.7812640506711586,
+      "accuracy": 0.82,
+      "early_error": 0.015
+     },
+     {
+      "class": "floor lamp",
+      "drawings": 200,
+      "mean_ink": 0.7340643436138956,
+      "accuracy": 0.745,
+      "early_error": 0.015
+     },
+     {
+      "class": "foot",
+      "drawings": 200,
+      "mean_ink": 0.7538909844391023,
+      "accuracy": 0.73,
+      "early_error": 0.045
+     },
+     {
+      "class": "giraffe",
+      "drawings": 200,
+      "mean_ink": 0.7144425839329586,
+      "accuracy": 0.895,
+      "early_error": 0.035
+     },
+     {
+      "class": "grapes",
+      "drawings": 200,
+      "mean_ink": 0.7154965530598112,
+      "accuracy": 0.83,
+      "early_error": 0.065
+     },
+     {
+      "class": "hand",
+      "drawings": 200,
+      "mean_ink": 0.5532605241491653,
+      "accuracy": 0.925,
+      "early_error": 0.005
+     },
+     {
+      "class": "helicopter",
+      "drawings": 200,
+      "mean_ink": 0.6135349211897146,
+      "accuracy": 0.86,
+      "early_error": 0.075
+     },
+     {
+      "class": "helmet",
+      "drawings": 200,
+      "mean_ink": 0.8748935763702909,
+      "accuracy": 0.77,
+      "early_error": 0.015
+     },
+     {
+      "class": "hockey stick",
+      "drawings": 200,
+      "mean_ink": 0.8779459088993038,
+      "accuracy": 0.85,
+      "early_error": 0.0
+     },
+     {
+      "class": "horse",
+      "drawings": 200,
+      "mean_ink": 0.9097791736192403,
+      "accuracy": 0.77,
+      "early_error": 0.05
+     },
+     {
+      "class": "house plant",
+      "drawings": 200,
+      "mean_ink": 0.5850890469039899,
+      "accuracy": 0.87,
+      "early_error": 0.05
+     },
+     {
+      "class": "hurricane",
+      "drawings": 200,
+      "mean_ink": 0.9152648677110398,
+      "accuracy": 0.225,
+      "early_error": 0.015
+     },
+     {
+      "class": "jacket",
+      "drawings": 200,
+      "mean_ink": 0.8833279257985589,
+      "accuracy": 0.795,
+      "early_error": 0.055
+     },
+     {
+      "class": "kangaroo",
+      "drawings": 200,
+      "mean_ink": 0.7319693936209319,
+      "accuracy": 0.86,
+      "early_error": 0.035
+     },
+     {
+      "class": "key",
+      "drawings": 200,
+      "mean_ink": 0.7378196149385312,
+      "accuracy": 0.81,
+      "early_error": 0.05
+     },
+     {
+      "class": "knee",
+      "drawings": 200,
+      "mean_ink": 0.8589772386246471,
+      "accuracy": 0.72,
+      "early_error": 0.025
+     },
+     {
+      "class": "lighthouse",
+      "drawings": 200,
+      "mean_ink": 0.6733118937236864,
+      "accuracy": 0.815,
+      "early_error": 0.095
+     },
+     {
+      "class": "lightning",
+      "drawings": 200,
+      "mean_ink": 0.6734583048111525,
+      "accuracy": 0.9,
+      "early_error": 0.01
+     },
+     {
+      "class": "lobster",
+      "drawings": 200,
+      "mean_ink": 0.8197567375381183,
+      "accuracy": 0.655,
+      "early_error": 0.06
+     },
+     {
+      "class": "lollipop",
+      "drawings": 200,
+      "mean_ink": 0.8227492182250009,
+      "accuracy": 0.815,
+      "early_error": 0.04
+     },
+     {
+      "class": "mailbox",
+      "drawings": 200,
+      "mean_ink": 0.7891841813220496,
+      "accuracy": 0.915,
+      "early_error": 0.01
+     },
+     {
+      "class": "map",
+      "drawings": 200,
+      "mean_ink": 0.790243614016662,
+      "accuracy": 0.895,
+      "early_error": 0.02
+     },
+     {
+      "class": "megaphone",
+      "drawings": 200,
+      "mean_ink": 0.6953862417787766,
+      "accuracy": 0.775,
+      "early_error": 0.095
+     },
+     {
+      "class": "monkey",
+      "drawings": 200,
+      "mean_ink": 0.767522379063553,
+      "accuracy": 0.71,
+      "early_error": 0.13
+     },
+     {
+      "class": "mountain",
+      "drawings": 200,
+      "mean_ink": 0.88181062865391,
+      "accuracy": 0.845,
+      "early_error": 0.005
+     },
+     {
+      "class": "mouth",
+      "drawings": 200,
+      "mean_ink": 0.6840153775337362,
+      "accuracy": 0.895,
+      "early_error": 0.035
+     },
+     {
+      "class": "mushroom",
+      "drawings": 200,
+      "mean_ink": 0.803271930977005,
+      "accuracy": 0.915,
+      "early_error": 0.03
+     },
+     {
+      "class": "nose",
+      "drawings": 200,
+      "mean_ink": 0.902684215565733,
+      "accuracy": 0.55,
+      "early_error": 0.02
+     },
+     {
+      "class": "octopus",
+      "drawings": 200,
+      "mean_ink": 0.5876365337953154,
+      "accuracy": 0.885,
+      "early_error": 0.03
+     },
+     {
+      "class": "onion",
+      "drawings": 200,
+      "mean_ink": 0.6278414783010194,
+      "accuracy": 0.765,
+      "early_error": 0.07
+     },
+     {
+      "class": "owl",
+      "drawings": 200,
+      "mean_ink": 0.6266012047948252,
+      "accuracy": 0.735,
+      "early_error": 0.095
+     },
+     {
+      "class": "parachute",
+      "drawings": 200,
+      "mean_ink": 0.664289940274431,
+      "accuracy": 0.785,
+      "early_error": 0.125
+     },
+     {
+      "class": "picture frame",
+      "drawings": 200,
+      "mean_ink": 0.9366444387040272,
+      "accuracy": 0.835,
+      "early_error": 0.005
+     },
+     {
+      "class": "pig",
+      "drawings": 200,
+      "mean_ink": 0.6510779323446585,
+      "accuracy": 0.855,
+      "early_error": 0.04
+     },
+     {
+      "class": "popsicle",
+      "drawings": 200,
+      "mean_ink": 0.7448410868555446,
+      "accuracy": 0.83,
+      "early_error": 0.035
+     },
+     {
+      "class": "purse",
+      "drawings": 200,
+      "mean_ink": 0.7789748025497871,
+      "accuracy": 0.895,
+      "early_error": 0.015
+     },
+     {
+      "class": "rabbit",
+      "drawings": 200,
+      "mean_ink": 0.6618345190037581,
+      "accuracy": 0.905,
+      "early_error": 0.025
+     },
+     {
+      "class": "rake",
+      "drawings": 200,
+      "mean_ink": 0.7124703261471106,
+      "accuracy": 0.88,
+      "early_error": 0.03
+     },
+     {
+      "class": "rollerskates",
+      "drawings": 200,
+      "mean_ink": 0.7164395981173866,
+      "accuracy": 0.815,
+      "early_error": 0.085
+     },
+     {
+      "class": "sailboat",
+      "drawings": 200,
+      "mean_ink": 0.7980355279089523,
+      "accuracy": 0.89,
+      "early_error": 0.075
+     },
+     {
+      "class": "saxophone",
+      "drawings": 200,
+      "mean_ink": 0.6046922241804263,
+      "accuracy": 0.925,
+      "early_error": 0.015
+     },
+     {
+      "class": "scissors",
+      "drawings": 200,
+      "mean_ink": 0.690054995408684,
+      "accuracy": 0.9,
+      "early_error": 0.07
+     },
+     {
+      "class": "scorpion",
+      "drawings": 200,
+      "mean_ink": 0.6425391670252878,
+      "accuracy": 0.8,
+      "early_error": 0.06
+     },
+     {
+      "class": "skateboard",
+      "drawings": 200,
+      "mean_ink": 0.8158896029929498,
+      "accuracy": 0.95,
+      "early_error": 0.01
+     },
+     {
+      "class": "sleeping bag",
+      "drawings": 200,
+      "mean_ink": 0.8568409805856392,
+      "accuracy": 0.76,
+      "early_error": 0.035
+     },
+     {
+      "class": "snail",
+      "drawings": 200,
+      "mean_ink": 0.6977755024223852,
+      "accuracy": 0.885,
+      "early_error": 0.04
+     },
+     {
+      "class": "snowflake",
+      "drawings": 200,
+      "mean_ink": 0.5715562659100083,
+      "accuracy": 0.88,
+      "early_error": 0.07
+     },
+     {
+      "class": "snowman",
+      "drawings": 200,
+      "mean_ink": 0.7173661042368238,
+      "accuracy": 0.905,
+      "early_error": 0.005
+     },
+     {
+      "class": "sock",
+      "drawings": 200,
+      "mean_ink": 0.8269005718539496,
+      "accuracy": 0.795,
+      "early_error": 0.01
+     },
+     {
+      "class": "spider",
+      "drawings": 200,
+      "mean_ink": 0.7208824259415834,
+      "accuracy": 0.75,
+      "early_error": 0.095
+     },
+     {
+      "class": "square",
+      "drawings": 200,
+      "mean_ink": 0.9990425862986418,
+      "accuracy": 0.585,
+      "early_error": 0.0
+     },
+     {
+      "class": "squirrel",
+      "drawings": 200,
+      "mean_ink": 0.6909547945355169,
+      "accuracy": 0.71,
+      "early_error": 0.145
+     },
+     {
+      "class": "star",
+      "drawings": 200,
+      "mean_ink": 0.6517598324011488,
+      "accuracy": 0.975,
+      "early_error": 0.005
+     },
+     {
+      "class": "stop sign",
+      "drawings": 200,
+      "mean_ink": 0.5706013094858007,
+      "accuracy": 0.875,
+      "early_error": 0.08
+     },
+     {
+      "class": "sun",
+      "drawings": 200,
+      "mean_ink": 0.7036123966910742,
+      "accuracy": 0.905,
+      "early_error": 0.02
+     },
+     {
+      "class": "sweater",
+      "drawings": 200,
+      "mean_ink": 0.9505396520721496,
+      "accuracy": 0.58,
+      "early_error": 0.005
+     },
+     {
+      "class": "t-shirt",
+      "drawings": 200,
+      "mean_ink": 0.7944420697973942,
+      "accuracy": 0.825,
+      "early_error": 0.005
+     },
+     {
+      "class": "teddy-bear",
+      "drawings": 200,
+      "mean_ink": 0.6753722279235782,
+      "accuracy": 0.77,
+      "early_error": 0.085
+     },
+     {
+      "class": "television",
+      "drawings": 200,
+      "mean_ink": 0.8066545728236104,
+      "accuracy": 0.855,
+      "early_error": 0.06
+     },
+     {
+      "class": "tent",
+      "drawings": 200,
+      "mean_ink": 0.851775108180115,
+      "accuracy": 0.855,
+      "early_error": 0.04
+     },
+     {
+      "class": "tornado",
+      "drawings": 200,
+      "mean_ink": 0.9602002675487704,
+      "accuracy": 0.95,
+      "early_error": 0.025
+     },
+     {
+      "class": "tractor",
+      "drawings": 200,
+      "mean_ink": 0.594473871226171,
+      "accuracy": 0.82,
+      "early_error": 0.085
+     },
+     {
+      "class": "triangle",
+      "drawings": 200,
+      "mean_ink": 0.9590245885384533,
+      "accuracy": 0.795,
+      "early_error": 0.01
+     },
+     {
+      "class": "umbrella",
+      "drawings": 200,
+      "mean_ink": 0.7004507896145188,
+      "accuracy": 0.88,
+      "early_error": 0.035
+     },
+     {
+      "class": "waterslide",
+      "drawings": 200,
+      "mean_ink": 0.6993230193751243,
+      "accuracy": 0.825,
+      "early_error": 0.01
+     },
+     {
+      "class": "whale",
+      "drawings": 200,
+      "mean_ink": 0.7146832873194185,
+      "accuracy": 0.825,
+      "early_error": 0.035
+     },
+     {
+      "class": "wine bottle",
+      "drawings": 200,
+      "mean_ink": 0.6009881072696319,
+      "accuracy": 0.94,
+      "early_error": 0.005
+     },
+     {
+      "class": "wristwatch",
+      "drawings": 200,
+      "mean_ink": 0.7105351913428393,
+      "accuracy": 0.735,
+      "early_error": 0.09
+     },
+     {
+      "class": "yoga",
+      "drawings": 200,
+      "mean_ink": 0.819631337367938,
+      "accuracy": 0.625,
+      "early_error": 0.095
+     },
+     {
+      "class": "zebra",
+      "drawings": 200,
+      "mean_ink": 0.7957223405445072,
+      "accuracy": 0.795,
+      "early_error": 0.075
+     }
+    ]
+   },
+   "earliest_classes": [
+    {
+     "class": "butterfly",
+     "drawings": 200,
+     "mean_ink": 0.5052791518081193,
+     "accuracy": 0.94,
+     "early_error": 0.01
+    },
+    {
+     "class": "hand",
+     "drawings": 200,
+     "mean_ink": 0.5532605241491653,
+     "accuracy": 0.925,
+     "early_error": 0.005
+    },
+    {
+     "class": "fan",
+     "drawings": 200,
+     "mean_ink": 0.5680618503839355,
+     "accuracy": 0.76,
+     "early_error": 0.12
+    },
+    {
+     "class": "stop sign",
+     "drawings": 200,
+     "mean_ink": 0.5706013094858007,
+     "accuracy": 0.875,
+     "early_error": 0.08
+    },
+    {
+     "class": "snowflake",
+     "drawings": 200,
+     "mean_ink": 0.5715562659100083,
+     "accuracy": 0.88,
+     "early_error": 0.07
+    },
+    {
+     "class": "angel",
+     "drawings": 200,
+     "mean_ink": 0.5788100067872556,
+     "accuracy": 0.81,
+     "early_error": 0.075
+    },
+    {
+     "class": "house plant",
+     "drawings": 200,
+     "mean_ink": 0.5850890469039899,
+     "accuracy": 0.87,
+     "early_error": 0.05
+    },
+    {
+     "class": "cello",
+     "drawings": 200,
+     "mean_ink": 0.5863604367216285,
+     "accuracy": 0.77,
+     "early_error": 0.065
+    },
+    {
+     "class": "octopus",
+     "drawings": 200,
+     "mean_ink": 0.5876365337953154,
+     "accuracy": 0.885,
+     "early_error": 0.03
+    },
+    {
+     "class": "tractor",
+     "drawings": 200,
+     "mean_ink": 0.594473871226171,
+     "accuracy": 0.82,
+     "early_error": 0.085
+    }
+   ],
+   "latest_classes": [
+    {
+     "class": "jacket",
+     "drawings": 200,
+     "mean_ink": 0.8833279257985589,
+     "accuracy": 0.795,
+     "early_error": 0.055
+    },
+    {
+     "class": "finger",
+     "drawings": 200,
+     "mean_ink": 0.889471649107443,
+     "accuracy": 0.725,
+     "early_error": 0.005
+    },
+    {
+     "class": "nose",
+     "drawings": 200,
+     "mean_ink": 0.902684215565733,
+     "accuracy": 0.55,
+     "early_error": 0.02
+    },
+    {
+     "class": "horse",
+     "drawings": 200,
+     "mean_ink": 0.9097791736192403,
+     "accuracy": 0.77,
+     "early_error": 0.05
+    },
+    {
+     "class": "hurricane",
+     "drawings": 200,
+     "mean_ink": 0.9152648677110398,
+     "accuracy": 0.225,
+     "early_error": 0.015
+    },
+    {
+     "class": "picture frame",
+     "drawings": 200,
+     "mean_ink": 0.9366444387040272,
+     "accuracy": 0.835,
+     "early_error": 0.005
+    },
+    {
+     "class": "sweater",
+     "drawings": 200,
+     "mean_ink": 0.9505396520721496,
+     "accuracy": 0.58,
+     "early_error": 0.005
+    },
+    {
+     "class": "triangle",
+     "drawings": 200,
+     "mean_ink": 0.9590245885384533,
+     "accuracy": 0.795,
+     "early_error": 0.01
+    },
+    {
+     "class": "tornado",
+     "drawings": 200,
+     "mean_ink": 0.9602002675487704,
+     "accuracy": 0.95,
+     "early_error": 0.025
+    },
+    {
+     "class": "square",
+     "drawings": 200,
+     "mean_ink": 0.9990425862986418,
+     "accuracy": 0.585,
+     "early_error": 0.0
+    }
+   ],
+   "stopping_ink_vs_eda": {
+    "recognized_rate": {
+     "spearman": 0.129957334986584,
+     "p_value": 0.19749988667227472,
+     "classes": 100
+    },
+    "early_confusability": {
+     "spearman": 0.30609746611020394,
+     "p_value": 0.0019536415119987692,
+     "classes": 100
+    },
+    "n_strokes_median": {
+     "spearman": -0.3396272142009608,
+     "p_value": 0.0005463786998003722,
+     "classes": 100
+    }
+   }
+  },
+  "gru_uniform": {
+   "seeds": 2,
+   "early_confusions": [
+    {
+     "at": 0.25,
+     "drawings": 20000,
+     "no_checkpoint_yet": 6462,
+     "accuracy": 0.15895996454424582,
+     "errors": 11386,
+     "top_pairs": [
+      {
+       "true": "basketball",
+       "predicted": "face",
+       "share_of_true_class": 0.29,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "hurricane",
+       "predicted": "tornado",
+       "share_of_true_class": 0.2894736842105263,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "face",
+       "predicted": "basketball",
+       "share_of_true_class": 0.22580645161290322,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "picture frame",
+       "predicted": "square",
+       "share_of_true_class": 0.41,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "grapes",
+       "predicted": "ant",
+       "share_of_true_class": 0.17676767676767677,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "bracelet",
+       "predicted": "basketball",
+       "share_of_true_class": 0.19230769230769232,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "purse",
+       "predicted": "helmet",
+       "share_of_true_class": 0.2982456140350877,
+       "same_semantic_group": true,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "floor lamp",
+       "predicted": "skateboard",
+       "share_of_true_class": 0.25384615384615383,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "The Mona Lisa",
+       "predicted": "square",
+       "share_of_true_class": 0.2894736842105263,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "snowman",
+       "predicted": "sun",
+       "share_of_true_class": 0.1736842105263158,
+       "same_semantic_group": true,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "snowflake",
+       "predicted": "square",
+       "share_of_true_class": 0.25396825396825395,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "alarm clock",
+       "predicted": "basketball",
+       "share_of_true_class": 0.19047619047619047,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "zebra",
+       "predicted": "horse",
+       "share_of_true_class": 0.1702127659574468,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "television",
+       "predicted": "square",
+       "share_of_true_class": 0.3974358974358974,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "monkey",
+       "predicted": "sun",
+       "share_of_true_class": 0.145,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      }
+     ],
+     "errors_within_semantic_group": {
+      "share": 0.17003337431933954,
+      "chance": 0.12342997869082532
+     },
+     "errors_within_semantic_subgroup": {
+      "share": 0.08246969963112595,
+      "chance": 0.039391810250759836
+     },
+     "errors_within_shape_cluster": {
+      "share": 0.16028455998594765,
+      "chance": 0.04936684604697954
+     }
+    },
+    {
+     "at": 0.5,
+     "drawings": 20000,
+     "no_checkpoint_yet": 1108,
+     "accuracy": 0.415731526572094,
+     "errors": 11038,
+     "top_pairs": [
+      {
+       "true": "picture frame",
+       "predicted": "square",
+       "share_of_true_class": 0.5153061224489796,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "zebra",
+       "predicted": "horse",
+       "share_of_true_class": 0.3484848484848485,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "hurricane",
+       "predicted": "tornado",
+       "share_of_true_class": 0.3333333333333333,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "map",
+       "predicted": "square",
+       "share_of_true_class": 0.34782608695652173,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "The Mona Lisa",
+       "predicted": "square",
+       "share_of_true_class": 0.3181818181818182,
+       "same_semantic_group": false,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "jacket",
+       "predicted": "sweater",
+       "share_of_true_class": 0.285,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "tornado",
+       "predicted": "hurricane",
+       "share_of_true_class": 0.2828282828282828,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "face",
+       "predicted": "basketball",
+       "share_of_true_class": 0.245,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "tent",
+       "predicted": "mountain",
+       "share_of_true_class": 0.27586206896551724,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "sweater",
+       "predicted": "jacket",
+       "share_of_true_class": 0.24742268041237114,
+       "same_semantic_group": true,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "blackberry",
+       "predicted": "grapes",
+       "share_of_true_class": 0.235,
+       "same_semantic_group": true,
+       "same_shape_cluster": false
+      },
+      {
+       "true": "television",
+       "predicted": "square",
+       "share_of_true_class": 0.2268041237113402,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "tent",
+       "predicted": "triangle",
+       "share_of_true_class": 0.23563218390804597,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "teddy-bear",
+       "predicted": "monkey",
+       "share_of_true_class": 0.205,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      },
+      {
+       "true": "bathtub",
+       "predicted": "skateboard",
+       "share_of_true_class": 0.205,
+       "same_semantic_group": false,
+       "same_shape_cluster": true
+      }
+     ],
+     "errors_within_semantic_group": {
+      "share": 0.23464395723863019,
+      "chance": 0.11636568621529664
+     },
+     "errors_within_semantic_subgroup": {
+      "share": 0.13335749229932958,
+      "chance": 0.038388047900640765
+     },
+     "errors_within_shape_cluster": {
+      "share": 0.25729298786011956,
+      "chance": 0.04922297810502196
+     }
+    }
+   ],
+   "stopping": {
+    "gap_target": 0.05,
+    "overall": {
+     "mean_ink": 0.7654832109760811,
+     "early_error": 0.0459
+    },
+    "classes": [
+     {
+      "class": "The Mona Lisa",
+      "drawings": 200,
+      "mean_ink": 0.7061689567929481,
+      "accuracy": 0.805,
+      "early_error": 0.145
+     },
+     {
+      "class": "alarm clock",
+      "drawings": 200,
+      "mean_ink": 0.7989551682903868,
+      "accuracy": 0.74,
+      "early_error": 0.1
+     },
+     {
+      "class": "angel",
+      "drawings": 200,
+      "mean_ink": 0.6042666486250997,
+      "accuracy": 0.76,
+      "early_error": 0.09
+     },
+     {
+      "class": "ant",
+      "drawings": 200,
+      "mean_ink": 0.826866196024574,
+      "accuracy": 0.745,
+      "early_error": 0.025
+     },
+     {
+      "class": "anvil",
+      "drawings": 200,
+      "mean_ink": 0.794200949109777,
+      "accuracy": 0.81,
+      "early_error": 0.015
+     },
+     {
+      "class": "apple",
+      "drawings": 200,
+      "mean_ink": 0.7826782142744793,
+      "accuracy": 0.835,
+      "early_error": 0.0
+     },
+     {
+      "class": "basketball",
+      "drawings": 200,
+      "mean_ink": 0.6719901035581322,
+      "accuracy": 0.875,
+      "early_error": 0.015
+     },
+     {
+      "class": "bat",
+      "drawings": 200,
+      "mean_ink": 0.7032383445726959,
+      "accuracy": 0.625,
+      "early_error": 0.045
+     },
+     {
+      "class": "bathtub",
+      "drawings": 200,
+      "mean_ink": 0.86423563998761,
+      "accuracy": 0.715,
+      "early_error": 0.005
+     },
+     {
+      "class": "bird",
+      "drawings": 200,
+      "mean_ink": 0.872377560235323,
+      "accuracy": 0.395,
+      "early_error": 0.04
+     },
+     {
+      "class": "blackberry",
+      "drawings": 200,
+      "mean_ink": 0.751059791423296,
+      "accuracy": 0.55,
+      "early_error": 0.105
+     },
+     {
+      "class": "boomerang",
+      "drawings": 200,
+      "mean_ink": 0.8800236173385128,
+      "accuracy": 0.715,
+      "early_error": 0.005
+     },
+     {
+      "class": "bowtie",
+      "drawings": 200,
+      "mean_ink": 0.7227971541557687,
+      "accuracy": 0.815,
+      "early_error": 0.01
+     },
+     {
+      "class": "bracelet",
+      "drawings": 200,
+      "mean_ink": 0.7891634357958079,
+      "accuracy": 0.665,
+      "early_error": 0.04
+     },
+     {
+      "class": "butterfly",
+      "drawings": 200,
+      "mean_ink": 0.49755327564680824,
+      "accuracy": 0.865,
+      "early_error": 0.03
+     },
+     {
+      "class": "camel",
+      "drawings": 200,
+      "mean_ink": 0.7157047269628714,
+      "accuracy": 0.74,
+      "early_error": 0.04
+     },
+     {
+      "class": "camouflage",
+      "drawings": 200,
+      "mean_ink": 0.781430161022107,
+      "accuracy": 0.56,
+      "early_error": 0.115
+     },
+     {
+      "class": "castle",
+      "drawings": 200,
+      "mean_ink": 0.65344898312371,
+      "accuracy": 0.85,
+      "early_error": 0.06
+     },
+     {
+      "class": "cello",
+      "drawings": 200,
+      "mean_ink": 0.628372070502475,
+      "accuracy": 0.765,
+      "early_error": 0.1
+     },
+     {
+      "class": "chandelier",
+      "drawings": 200,
+      "mean_ink": 0.6442058738953844,
+      "accuracy": 0.86,
+      "early_error": 0.04
+     },
+     {
+      "class": "church",
+      "drawings": 200,
+      "mean_ink": 0.7611971270710736,
+      "accuracy": 0.7,
+      "early_error": 0.12
+     },
+     {
+      "class": "computer",
+      "drawings": 200,
+      "mean_ink": 0.7317533241901362,
+      "accuracy": 0.825,
+      "early_error": 0.08
+     },
+     {
+      "class": "cruise ship",
+      "drawings": 200,
+      "mean_ink": 0.8420697760360503,
+      "accuracy": 0.73,
+      "early_error": 0.075
+     },
+     {
+      "class": "diamond",
+      "drawings": 200,
+      "mean_ink": 0.6955130760646563,
+      "accuracy": 0.95,
+      "early_error": 0.005
+     },
+     {
+      "class": "drill",
+      "drawings": 200,
+      "mean_ink": 0.8989230098166271,
+      "accuracy": 0.63,
+      "early_error": 0.02
+     },
+     {
+      "class": "duck",
+      "drawings": 200,
+      "mean_ink": 0.8356518532853169,
+      "accuracy": 0.635,
+      "early_error": 0.035
+     },
+     {
+      "class": "face",
+      "drawings": 200,
+      "mean_ink": 0.8084925865137984,
+      "accuracy": 0.785,
+      "early_error": 0.035
+     },
+     {
+      "class": "fan",
+      "drawings": 200,
+      "mean_ink": 0.577511746242353,
+      "accuracy": 0.76,
+      "early_error": 0.145
+     },
+     {
+      "class": "fence",
+      "drawings": 200,
+      "mean_ink": 0.6725238648751314,
+      "accuracy": 0.895,
+      "early_error": 0.005
+     },
+     {
+      "class": "finger",
+      "drawings": 200,
+      "mean_ink": 0.8656211186130054,
+      "accuracy": 0.69,
+      "early_error": 0.01
+     },
+     {
+      "class": "flip flops",
+      "drawings": 200,
+      "mean_ink": 0.8549108033946956,
+      "accuracy": 0.805,
+      "early_error": 0.0
+     },
+     {
+      "class": "floor lamp",
+      "drawings": 200,
+      "mean_ink": 0.7267869653434302,
+      "accuracy": 0.685,
+      "early_error": 0.03
+     },
+     {
+      "class": "foot",
+      "drawings": 200,
+      "mean_ink": 0.8187973127513649,
+      "accuracy": 0.66,
+      "early_error": 0.015
+     },
+     {
+      "class": "giraffe",
+      "drawings": 200,
+      "mean_ink": 0.7431065159944484,
+      "accuracy": 0.78,
+      "early_error": 0.09
+     },
+     {
+      "class": "grapes",
+      "drawings": 200,
+      "mean_ink": 0.7260850664965719,
+      "accuracy": 0.745,
+      "early_error": 0.055
+     },
+     {
+      "class": "hand",
+      "drawings": 200,
+      "mean_ink": 0.504649296443612,
+      "accuracy": 0.875,
+      "early_error": 0.035
+     },
+     {
+      "class": "helicopter",
+      "drawings": 200,
+      "mean_ink": 0.6688962951368151,
+      "accuracy": 0.78,
+      "early_error": 0.105
+     },
+     {
+      "class": "helmet",
+      "drawings": 200,
+      "mean_ink": 0.8691340126503583,
+      "accuracy": 0.76,
+      "early_error": 0.02
+     },
+     {
+      "class": "hockey stick",
+      "drawings": 200,
+      "mean_ink": 0.8944385031409281,
+      "accuracy": 0.78,
+      "early_error": 0.0
+     },
+     {
+      "class": "horse",
+      "drawings": 200,
+      "mean_ink": 0.8789522908454009,
+      "accuracy": 0.57,
+      "early_error": 0.06
+     },
+     {
+      "class": "house plant",
+      "drawings": 200,
+      "mean_ink": 0.6148343539490565,
+      "accuracy": 0.83,
+      "early_error": 0.095
+     },
+     {
+      "class": "hurricane",
+      "drawings": 200,
+      "mean_ink": 0.8291691579074799,
+      "accuracy": 0.255,
+      "early_error": 0.02
+     },
+     {
+      "class": "jacket",
+      "drawings": 200,
+      "mean_ink": 0.8754984335401023,
+      "accuracy": 0.72,
+      "early_error": 0.065
+     },
+     {
+      "class": "kangaroo",
+      "drawings": 200,
+      "mean_ink": 0.7850989303899698,
+      "accuracy": 0.645,
+      "early_error": 0.085
+     },
+     {
+      "class": "key",
+      "drawings": 200,
+      "mean_ink": 0.8266862264434622,
+      "accuracy": 0.675,
+      "early_error": 0.02
+     },
+     {
+      "class": "knee",
+      "drawings": 200,
+      "mean_ink": 0.8877290231894284,
+      "accuracy": 0.63,
+      "early_error": 0.015
+     },
+     {
+      "class": "lighthouse",
+      "drawings": 200,
+      "mean_ink": 0.6720339448913818,
+      "accuracy": 0.77,
+      "early_error": 0.095
+     },
+     {
+      "class": "lightning",
+      "drawings": 200,
+      "mean_ink": 0.6818545754375052,
+      "accuracy": 0.915,
+      "early_error": 0.005
+     },
+     {
+      "class": "lobster",
+      "drawings": 200,
+      "mean_ink": 0.90028893075808,
+      "accuracy": 0.48,
+      "early_error": 0.05
+     },
+     {
+      "class": "lollipop",
+      "drawings": 200,
+      "mean_ink": 0.809016312326714,
+      "accuracy": 0.82,
+      "early_error": 0.035
+     },
+     {
+      "class": "mailbox",
+      "drawings": 200,
+      "mean_ink": 0.8118936602942872,
+      "accuracy": 0.825,
+      "early_error": 0.05
+     },
+     {
+      "class": "map",
+      "drawings": 200,
+      "mean_ink": 0.8285799510646674,
+      "accuracy": 0.84,
+      "early_error": 0.0
+     },
+     {
+      "class": "megaphone",
+      "drawings": 200,
+      "mean_ink": 0.7500230603657055,
+      "accuracy": 0.755,
+      "early_error": 0.05
+     },
+     {
+      "class": "monkey",
+      "drawings": 200,
+      "mean_ink": 0.7719244422028146,
+      "accuracy": 0.615,
+      "early_error": 0.125
+     },
+     {
+      "class": "mountain",
+      "drawings": 200,
+      "mean_ink": 0.8989371202701836,
+      "accuracy": 0.8,
+      "early_error": 0.0
+     },
+     {
+      "class": "mouth",
+      "drawings": 200,
+      "mean_ink": 0.7257906910133957,
+      "accuracy": 0.88,
+      "early_error": 0.02
+     },
+     {
+      "class": "mushroom",
+      "drawings": 200,
+      "mean_ink": 0.79558544164333,
+      "accuracy": 0.825,
+      "early_error": 0.03
+     },
+     {
+      "class": "nose",
+      "drawings": 200,
+      "mean_ink": 0.9292744026218966,
+      "accuracy": 0.48,
+      "early_error": 0.005
+     },
+     {
+      "class": "octopus",
+      "drawings": 200,
+      "mean_ink": 0.6184821112342762,
+      "accuracy": 0.835,
+      "early_error": 0.02
+     },
+     {
+      "class": "onion",
+      "drawings": 200,
+      "mean_ink": 0.6536173264515404,
+      "accuracy": 0.735,
+      "early_error": 0.065
+     },
+     {
+      "class": "owl",
+      "drawings": 200,
+      "mean_ink": 0.7460312504697137,
+      "accuracy": 0.7,
+      "early_error": 0.085
+     },
+     {
+      "class": "parachute",
+      "drawings": 200,
+      "mean_ink": 0.7106562751152578,
+      "accuracy": 0.785,
+      "early_error": 0.095
+     },
+     {
+      "class": "picture frame",
+      "drawings": 200,
+      "mean_ink": 0.8849426880538422,
+      "accuracy": 0.825,
+      "early_error": 0.025
+     },
+     {
+      "class": "pig",
+      "drawings": 200,
+      "mean_ink": 0.7009524013488786,
+      "accuracy": 0.8,
+      "early_error": 0.045
+     },
+     {
+      "class": "popsicle",
+      "drawings": 200,
+      "mean_ink": 0.7772291983491785,
+      "accuracy": 0.805,
+      "early_error": 0.05
+     },
+     {
+      "class": "purse",
+      "drawings": 200,
+      "mean_ink": 0.8055248298509821,
+      "accuracy": 0.825,
+      "early_error": 0.035
+     },
+     {
+      "class": "rabbit",
+      "drawings": 200,
+      "mean_ink": 0.7053667723871329,
+      "accuracy": 0.835,
+      "early_error": 0.035
+     },
+     {
+      "class": "rake",
+      "drawings": 200,
+      "mean_ink": 0.7628821730829688,
+      "accuracy": 0.815,
+      "early_error": 0.015
+     },
+     {
+      "class": "rollerskates",
+      "drawings": 200,
+      "mean_ink": 0.7124989501585038,
+      "accuracy": 0.725,
+      "early_error": 0.13
+     },
+     {
+      "class": "sailboat",
+      "drawings": 200,
+      "mean_ink": 0.8139143126034799,
+      "accuracy": 0.87,
+      "early_error": 0.065
+     },
+     {
+      "class": "saxophone",
+      "drawings": 200,
+      "mean_ink": 0.6348207630442516,
+      "accuracy": 0.89,
+      "early_error": 0.03
+     },
+     {
+      "class": "scissors",
+      "drawings": 200,
+      "mean_ink": 0.7744385452822423,
+      "accuracy": 0.795,
+      "early_error": 0.07
+     },
+     {
+      "class": "scorpion",
+      "drawings": 200,
+      "mean_ink": 0.7380794752926431,
+      "accuracy": 0.73,
+      "early_error": 0.06
+     },
+     {
+      "class": "skateboard",
+      "drawings": 200,
+      "mean_ink": 0.8231577959469039,
+      "accuracy": 0.93,
+      "early_error": 0.01
+     },
+     {
+      "class": "sleeping bag",
+      "drawings": 200,
+      "mean_ink": 0.9259310529145509,
+      "accuracy": 0.63,
+      "early_error": 0.02
+     },
+     {
+      "class": "snail",
+      "drawings": 200,
+      "mean_ink": 0.7510084694701823,
+      "accuracy": 0.875,
+      "early_error": 0.05
+     },
+     {
+      "class": "snowflake",
+      "drawings": 200,
+      "mean_ink": 0.5510504096217838,
+      "accuracy": 0.86,
+      "early_error": 0.04
+     },
+     {
+      "class": "snowman",
+      "drawings": 200,
+      "mean_ink": 0.7172174152387278,
+      "accuracy": 0.885,
+      "early_error": 0.0
+     },
+     {
+      "class": "sock",
+      "drawings": 200,
+      "mean_ink": 0.8377022866302798,
+      "accuracy": 0.765,
+      "early_error": 0.01
+     },
+     {
+      "class": "spider",
+      "drawings": 200,
+      "mean_ink": 0.7409732693141581,
+      "accuracy": 0.7,
+      "early_error": 0.11
+     },
+     {
+      "class": "square",
+      "drawings": 200,
+      "mean_ink": 0.9988096443507467,
+      "accuracy": 0.605,
+      "early_error": 0.0
+     },
+     {
+      "class": "squirrel",
+      "drawings": 200,
+      "mean_ink": 0.7839523456155129,
+      "accuracy": 0.6,
+      "early_error": 0.105
+     },
+     {
+      "class": "star",
+      "drawings": 200,
+      "mean_ink": 0.6511785377604256,
+      "accuracy": 0.96,
+      "early_error": 0.01
+     },
+     {
+      "class": "stop sign",
+      "drawings": 200,
+      "mean_ink": 0.6641694294351556,
+      "accuracy": 0.885,
+      "early_error": 0.07
+     },
+     {
+      "class": "sun",
+      "drawings": 200,
+      "mean_ink": 0.7278147376513725,
+      "accuracy": 0.88,
+      "early_error": 0.035
+     },
+     {
+      "class": "sweater",
+      "drawings": 200,
+      "mean_ink": 0.9290644292681762,
+      "accuracy": 0.49,
+      "early_error": 0.005
+     },
+     {
+      "class": "t-shirt",
+      "drawings": 200,
+      "mean_ink": 0.7712964022470135,
+      "accuracy": 0.775,
+      "early_error": 0.015
+     },
+     {
+      "class": "teddy-bear",
+      "drawings": 200,
+      "mean_ink": 0.7082244333312977,
+      "accuracy": 0.695,
+      "early_error": 0.105
+     },
+     {
+      "class": "television",
+      "drawings": 200,
+      "mean_ink": 0.8048654249064251,
+      "accuracy": 0.81,
+      "early_error": 0.085
+     },
+     {
+      "class": "tent",
+      "drawings": 200,
+      "mean_ink": 0.8632154488830612,
+      "accuracy": 0.815,
+      "early_error": 0.05
+     },
+     {
+      "class": "tornado",
+      "drawings": 200,
+      "mean_ink": 0.8322751344524792,
+      "accuracy": 0.88,
+      "early_error": 0.025
+     },
+     {
+      "class": "tractor",
+      "drawings": 200,
+      "mean_ink": 0.6701406020565203,
+      "accuracy": 0.835,
+      "early_error": 0.02
+     },
+     {
+      "class": "triangle",
+      "drawings": 200,
+      "mean_ink": 0.9675786247445854,
+      "accuracy": 0.815,
+      "early_error": 0.0
+     },
+     {
+      "class": "umbrella",
+      "drawings": 200,
+      "mean_ink": 0.7084910329376988,
+      "accuracy": 0.86,
+      "early_error": 0.015
+     },
+     {
+      "class": "waterslide",
+      "drawings": 200,
+      "mean_ink": 0.7013484075449182,
+      "accuracy": 0.825,
+      "early_error": 0.02
+     },
+     {
+      "class": "whale",
+      "drawings": 200,
+      "mean_ink": 0.814187625621487,
+      "accuracy": 0.735,
+      "early_error": 0.035
+     },
+     {
+      "class": "wine bottle",
+      "drawings": 200,
+      "mean_ink": 0.6190130918677703,
+      "accuracy": 0.915,
+      "early_error": 0.01
+     },
+     {
+      "class": "wristwatch",
+      "drawings": 200,
+      "mean_ink": 0.8007919473936981,
+      "accuracy": 0.655,
+      "early_error": 0.05
+     },
+     {
+      "class": "yoga",
+      "drawings": 200,
+      "mean_ink": 0.8665013344798425,
+      "accuracy": 0.5,
+      "early_error": 0.065
+     },
+     {
+      "class": "zebra",
+      "drawings": 200,
+      "mean_ink": 0.8209546166454359,
+      "accuracy": 0.78,
+      "early_error": 0.075
+     }
+    ]
+   },
+   "earliest_classes": [
+    {
+     "class": "butterfly",
+     "drawings": 200,
+     "mean_ink": 0.49755327564680824,
+     "accuracy": 0.865,
+     "early_error": 0.03
+    },
+    {
+     "class": "hand",
+     "drawings": 200,
+     "mean_ink": 0.504649296443612,
+     "accuracy": 0.875,
+     "early_error": 0.035
+    },
+    {
+     "class": "snowflake",
+     "drawings": 200,
+     "mean_ink": 0.5510504096217838,
+     "accuracy": 0.86,
+     "early_error": 0.04
+    },
+    {
+     "class": "fan",
+     "drawings": 200,
+     "mean_ink": 0.577511746242353,
+     "accuracy": 0.76,
+     "early_error": 0.145
+    },
+    {
+     "class": "angel",
+     "drawings": 200,
+     "mean_ink": 0.6042666486250997,
+     "accuracy": 0.76,
+     "early_error": 0.09
+    },
+    {
+     "class": "house plant",
+     "drawings": 200,
+     "mean_ink": 0.6148343539490565,
+     "accuracy": 0.83,
+     "early_error": 0.095
+    },
+    {
+     "class": "octopus",
+     "drawings": 200,
+     "mean_ink": 0.6184821112342762,
+     "accuracy": 0.835,
+     "early_error": 0.02
+    },
+    {
+     "class": "wine bottle",
+     "drawings": 200,
+     "mean_ink": 0.6190130918677703,
+     "accuracy": 0.915,
+     "early_error": 0.01
+    },
+    {
+     "class": "cello",
+     "drawings": 200,
+     "mean_ink": 0.628372070502475,
+     "accuracy": 0.765,
+     "early_error": 0.1
+    },
+    {
+     "class": "saxophone",
+     "drawings": 200,
+     "mean_ink": 0.6348207630442516,
+     "accuracy": 0.89,
+     "early_error": 0.03
+    }
+   ],
+   "latest_classes": [
+    {
+     "class": "knee",
+     "drawings": 200,
+     "mean_ink": 0.8877290231894284,
+     "accuracy": 0.63,
+     "early_error": 0.015
+    },
+    {
+     "class": "hockey stick",
+     "drawings": 200,
+     "mean_ink": 0.8944385031409281,
+     "accuracy": 0.78,
+     "early_error": 0.0
+    },
+    {
+     "class": "drill",
+     "drawings": 200,
+     "mean_ink": 0.8989230098166271,
+     "accuracy": 0.63,
+     "early_error": 0.02
+    },
+    {
+     "class": "mountain",
+     "drawings": 200,
+     "mean_ink": 0.8989371202701836,
+     "accuracy": 0.8,
+     "early_error": 0.0
+    },
+    {
+     "class": "lobster",
+     "drawings": 200,
+     "mean_ink": 0.90028893075808,
+     "accuracy": 0.48,
+     "early_error": 0.05
+    },
+    {
+     "class": "sleeping bag",
+     "drawings": 200,
+     "mean_ink": 0.9259310529145509,
+     "accuracy": 0.63,
+     "early_error": 0.02
+    },
+    {
+     "class": "sweater",
+     "drawings": 200,
+     "mean_ink": 0.9290644292681762,
+     "accuracy": 0.49,
+     "early_error": 0.005
+    },
+    {
+     "class": "nose",
+     "drawings": 200,
+     "mean_ink": 0.9292744026218966,
+     "accuracy": 0.48,
+     "early_error": 0.005
+    },
+    {
+     "class": "triangle",
+     "drawings": 200,
+     "mean_ink": 0.9675786247445854,
+     "accuracy": 0.815,
+     "early_error": 0.0
+    },
+    {
+     "class": "square",
+     "drawings": 200,
+     "mean_ink": 0.9988096443507467,
+     "accuracy": 0.605,
+     "early_error": 0.0
+    }
+   ],
+   "stopping_ink_vs_eda": {
+    "recognized_rate": {
+     "spearman": 0.0012841515300886074,
+     "p_value": 0.9898830398481688,
+     "classes": 100
+    },
+    "early_confusability": {
+     "spearman": 0.176185018428034,
+     "p_value": 0.079525937502396,
+     "classes": 100
+    },
+    "n_strokes_median": {
+     "spearman": -0.2708208171387979,
+     "p_value": 0.006424575000082302,
+     "classes": 100
+    }
+   }
+  }
+ }
+}
